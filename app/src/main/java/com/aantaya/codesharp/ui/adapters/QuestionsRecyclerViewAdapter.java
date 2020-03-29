@@ -13,7 +13,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.aantaya.codesharp.R;
 import com.aantaya.codesharp.enums.QuestionDifficulty;
 import com.aantaya.codesharp.ui.home.RecyclerViewQuestionItem;
-import com.aantaya.codesharp.ui.listeners.MyItemClickListener;
+import com.aantaya.codesharp.listeners.MyItemClickListener;
 
 import java.lang.ref.WeakReference;
 import java.util.List;
