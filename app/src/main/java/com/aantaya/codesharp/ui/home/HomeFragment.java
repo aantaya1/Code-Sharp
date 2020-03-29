@@ -5,6 +5,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -17,6 +18,8 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.aantaya.codesharp.R;
 import com.aantaya.codesharp.models.QuestionDifficulty;
 import com.aantaya.codesharp.ui.adapters.QuestionsRecyclerViewAdapter;
+import com.aantaya.codesharp.ui.listeners.MyItemClickListener;
+import com.google.android.material.tabs.TabLayout;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
@@ -24,6 +27,8 @@ import java.util.List;
 import java.util.WeakHashMap;
 
 public class HomeFragment extends Fragment {
+
+    private final String TAG = HomeFragment.class.getSimpleName();
 
     private HomeViewModel homeViewModel;
 
@@ -46,7 +51,14 @@ public class HomeFragment extends Fragment {
         items.add(new RecyclerViewQuestionItem(4, "Cool ubjh av skfdv h vkhjbksdkhfksjdfh", QuestionDifficulty.EASY));
         items.add(new RecyclerViewQuestionItem(4, "Cool ubjh av skfdv h vkhjbksdkhfksjdfh", QuestionDifficulty.EASY));
 
-        recyclerView.setAdapter(new QuestionsRecyclerViewAdapter(new WeakReference<>(getContext()), items));
+        recyclerView.setAdapter(new QuestionsRecyclerViewAdapter(new WeakReference<>(getContext()), items,
+                new MyItemClickListener() {
+            @Override
+            public void onClick(int position) {
+                //todo: launch the answer question activity
+                Toast.makeText(getContext(), "Position: " + position, Toast.LENGTH_SHORT).show();
+            }
+        }));
 
         return root;
     }

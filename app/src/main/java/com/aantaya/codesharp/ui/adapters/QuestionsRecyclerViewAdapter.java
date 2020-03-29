@@ -4,6 +4,7 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -13,6 +14,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.aantaya.codesharp.R;
 import com.aantaya.codesharp.models.QuestionDifficulty;
 import com.aantaya.codesharp.ui.home.RecyclerViewQuestionItem;
+import com.aantaya.codesharp.ui.listeners.MyItemClickListener;
 
 import java.lang.ref.WeakReference;
 import java.util.List;
@@ -21,19 +23,23 @@ public class QuestionsRecyclerViewAdapter extends RecyclerView.Adapter<Questions
 
     private static final String TAG = QuestionsRecyclerViewAdapter.class.getSimpleName();
 
-    List<RecyclerViewQuestionItem> questions;
-    WeakReference<Context> contextWeakReference;
+    private List<RecyclerViewQuestionItem> questions;
+    private WeakReference<Context> contextWeakReference;
+    private MyItemClickListener listener;
 
-    public QuestionsRecyclerViewAdapter(WeakReference<Context> contextWeakReference, List<RecyclerViewQuestionItem> questions) {
+    public QuestionsRecyclerViewAdapter(WeakReference<Context> contextWeakReference,
+                                        List<RecyclerViewQuestionItem> questions,
+                                        MyItemClickListener listener) {
         this.contextWeakReference = contextWeakReference;
         this.questions = questions;
+        this.listener = listener;
     }
 
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.questions_recyclerview_item, parent, false);
-        return new ViewHolder(view);
+        return new ViewHolder(view, listener);
     }
 
     @Override
@@ -83,16 +89,27 @@ public class QuestionsRecyclerViewAdapter extends RecyclerView.Adapter<Questions
         return questions.size();
     }
 
-    public class ViewHolder extends RecyclerView.ViewHolder{
+    class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
 
-        public ImageView difficultyCircle;
-        public TextView questionTitle;
+        ImageView difficultyCircle;
+        TextView questionTitle;
 
-        public ViewHolder(@NonNull View itemView) {
+        MyItemClickListener viewClickListener;
+
+        ViewHolder(@NonNull View itemView, MyItemClickListener _listener) {
             super(itemView);
 
             difficultyCircle = itemView.findViewById(R.id.question_recyclerview_item_image);
             questionTitle = itemView.findViewById(R.id.question_recyclerview_item_title);
+
+            viewClickListener = _listener;
+
+            itemView.setOnClickListener(this);
+        }
+
+        @Override
+        public void onClick(View view) {
+            viewClickListener.onClick(getLayoutPosition());
         }
     }
 }
