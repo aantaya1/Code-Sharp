@@ -80,6 +80,12 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * private helper method for setting the main page's icons to display as the correct tint
+     * depending on the user's theme prefs
+     *
+     * @param menu reference to menu containing icons we want to update
+     */
     private void setIconColorsWithAppTheme(Menu menu){
         MenuItem item = menu.findItem(R.id.action_more);
         Drawable drawableWrap = DrawableCompat.wrap(item.getIcon()).mutate();
