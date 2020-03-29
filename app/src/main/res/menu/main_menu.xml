@@ -3,12 +3,6 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
-        android:id="@+id/main_menu_filter"
-        android:title="@string/filter_icon"
-        android:icon="@drawable/ic_filter_foreground"
-        app:showAsAction="collapseActionView|ifRoom"/>
-
-    <item
         android:id="@+id/main_menu_search"
         android:title="@string/search_icon"
         android:icon="@drawable/ic_search_foreground"
@@ -16,8 +10,14 @@
         app:actionViewClass="android.widget.SearchView"/>
 
     <item
+        android:id="@+id/main_menu_filter"
+        android:title="@string/filter_icon"
+        android:icon="@drawable/ic_filter_foreground"
+        app:showAsAction="collapseActionView|ifRoom"/>
+
+    <item
         android:id="@+id/action_more"
         android:icon="@drawable/ic_more_vert_foreground"
-        android:title="@string/more_icon"
-        app:showAsAction="ifRoom" />
+        android:title="@string/settings"
+        app:showAsAction="never" />
 </menu>

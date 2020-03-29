@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#00bcd4</color>
-    <color name="colorPrimaryDark">#008ba3</color>
-    <color name="colorAccent">#03DAC5</color>
+    <!-- app palette -->
+    <color name="primary">#64B5F6</color> <!-- Blue 300 -->
+    <color name="secondary">#FFCC80</color> <!-- Orange 200 -->
+    <color name="error">#Ef9A9A</color> <!-- Red 200 -->
 </resources>
