@@ -37,7 +37,12 @@ public class HomeFragment extends Fragment {
         items.add(new RecyclerViewQuestionItem(1, "Hello", QuestionDifficulty.EASY));
         items.add(new RecyclerViewQuestionItem(2, "World", QuestionDifficulty.EASY));
         items.add(new RecyclerViewQuestionItem(3, "This", QuestionDifficulty.EASY));
-        items.add(new RecyclerViewQuestionItem(4, "Cool", QuestionDifficulty.EASY));
+        items.add(new RecyclerViewQuestionItem(4, "Cool ubjh av skfdv h vkhjbksdkhfksjdfh Cool ubjh av skfdv h vkhjbksdkhfksjdfh Cool ubjh av skfdv h vkhjbksdkhfksjdfh", QuestionDifficulty.EASY));
+        items.add(new RecyclerViewQuestionItem(4, "Cool ubjh av skfdv h vkhjbksdkhfksjdfh", QuestionDifficulty.EASY));
+        items.add(new RecyclerViewQuestionItem(4, "Cool ubjh av skfdv h vkhjbksdkhfksjdfh", QuestionDifficulty.EASY));
+        items.add(new RecyclerViewQuestionItem(4, "Cool ubjh av skfdv h vkhjbksdkhfksjdfh", QuestionDifficulty.EASY));
+        items.add(new RecyclerViewQuestionItem(4, "Cool ubjh av skfdv h vkhjbksdkhfksjdfh", QuestionDifficulty.EASY));
+        items.add(new RecyclerViewQuestionItem(4, "Cool ubjh av skfdv h vkhjbksdkhfksjdfh", QuestionDifficulty.EASY));
 
         recyclerView.setAdapter(new QuestionsRecyclerViewAdapter(items));
 
