@@ -6,14 +6,7 @@ import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.widget.PopupMenu;
 import android.widget.Toast;
-
-import com.aantaya.codesharp.ui.settings.SettingsActivity;
-import com.aantaya.codesharp.utils.ColorUtils;
-import com.aantaya.codesharp.utils.ThemeHelper;
-import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
@@ -23,6 +16,11 @@ import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 import androidx.preference.PreferenceManager;
+
+import com.aantaya.codesharp.ui.settings.SettingsActivity;
+import com.aantaya.codesharp.utils.ColorUtils;
+import com.aantaya.codesharp.utils.ThemeHelper;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 public class MainActivity extends AppCompatActivity {
 
