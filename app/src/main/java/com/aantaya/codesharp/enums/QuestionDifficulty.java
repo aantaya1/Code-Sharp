@@ -1,4 +1,4 @@
-package com.aantaya.codesharp.models;
+package com.aantaya.codesharp.enums;
 
 import com.aantaya.codesharp.R;
 

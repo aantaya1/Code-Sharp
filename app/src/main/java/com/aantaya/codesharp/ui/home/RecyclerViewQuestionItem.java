@@ -1,6 +1,6 @@
 package com.aantaya.codesharp.ui.home;
 
-import com.aantaya.codesharp.models.QuestionDifficulty;
+import com.aantaya.codesharp.enums.QuestionDifficulty;
 
 public class RecyclerViewQuestionItem {
     private int questionId;

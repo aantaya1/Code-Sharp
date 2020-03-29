@@ -4,7 +4,6 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -12,7 +11,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.aantaya.codesharp.R;
-import com.aantaya.codesharp.models.QuestionDifficulty;
+import com.aantaya.codesharp.enums.QuestionDifficulty;
 import com.aantaya.codesharp.ui.home.RecyclerViewQuestionItem;
 import com.aantaya.codesharp.ui.listeners.MyItemClickListener;
 
@@ -27,6 +26,13 @@ public class QuestionsRecyclerViewAdapter extends RecyclerView.Adapter<Questions
     private WeakReference<Context> contextWeakReference;
     private MyItemClickListener listener;
 
+    /**
+     * Default constructor
+     *
+     * @param contextWeakReference weak reference to calling context
+     * @param questions reference to questions that will be displayed
+     * @param listener item click listener
+     */
     public QuestionsRecyclerViewAdapter(WeakReference<Context> contextWeakReference,
                                         List<RecyclerViewQuestionItem> questions,
                                         MyItemClickListener listener) {
