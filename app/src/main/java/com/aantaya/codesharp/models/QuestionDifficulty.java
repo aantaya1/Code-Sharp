@@ -3,9 +3,19 @@ package com.aantaya.codesharp.models;
 import com.aantaya.codesharp.R;
 
 public enum QuestionDifficulty {
-    EASY,
-    MEDIUM,
-    HARD;
+    EASY (1),
+    MEDIUM (2),
+    HARD (3);
+
+    int code;
+
+    QuestionDifficulty(int code) {
+        this.code = code;
+    }
+
+    public int getCode() {
+        return code;
+    }
 
     public static int getColor(QuestionDifficulty difficulty){
         switch (difficulty){

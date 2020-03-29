@@ -1,11 +1,6 @@
 package com.aantaya.codesharp.ui.adapters;
 
 import android.content.Context;
-import android.graphics.drawable.ColorDrawable;
-import android.graphics.drawable.Drawable;
-import android.graphics.drawable.GradientDrawable;
-import android.graphics.drawable.ShapeDrawable;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,7 +8,6 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.aantaya.codesharp.R;
@@ -49,6 +43,12 @@ public class QuestionsRecyclerViewAdapter extends RecyclerView.Adapter<Questions
         setDifficultyColor(holder.difficultyCircle, item.getQuestionDifficulty());
     }
 
+    /**
+     * Private helper for setting the correct difficulty circle.
+     *
+     * @param imageView should be a ref to the imageview for the difficulty circle
+     * @param difficulty questions difficulty
+     */
     private void setDifficultyColor(ImageView imageView, QuestionDifficulty difficulty){
         switch (difficulty){
             case EASY:
@@ -64,6 +64,18 @@ public class QuestionsRecyclerViewAdapter extends RecyclerView.Adapter<Questions
                 imageView.setImageDrawable(contextWeakReference.get().getDrawable(R.drawable.circle_yellow));
                 break;
         }
+    }
+
+    /**
+     * For now, the only time we cannot reuse a view is when the question difficult is different,
+     * since we need to redraw the difficulty circle
+     *
+     * @param position
+     * @return
+     */
+    @Override
+    public int getItemViewType(int position) {
+        return questions.get(position).getQuestionDifficulty().getCode();
     }
 
     @Override
