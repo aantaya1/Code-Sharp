@@ -1,5 +1,11 @@
 package com.aantaya.codesharp.ui.adapters;
 
+import android.content.Context;
+import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.Drawable;
+import android.graphics.drawable.GradientDrawable;
+import android.graphics.drawable.ShapeDrawable;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -7,18 +13,25 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.aantaya.codesharp.R;
+import com.aantaya.codesharp.models.QuestionDifficulty;
 import com.aantaya.codesharp.ui.home.RecyclerViewQuestionItem;
 
+import java.lang.ref.WeakReference;
 import java.util.List;
 
 public class QuestionsRecyclerViewAdapter extends RecyclerView.Adapter<QuestionsRecyclerViewAdapter.ViewHolder>{
 
-    List<RecyclerViewQuestionItem> questions;
+    private static final String TAG = QuestionsRecyclerViewAdapter.class.getSimpleName();
 
-    public QuestionsRecyclerViewAdapter(List<RecyclerViewQuestionItem> questions) {
+    List<RecyclerViewQuestionItem> questions;
+    WeakReference<Context> contextWeakReference;
+
+    public QuestionsRecyclerViewAdapter(WeakReference<Context> contextWeakReference, List<RecyclerViewQuestionItem> questions) {
+        this.contextWeakReference = contextWeakReference;
         this.questions = questions;
     }
 
@@ -33,7 +46,24 @@ public class QuestionsRecyclerViewAdapter extends RecyclerView.Adapter<Questions
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         RecyclerViewQuestionItem item = questions.get(position);
         holder.questionTitle.setText(item.getQuestionTitle());
-        //todo: set difficulty background color
+        setDifficultyColor(holder.difficultyCircle, item.getQuestionDifficulty());
+    }
+
+    private void setDifficultyColor(ImageView imageView, QuestionDifficulty difficulty){
+        switch (difficulty){
+            case EASY:
+                imageView.setImageDrawable(contextWeakReference.get().getDrawable(R.drawable.circle_green));
+                break;
+            case MEDIUM:
+                imageView.setImageDrawable(contextWeakReference.get().getDrawable(R.drawable.circle_yellow));
+                break;
+            case HARD:
+                imageView.setImageDrawable(contextWeakReference.get().getDrawable(R.drawable.circle_red));
+                break;
+            default:
+                imageView.setImageDrawable(contextWeakReference.get().getDrawable(R.drawable.circle_yellow));
+                break;
+        }
     }
 
     @Override

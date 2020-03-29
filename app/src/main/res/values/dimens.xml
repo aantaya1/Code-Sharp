@@ -5,6 +5,7 @@
 
     <dimen name="list_item_height">72dp</dimen>
     <dimen name="recyclerview_question_difficulty_circle">24dp</dimen>
+    <dimen name="recyclerview_question_difficulty_circle_outline">2dp</dimen>
 
     <dimen name="margin_medium">16dp</dimen>
 </resources>

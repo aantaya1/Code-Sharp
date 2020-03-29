@@ -18,8 +18,10 @@ import com.aantaya.codesharp.R;
 import com.aantaya.codesharp.models.QuestionDifficulty;
 import com.aantaya.codesharp.ui.adapters.QuestionsRecyclerViewAdapter;
 
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.WeakHashMap;
 
 public class HomeFragment extends Fragment {
 
@@ -35,8 +37,8 @@ public class HomeFragment extends Fragment {
 
         List<RecyclerViewQuestionItem> items = new ArrayList<>();
         items.add(new RecyclerViewQuestionItem(1, "Hello", QuestionDifficulty.EASY));
-        items.add(new RecyclerViewQuestionItem(2, "World", QuestionDifficulty.EASY));
-        items.add(new RecyclerViewQuestionItem(3, "This", QuestionDifficulty.EASY));
+        items.add(new RecyclerViewQuestionItem(2, "World", QuestionDifficulty.MEDIUM));
+        items.add(new RecyclerViewQuestionItem(3, "This", QuestionDifficulty.HARD));
         items.add(new RecyclerViewQuestionItem(4, "Cool ubjh av skfdv h vkhjbksdkhfksjdfh Cool ubjh av skfdv h vkhjbksdkhfksjdfh Cool ubjh av skfdv h vkhjbksdkhfksjdfh", QuestionDifficulty.EASY));
         items.add(new RecyclerViewQuestionItem(4, "Cool ubjh av skfdv h vkhjbksdkhfksjdfh", QuestionDifficulty.EASY));
         items.add(new RecyclerViewQuestionItem(4, "Cool ubjh av skfdv h vkhjbksdkhfksjdfh", QuestionDifficulty.EASY));
@@ -44,7 +46,7 @@ public class HomeFragment extends Fragment {
         items.add(new RecyclerViewQuestionItem(4, "Cool ubjh av skfdv h vkhjbksdkhfksjdfh", QuestionDifficulty.EASY));
         items.add(new RecyclerViewQuestionItem(4, "Cool ubjh av skfdv h vkhjbksdkhfksjdfh", QuestionDifficulty.EASY));
 
-        recyclerView.setAdapter(new QuestionsRecyclerViewAdapter(items));
+        recyclerView.setAdapter(new QuestionsRecyclerViewAdapter(new WeakReference<>(getContext()), items));
 
         return root;
     }

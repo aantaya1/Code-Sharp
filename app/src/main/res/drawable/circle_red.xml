@@ -4,9 +4,13 @@
     android:shape="oval">
 
     <solid
-        android:color="#666666"/>
+        android:color="@color/red"/>
 
     <size
         android:width="120dp"
         android:height="120dp"/>
+
+    <stroke
+        android:color="@color/black"
+        android:width="@dimen/recyclerview_question_difficulty_circle_outline"/>
 </shape>
