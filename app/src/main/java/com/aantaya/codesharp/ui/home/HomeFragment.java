@@ -11,8 +11,15 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.aantaya.codesharp.R;
+import com.aantaya.codesharp.models.QuestionDifficulty;
+import com.aantaya.codesharp.ui.adapters.QuestionsRecyclerViewAdapter;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class HomeFragment extends Fragment {
 
@@ -20,16 +27,20 @@ public class HomeFragment extends Fragment {
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
-        homeViewModel =
-                ViewModelProviders.of(this).get(HomeViewModel.class);
+        homeViewModel = ViewModelProviders.of(this).get(HomeViewModel.class);
         View root = inflater.inflate(R.layout.fragment_home, container, false);
-        final TextView textView = root.findViewById(R.id.text_home);
-        homeViewModel.getText().observe(getViewLifecycleOwner(), new Observer<String>() {
-            @Override
-            public void onChanged(@Nullable String s) {
-                textView.setText(s);
-            }
-        });
+        final RecyclerView recyclerView = root.findViewById(R.id.recyclerview_home);
+        recyclerView.setHasFixedSize(true);
+        recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+
+        List<RecyclerViewQuestionItem> items = new ArrayList<>();
+        items.add(new RecyclerViewQuestionItem(1, "Hello", QuestionDifficulty.EASY));
+        items.add(new RecyclerViewQuestionItem(2, "World", QuestionDifficulty.EASY));
+        items.add(new RecyclerViewQuestionItem(3, "This", QuestionDifficulty.EASY));
+        items.add(new RecyclerViewQuestionItem(4, "Cool", QuestionDifficulty.EASY));
+
+        recyclerView.setAdapter(new QuestionsRecyclerViewAdapter(items));
+
         return root;
     }
 }

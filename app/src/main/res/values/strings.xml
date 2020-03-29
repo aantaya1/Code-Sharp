@@ -21,4 +21,7 @@
 
     <!-- Sync Preferences -->
     <string name="sync_title">Sync questions periodically</string>
+
+    <!--  Recyclerviews  -->
+    <string name="question_title">Question Title</string>
 </resources>
