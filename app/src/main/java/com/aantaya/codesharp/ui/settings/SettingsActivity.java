@@ -1,7 +1,10 @@
 package com.aantaya.codesharp.ui.settings;
 
+import android.content.Intent;
 import android.os.Bundle;
+import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
@@ -12,7 +15,11 @@ import androidx.preference.SwitchPreference;
 import androidx.preference.SwitchPreferenceCompat;
 
 import com.aantaya.codesharp.R;
+import com.aantaya.codesharp.ui.login.LoginActivity;
 import com.aantaya.codesharp.utils.ThemeHelper;
+import com.firebase.ui.auth.AuthUI;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 
 public class SettingsActivity extends AppCompatActivity {
 
@@ -48,6 +55,28 @@ public class SettingsActivity extends AppCompatActivity {
                         boolean useDarkMode = (Boolean) newValue;
                         ThemeHelper.applyTheme(useDarkMode);
                         return true;
+                    }
+                });
+            }
+
+            Preference signOut = findPreference("sign_out");
+            if (signOut != null){
+                signOut.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+                    @Override
+                    public boolean onPreferenceClick(Preference preference) {
+                        AuthUI.getInstance()
+                                .signOut(getContext())
+                                .addOnCompleteListener(new OnCompleteListener<Void>() {
+                                    public void onComplete(@NonNull Task<Void> task) {
+                                        // user is now signed out
+                                        startActivity(new Intent(getContext(), LoginActivity.class));
+                                        if (getActivity() != null){
+                                            getActivity().finish();
+                                        }
+                                    }
+                                });
+
+                        return false;
                     }
                 });
             }

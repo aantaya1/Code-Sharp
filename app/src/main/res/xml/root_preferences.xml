@@ -33,4 +33,12 @@
 
     </PreferenceCategory>
 
+    <PreferenceCategory app:title="@string/account_header">
+
+        <Preference
+            app:key="sign_out"
+            app:title="@string/sign_out_button_title"/>
+
+    </PreferenceCategory>
+
 </PreferenceScreen>
