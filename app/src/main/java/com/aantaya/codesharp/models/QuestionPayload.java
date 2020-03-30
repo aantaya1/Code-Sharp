@@ -2,6 +2,16 @@ package com.aantaya.codesharp.models;
 
 import java.util.List;
 
+/**
+ * This model defines what an actual question is. This is required because a given Question
+ * can be asked in multiple different programming languages. This allows us to map a specific
+ * question to a QuestionPayload based on it's ProgrammingLanguage. Thus, any question can have
+ * multiple question payloads associated to it; one for each language the question was written
+ * in.
+ *
+ * See the attribute questionPayload in QuestionModel
+ *
+ */
 public class QuestionPayload {
     private String question;
     private List<String> hints;

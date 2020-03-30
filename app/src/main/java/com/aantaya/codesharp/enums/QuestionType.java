@@ -1,5 +1,8 @@
 package com.aantaya.codesharp.enums;
 
+/**
+ * Supported question types
+ */
 public enum QuestionType {
     COMPLEXITY_ANAYSIS(1),
     TOPIC_QUESTION(2),

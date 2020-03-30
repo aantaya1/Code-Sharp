@@ -17,6 +17,13 @@ public enum QuestionDifficulty {
         return code;
     }
 
+    /**
+     * static helper method for getting the color that is related to the given difficulty level
+     * This is primarily used for determining UI elements associated to questions
+     *
+     * @param difficulty the difficulty we would like to map to a color
+     * @return the color that is mapped to the provided difficulty
+     */
     public static int getColor(QuestionDifficulty difficulty){
         switch (difficulty){
             case EASY:

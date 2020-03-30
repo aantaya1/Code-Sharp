@@ -54,24 +54,18 @@ public class LoginActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        switch (requestCode){
-            case RC_SIGN_IN:
-                IdpResponse response = IdpResponse.fromResultIntent(data);
-
-                if (resultCode == RESULT_OK) {
-                    // Successfully signed in
-                    Intent launchMain = new Intent(getApplicationContext(), MainActivity.class);
-                    startActivity(launchMain);
-                    finish();
-                } else {
-                    // Sign in failed. If response is null the user canceled the
-                    // sign-in flow using the back button. Otherwise check
-                    // response.getError().getErrorCode() and handle the error.
-                    // ...
-                    Toast.makeText(this, "Signin failed...", Toast.LENGTH_SHORT).show();
-                }
-
-                break;
+        if (requestCode == RC_SIGN_IN && resultCode == RESULT_OK){
+            // Successfully signed in...now launch the main activity
+            Intent launchMain = new Intent(getApplicationContext(), MainActivity.class);
+            startActivity(launchMain);
+            finish();
+        }else {
+            IdpResponse response = IdpResponse.fromResultIntent(data);
+            // Sign in failed. If response is null the user canceled the
+            // sign-in flow using the back button. Otherwise check
+            // response.getError().getErrorCode() and handle the error.
+            // ...
+            Toast.makeText(this, "Signin failed...", Toast.LENGTH_SHORT).show();
         }
     }
 }

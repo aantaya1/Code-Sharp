@@ -59,6 +59,8 @@ public class SettingsActivity extends AppCompatActivity {
                 });
             }
 
+            //If the user clicks the sign-out button, we need to log them out using the
+            // Firebase AuthUI to handle of the redirection and UI things
             Preference signOut = findPreference("sign_out");
             if (signOut != null){
                 signOut.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
