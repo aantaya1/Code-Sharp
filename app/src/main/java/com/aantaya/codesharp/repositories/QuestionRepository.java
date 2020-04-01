@@ -18,6 +18,7 @@ import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -52,8 +53,6 @@ public class QuestionRepository {
     }
 
     public MutableLiveData<List<QuestionModel>> getQuestions(){
-        setQuestionItems();
-
         MutableLiveData<List<QuestionModel>> data = new MutableLiveData<>();
         data.setValue(questionItems);
         return data;
@@ -86,26 +85,29 @@ public class QuestionRepository {
     /**
      * TODO: Remove/replace this with firebase API call
      */
-    private void setQuestionItems(){
+    private void sendQuestionsToFirebase(){
 
         QuestionModel question;
         QuestionPayload questionPayload;
         Map<ProgrammingLanguage, QuestionPayload> map;
 
         questionPayload = new QuestionPayload();
-
-        questionPayload.setQuestion("How many times does this for loop iterate?");
-        questionPayload.setAnswer("15");
-        questionPayload.setHints(new ArrayList<String>());
-        questionPayload.setWrongAnswers(new ArrayList<String>());
+        questionPayload.setQuestion("How do you start an activity in Android?");
+        questionPayload.setAnswer("Create a new intent with the current activity and the class of " +
+                "the destination activity. Then call startActivity() with that intent.");
+        questionPayload.setHints(new ArrayList<>(Arrays.asList("Can Intents help us?")));
+        questionPayload.setWrongAnswers(new ArrayList<>(Arrays.asList(
+                "Call setContentView() with the new layout xml that we would like to display to the user.",
+                "Issue a broadcast to the activity that you would like to start.",
+                "Call the onCreate method for the activity that you would like to start, and updated the " +
+                        "UI with a call to setContentView()")));
 
         map = new HashMap<>();
         map.put(ProgrammingLanguage.JAVA, questionPayload);
 
         question = new QuestionModel();
-        question.setId(1);
         question.setQuestionPayloadMap(map);
-        question.setQuestionTitle("For Loops");
+        question.setQuestionTitle("Starting an Android Activity");
         question.setDifficulty(QuestionDifficulty.EASY);
         question.setQuestionType(QuestionType.TOPIC_QUESTION);
         question.setTags(new ArrayList<String>());
@@ -115,20 +117,23 @@ public class QuestionRepository {
         //--------------------------------
 
         questionPayload = new QuestionPayload();
-
-        questionPayload.setQuestion("How many times does this while loop iterate?");
-        questionPayload.setAnswer("38");
-        questionPayload.setHints(new ArrayList<String>());
-        questionPayload.setWrongAnswers(new ArrayList<String>());
+        questionPayload.setQuestion("What are the Android Components?");
+        questionPayload.setAnswer("Activities, Services, Broadcast Receivers, and Content Providers");
+        questionPayload.setHints(new ArrayList<>(Arrays.asList("App components are the essential " +
+                "building blocks of an Android app. Each component is an entry point through which " +
+                "the system or a user can enter your app.")));
+        questionPayload.setWrongAnswers(new ArrayList<>(Arrays.asList(
+                "Intents, Fragments, Views, and ViewModels",
+                "Activities and Services",
+                "onCreate(), onResume(), onPause(), and onDestroy()")));
 
         map = new HashMap<>();
         map.put(ProgrammingLanguage.JAVA, questionPayload);
 
         question = new QuestionModel();
-        question.setId(2);
         question.setQuestionPayloadMap(map);
-        question.setQuestionTitle("While Loops");
-        question.setDifficulty(QuestionDifficulty.MEDIUM);
+        question.setQuestionTitle("Android Components");
+        question.setDifficulty(QuestionDifficulty.EASY);
         question.setQuestionType(QuestionType.TOPIC_QUESTION);
         question.setTags(new ArrayList<String>());
 
@@ -137,23 +142,29 @@ public class QuestionRepository {
         //----------------------------------
 
         questionPayload = new QuestionPayload();
-
-        questionPayload.setQuestion("What is Java?");
-        questionPayload.setAnswer("A Programming Language");
-        questionPayload.setHints(new ArrayList<String>());
-        questionPayload.setWrongAnswers(new ArrayList<String>());
+        questionPayload.setQuestion("How does the Java garbage collector know when to deallocate memory for a given object?");
+        questionPayload.setAnswer("When an object is no longer referenced by any part of your program.");
+        questionPayload.setHints(new ArrayList<>(Arrays.asList("Sometimes you should get rid of things " +
+                "that you know you will never use again.")));
+        questionPayload.setWrongAnswers(new ArrayList<>(Arrays.asList(
+                "Once you set all the fields in the object to zero, empty, or null.",
+                "Once you have finished using an object regardless of whether or not you still have a reference to the object.",
+                "When the JVM runs out of memory on the heap.")));
 
         map = new HashMap<>();
         map.put(ProgrammingLanguage.JAVA, questionPayload);
 
         question = new QuestionModel();
-        question.setId(1);
         question.setQuestionPayloadMap(map);
-        question.setQuestionTitle("What is Java?");
-        question.setDifficulty(QuestionDifficulty.HARD);
+        question.setQuestionTitle("Java Garbage Collection");
+        question.setDifficulty(QuestionDifficulty.EASY);
         question.setQuestionType(QuestionType.TOPIC_QUESTION);
         question.setTags(new ArrayList<String>());
 
         questionItems.add(question);
+
+        for (QuestionModel questionModel : questionItems){
+
+        }
     }
 }
