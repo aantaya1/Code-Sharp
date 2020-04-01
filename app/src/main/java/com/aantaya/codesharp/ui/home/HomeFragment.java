@@ -14,15 +14,15 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.aantaya.codesharp.R;
-import com.aantaya.codesharp.ui.adapters.QuestionsRecyclerViewAdapter;
 import com.aantaya.codesharp.listeners.MyItemClickListener;
+import com.aantaya.codesharp.ui.adapters.QuestionsRecyclerViewAdapter;
 
 import java.lang.ref.WeakReference;
 import java.util.List;
 
 public class HomeFragment extends Fragment {
 
-    private final String TAG = HomeFragment.class.getSimpleName();
+    private static final String TAG = HomeFragment.class.getSimpleName();
 
     private HomeViewModel mHomeViewModel;
     private RecyclerView mRecyclerView;
@@ -35,6 +35,13 @@ public class HomeFragment extends Fragment {
 
         initRecyclerView();
 
+        return root;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+
         //Get the view model
         mHomeViewModel = ViewModelProviders.of(this).get(HomeViewModel.class);
 
@@ -42,17 +49,20 @@ public class HomeFragment extends Fragment {
         mHomeViewModel.init();
 
         //Set up the fragment to observe changes to the questions as they are updated in the viewmodel
+        //and then update the adapter with the new items
         mHomeViewModel.getQuestions().observe(getViewLifecycleOwner(),
                 new Observer<List<RecyclerViewQuestionItem>>() {
-            @Override
-            public void onChanged(List<RecyclerViewQuestionItem> recyclerViewQuestionItems) {
-                mAdapter.updateItems(recyclerViewQuestionItems);
-            }
-        });
-
-        return root;
+                    @Override
+                    public void onChanged(List<RecyclerViewQuestionItem> recyclerViewQuestionItems) {
+                        mAdapter.updateItems(recyclerViewQuestionItems);
+                    }
+                });
     }
 
+    /**
+     * helper function to init the recyclerview along with all the adapter and onClick logic for
+     * items in the recyclerview
+     */
     private void initRecyclerView(){
         mRecyclerView.setHasFixedSize(true);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));

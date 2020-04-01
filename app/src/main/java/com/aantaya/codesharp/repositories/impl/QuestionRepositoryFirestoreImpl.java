@@ -1,4 +1,4 @@
-package com.aantaya.codesharp.repositories;
+package com.aantaya.codesharp.repositories.impl;
 
 import android.util.Log;
 
@@ -24,24 +24,16 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-/**
- * Implemented as a singleton since we don't want duplicate connections to our
- * remote/local data sources
- *
- * TODO: Make this an interface and implement the interface instead (Dagger??)
- *
- */
-public class QuestionRepository {
+public class QuestionRepositoryFirestoreImpl {
+    private static final String TAG = QuestionRepositoryFirestoreImpl.class.getSimpleName();
 
-    private static final String TAG = QuestionRepository.class.getSimpleName();
-
-    private static QuestionRepository questionRepository;
+    private static QuestionRepositoryFirestoreImpl questionRepository;
 
     //todo: this will probably be removed once we implement firebase
     private List<QuestionModel> questionItems = new ArrayList<>();
     private FirebaseFirestore db;//todo: revisit this, maybe we don't need to keep this connection open
 
-    private QuestionRepository(){
+    private QuestionRepositoryFirestoreImpl(){
         db = FirebaseFirestore.getInstance();
 
         // The default cache size threshold is 100 MB. Configure "setCacheSizeBytes"
@@ -56,9 +48,9 @@ public class QuestionRepository {
 //        sendQuestionsToFirebase();
     }
 
-    public static QuestionRepository getInstance(){
+    public static QuestionRepositoryFirestoreImpl getInstance(){
         if (questionRepository == null){
-            questionRepository = new QuestionRepository();
+            questionRepository = new QuestionRepositoryFirestoreImpl();
         }
 
         return questionRepository;
