@@ -1,5 +1,8 @@
 package com.aantaya.codesharp.repositories;
 
+import android.util.Log;
+
+import androidx.annotation.NonNull;
 import androidx.lifecycle.MutableLiveData;
 
 import com.aantaya.codesharp.enums.ProgrammingLanguage;
@@ -8,6 +11,11 @@ import com.aantaya.codesharp.enums.QuestionType;
 import com.aantaya.codesharp.models.QuestionModel;
 import com.aantaya.codesharp.models.QuestionPayload;
 import com.aantaya.codesharp.ui.home.RecyclerViewQuestionItem;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -17,13 +25,23 @@ import java.util.Map;
 /**
  * Implemented as a singleton since we don't want duplicate connections to our
  * remote/local data sources
+ *
+ * TODO: Make this an interface and implement the interface instead (Dagger??)
+ *
  */
 public class QuestionRepository {
+
+    private static final String TAG = QuestionRepository.class.getSimpleName();
 
     private static QuestionRepository questionRepository;
 
     //todo: this will probably be removed once we implement firebase
     private List<QuestionModel> questionItems = new ArrayList<>();
+    private FirebaseFirestore db;//todo: revisit this, maybe we don't need to keep this connection open
+
+    private QuestionRepository(){
+        db = FirebaseFirestore.getInstance();
+    }
 
     public static QuestionRepository getInstance(){
         if (questionRepository == null){
@@ -42,19 +60,26 @@ public class QuestionRepository {
     }
 
     public MutableLiveData<List<RecyclerViewQuestionItem>> getQuestionsForRecyclerView(){
-        List<RecyclerViewQuestionItem> items = new ArrayList<>();
-        items.add(new RecyclerViewQuestionItem(1, "Hello", QuestionDifficulty.EASY));
-        items.add(new RecyclerViewQuestionItem(2, "World", QuestionDifficulty.MEDIUM));
-        items.add(new RecyclerViewQuestionItem(3, "This", QuestionDifficulty.HARD));
-        items.add(new RecyclerViewQuestionItem(4, "Cool ubjh av skfdv h vkhjbksdkhfksjdfh Cool ubjh av skfdv h vkhjbksdkhfksjdfh Cool ubjh av skfdv h vkhjbksdkhfksjdfh", QuestionDifficulty.EASY));
-        items.add(new RecyclerViewQuestionItem(4, "Cool ubjh av skfdv h vkhjbksdkhfksjdfh", QuestionDifficulty.EASY));
-        items.add(new RecyclerViewQuestionItem(4, "Cool ubjh av skfdv h vkhjbksdkhfksjdfh", QuestionDifficulty.EASY));
-        items.add(new RecyclerViewQuestionItem(4, "Cool ubjh av skfdv h vkhjbksdkhfksjdfh", QuestionDifficulty.EASY));
-        items.add(new RecyclerViewQuestionItem(4, "Cool ubjh av skfdv h vkhjbksdkhfksjdfh", QuestionDifficulty.EASY));
-        items.add(new RecyclerViewQuestionItem(4, "Cool ubjh av skfdv h vkhjbksdkhfksjdfh", QuestionDifficulty.EASY));
-
         MutableLiveData<List<RecyclerViewQuestionItem>> data = new MutableLiveData<>();
-        data.setValue(items);
+
+        db.collection("questions")
+                .get()
+                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                        if (task.isSuccessful()) {
+                            for (QueryDocumentSnapshot document : task.getResult()) {
+                                //todo: parse this and update the livedata!
+                                Log.d(TAG, document.getId() + " => " + document.getData());
+                            }
+                        } else {
+                            Log.w(TAG, "Error getting documents.", task.getException());
+                        }
+                    }
+                });
+
+        data.setValue(new ArrayList<RecyclerViewQuestionItem>());
+
         return data;
     }
 
