@@ -26,12 +26,14 @@ public class HomeFragment extends Fragment {
 
     private HomeViewModel mHomeViewModel;
     private RecyclerView mRecyclerView;
-    private RecyclerView.Adapter mAdapter;
+    private QuestionsRecyclerViewAdapter mAdapter;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
         View root = inflater.inflate(R.layout.fragment_home, container, false);
         mRecyclerView = root.findViewById(R.id.recyclerview_home);
+
+        initRecyclerView();
 
         //Get the view model
         mHomeViewModel = ViewModelProviders.of(this).get(HomeViewModel.class);
@@ -44,11 +46,9 @@ public class HomeFragment extends Fragment {
                 new Observer<List<RecyclerViewQuestionItem>>() {
             @Override
             public void onChanged(List<RecyclerViewQuestionItem> recyclerViewQuestionItems) {
-                mAdapter.notifyDataSetChanged();
+                mAdapter.updateItems(recyclerViewQuestionItems);
             }
         });
-
-        initRecyclerView();
 
         return root;
     }
@@ -57,7 +57,7 @@ public class HomeFragment extends Fragment {
         mRecyclerView.setHasFixedSize(true);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
 
-        mAdapter = new QuestionsRecyclerViewAdapter(new WeakReference<>(getContext()), mHomeViewModel.getQuestions().getValue(),
+        mAdapter = new QuestionsRecyclerViewAdapter(new WeakReference<>(getContext()),
                 new MyItemClickListener() {
                     @Override
                     public void onClick(int position) {

@@ -14,6 +14,7 @@ import com.aantaya.codesharp.ui.home.RecyclerViewQuestionItem;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreSettings;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
@@ -42,6 +43,17 @@ public class QuestionRepository {
 
     private QuestionRepository(){
         db = FirebaseFirestore.getInstance();
+
+        // The default cache size threshold is 100 MB. Configure "setCacheSizeBytes"
+        // for a different threshold (minimum 1 MB) or set to "CACHE_SIZE_UNLIMITED"
+        // to disable clean-up.
+        FirebaseFirestoreSettings settings = new FirebaseFirestoreSettings.Builder()
+                .setPersistenceEnabled(true)
+                .setCacheSizeBytes(FirebaseFirestoreSettings.CACHE_SIZE_UNLIMITED)
+                .build();
+        db.setFirestoreSettings(settings);
+
+//        sendQuestionsToFirebase();
     }
 
     public static QuestionRepository getInstance(){
@@ -59,7 +71,7 @@ public class QuestionRepository {
     }
 
     public MutableLiveData<List<RecyclerViewQuestionItem>> getQuestionsForRecyclerView(){
-        MutableLiveData<List<RecyclerViewQuestionItem>> data = new MutableLiveData<>();
+        final MutableLiveData<List<RecyclerViewQuestionItem>> data = new MutableLiveData<>();
 
         db.collection("questions")
                 .get()
@@ -67,10 +79,22 @@ public class QuestionRepository {
                     @Override
                     public void onComplete(@NonNull Task<QuerySnapshot> task) {
                         if (task.isSuccessful()) {
+                            List<RecyclerViewQuestionItem> items = new ArrayList<>();
+
                             for (QueryDocumentSnapshot document : task.getResult()) {
                                 //todo: parse this and update the livedata!
                                 Log.d(TAG, document.getId() + " => " + document.getData());
+                                QuestionModel questionModel = document.toObject(QuestionModel.class);
+
+                                Log.d(TAG, "id->" + document.getId());
+                                Log.d(TAG, "title->" + questionModel.getQuestionTitle());
+                                Log.d(TAG, "difficulty->" + questionModel.getDifficulty());
+
+                                items.add(new RecyclerViewQuestionItem(document.getId(),
+                                        questionModel.getQuestionTitle(), questionModel.getDifficulty()));
                             }
+
+                            data.postValue(items);
                         } else {
                             Log.w(TAG, "Error getting documents.", task.getException());
                         }
@@ -89,7 +113,7 @@ public class QuestionRepository {
 
         QuestionModel question;
         QuestionPayload questionPayload;
-        Map<ProgrammingLanguage, QuestionPayload> map;
+        Map<String, QuestionPayload> map;
 
         questionPayload = new QuestionPayload();
         questionPayload.setQuestion("How do you start an activity in Android?");
@@ -103,7 +127,7 @@ public class QuestionRepository {
                         "UI with a call to setContentView()")));
 
         map = new HashMap<>();
-        map.put(ProgrammingLanguage.JAVA, questionPayload);
+        map.put(ProgrammingLanguage.JAVA.toString(), questionPayload);
 
         question = new QuestionModel();
         question.setQuestionPayloadMap(map);
@@ -128,7 +152,7 @@ public class QuestionRepository {
                 "onCreate(), onResume(), onPause(), and onDestroy()")));
 
         map = new HashMap<>();
-        map.put(ProgrammingLanguage.JAVA, questionPayload);
+        map.put(ProgrammingLanguage.JAVA.toString(), questionPayload);
 
         question = new QuestionModel();
         question.setQuestionPayloadMap(map);
@@ -152,7 +176,7 @@ public class QuestionRepository {
                 "When the JVM runs out of memory on the heap.")));
 
         map = new HashMap<>();
-        map.put(ProgrammingLanguage.JAVA, questionPayload);
+        map.put(ProgrammingLanguage.JAVA.toString(), questionPayload);
 
         question = new QuestionModel();
         question.setQuestionPayloadMap(map);
@@ -164,7 +188,7 @@ public class QuestionRepository {
         questionItems.add(question);
 
         for (QuestionModel questionModel : questionItems){
-
+            db.collection("questions").add(questionModel);
         }
     }
 }

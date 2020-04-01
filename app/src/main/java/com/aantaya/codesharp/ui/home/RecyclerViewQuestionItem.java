@@ -3,7 +3,7 @@ package com.aantaya.codesharp.ui.home;
 import com.aantaya.codesharp.enums.QuestionDifficulty;
 
 public class RecyclerViewQuestionItem {
-    private int questionId;
+    private String questionId;
     private String questionTitle;
     private QuestionDifficulty questionDifficulty;
 
@@ -14,18 +14,18 @@ public class RecyclerViewQuestionItem {
      * @param questionTitle what will be displayed in recyclerview
      * @param questionDifficulty used for determining the color to display next to question
      */
-    public RecyclerViewQuestionItem(int questionId, String questionTitle,
+    public RecyclerViewQuestionItem(String questionId, String questionTitle,
                                     QuestionDifficulty questionDifficulty) {
         this.questionId = questionId;
         this.questionTitle = questionTitle;
         this.questionDifficulty = questionDifficulty;
     }
 
-    public int getQuestionId() {
+    public String getQuestionId() {
         return questionId;
     }
 
-    public void setQuestionId(int questionId) {
+    public void setQuestionId(String questionId) {
         this.questionId = questionId;
     }
 

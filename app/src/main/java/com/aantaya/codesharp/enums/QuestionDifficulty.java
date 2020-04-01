@@ -17,6 +17,19 @@ public enum QuestionDifficulty {
         return code;
     }
 
+    public static QuestionDifficulty fromString(String s){
+        switch (s.toLowerCase()){
+            case "easy":
+                return EASY;
+            case "medium":
+                return MEDIUM;
+            case "hard":
+                return HARD;
+            default:
+                return EASY;
+        }
+    }
+
     /**
      * static helper method for getting the color that is related to the given difficulty level
      * This is primarily used for determining UI elements associated to questions

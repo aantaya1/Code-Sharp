@@ -9,10 +9,10 @@ import java.util.List;
 import java.util.Map;
 
 public class QuestionModel {
-    private int id;
+    private String id;
     private String questionTitle;
     private QuestionType questionType;
-    private Map<ProgrammingLanguage, QuestionPayload> questionPayloadMap;
+    private Map<String, QuestionPayload> questionPayloadMap;
     private QuestionDifficulty difficulty;
     private List<String> tags;
     private Date modified;
@@ -21,11 +21,20 @@ public class QuestionModel {
         //blank constructor
     }
 
-    public int getId() {
+    public QuestionModel(String questionTitle, QuestionType questionType, Map<String, QuestionPayload> questionPayloadMap, QuestionDifficulty difficulty, List<String> tags, Date modified) {
+        this.questionTitle = questionTitle;
+        this.questionType = questionType;
+        this.questionPayloadMap = questionPayloadMap;
+        this.difficulty = difficulty;
+        this.tags = tags;
+        this.modified = modified;
+    }
+
+    public String getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(String id) {
         this.id = id;
     }
 
@@ -45,11 +54,11 @@ public class QuestionModel {
         this.questionType = questionType;
     }
 
-    public Map<ProgrammingLanguage, QuestionPayload> getQuestionPayloadMap() {
+    public Map<String, QuestionPayload> getQuestionPayloadMap() {
         return questionPayloadMap;
     }
 
-    public void setQuestionPayloadMap(Map<ProgrammingLanguage, QuestionPayload> questionPayloadMap) {
+    public void setQuestionPayloadMap(Map<String, QuestionPayload> questionPayloadMap) {
         this.questionPayloadMap = questionPayloadMap;
     }
 

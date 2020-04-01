@@ -8,6 +8,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.DiffUtil;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.aantaya.codesharp.R;
@@ -16,13 +17,14 @@ import com.aantaya.codesharp.ui.home.RecyclerViewQuestionItem;
 import com.aantaya.codesharp.listeners.MyItemClickListener;
 
 import java.lang.ref.WeakReference;
+import java.util.ArrayList;
 import java.util.List;
 
 public class QuestionsRecyclerViewAdapter extends RecyclerView.Adapter<QuestionsRecyclerViewAdapter.ViewHolder>{
 
     private static final String TAG = QuestionsRecyclerViewAdapter.class.getSimpleName();
 
-    private List<RecyclerViewQuestionItem> questions;
+    private List<RecyclerViewQuestionItem> questions = new ArrayList<>();
     private WeakReference<Context> contextWeakReference;
     private MyItemClickListener listener;
 
@@ -30,14 +32,11 @@ public class QuestionsRecyclerViewAdapter extends RecyclerView.Adapter<Questions
      * Default constructor
      *
      * @param contextWeakReference weak reference to calling context
-     * @param questions reference to questions that will be displayed
      * @param listener item click listener
      */
     public QuestionsRecyclerViewAdapter(WeakReference<Context> contextWeakReference,
-                                        List<RecyclerViewQuestionItem> questions,
                                         MyItemClickListener listener) {
         this.contextWeakReference = contextWeakReference;
-        this.questions = questions;
         this.listener = listener;
     }
 
@@ -78,6 +77,16 @@ public class QuestionsRecyclerViewAdapter extends RecyclerView.Adapter<Questions
         }
     }
 
+    public void updateItems(List<RecyclerViewQuestionItem> newItems){
+        final QuestionsRecyclerViewAdapter.DiffUtilCallback callback = new DiffUtilCallback(this.questions, newItems);
+        final DiffUtil.DiffResult diffResult = DiffUtil.calculateDiff(callback);
+
+        this.questions.clear();
+        this.questions.addAll(newItems);
+
+        diffResult.dispatchUpdatesTo(this);
+    }
+
     /**
      * For now, the only time we cannot reuse a view is when the question difficult is different,
      * since we need to redraw the difficulty circle
@@ -116,6 +125,52 @@ public class QuestionsRecyclerViewAdapter extends RecyclerView.Adapter<Questions
         @Override
         public void onClick(View view) {
             viewClickListener.onClick(getLayoutPosition());
+        }
+    }
+
+    class DiffUtilCallback extends DiffUtil.Callback{
+
+        private final List<RecyclerViewQuestionItem> oldList;
+        private final List<RecyclerViewQuestionItem> newlist;
+
+        public DiffUtilCallback(@NonNull List<RecyclerViewQuestionItem> oldList, @NonNull List<RecyclerViewQuestionItem> newlist) {
+            this.oldList = oldList;
+            this.newlist = newlist;
+        }
+
+        @Override
+        public int getOldListSize() {
+            return oldList.size();
+        }
+
+        @Override
+        public int getNewListSize() {
+            return newlist.size();
+        }
+
+        /**
+         * Two items are the same if and only if they have the same id
+         *
+         * @param oldItemPosition
+         * @param newItemPosition
+         * @return
+         */
+        @Override
+        public boolean areItemsTheSame(int oldItemPosition, int newItemPosition) {
+            return oldList.get(oldItemPosition).getQuestionId().equals(newlist.get(newItemPosition).getQuestionId());
+        }
+
+        /**
+         * This method is called only if areItemsTheSame returns true. In our case, if the items
+         * have the same id then they will also have the same content so just return true.
+         *
+         * @param oldItemPosition
+         * @param newItemPosition
+         * @return
+         */
+        @Override
+        public boolean areContentsTheSame(int oldItemPosition, int newItemPosition) {
+            return true;
         }
     }
 }

@@ -4,10 +4,8 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
-import com.aantaya.codesharp.enums.QuestionDifficulty;
 import com.aantaya.codesharp.repositories.QuestionRepository;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class HomeViewModel extends ViewModel {
