@@ -1,4 +1,4 @@
-package com.aantaya.codesharp.ui.home;
+package com.aantaya.codesharp.models;
 
 import com.aantaya.codesharp.enums.QuestionDifficulty;
 

@@ -13,7 +13,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.aantaya.codesharp.R;
 import com.aantaya.codesharp.enums.QuestionDifficulty;
-import com.aantaya.codesharp.ui.home.RecyclerViewQuestionItem;
+import com.aantaya.codesharp.models.RecyclerViewQuestionItem;
 import com.aantaya.codesharp.listeners.MyItemClickListener;
 
 import java.lang.ref.WeakReference;
@@ -77,6 +77,14 @@ public class QuestionsRecyclerViewAdapter extends RecyclerView.Adapter<Questions
         }
     }
 
+    /**
+     * public method for updating the items that the recyclerview displays. Uses the DiffUtils library
+     * for efficient and simple dispatching of updated to the recyclerview.
+     *
+     * https://developer.android.com/reference/androidx/recyclerview/widget/DiffUtil
+     *
+     * @param newItems list of the new items we would like to display
+     */
     public void updateItems(List<RecyclerViewQuestionItem> newItems){
         final QuestionsRecyclerViewAdapter.DiffUtilCallback callback = new DiffUtilCallback(this.questions, newItems);
         final DiffUtil.DiffResult diffResult = DiffUtil.calculateDiff(callback);
@@ -128,12 +136,14 @@ public class QuestionsRecyclerViewAdapter extends RecyclerView.Adapter<Questions
         }
     }
 
-    class DiffUtilCallback extends DiffUtil.Callback{
+    static class DiffUtilCallback extends DiffUtil.Callback{
 
         private final List<RecyclerViewQuestionItem> oldList;
         private final List<RecyclerViewQuestionItem> newlist;
 
-        public DiffUtilCallback(@NonNull List<RecyclerViewQuestionItem> oldList, @NonNull List<RecyclerViewQuestionItem> newlist) {
+        public DiffUtilCallback(@NonNull List<RecyclerViewQuestionItem> oldList,
+                                @NonNull List<RecyclerViewQuestionItem> newlist) {
+
             this.oldList = oldList;
             this.newlist = newlist;
         }

@@ -15,6 +15,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.aantaya.codesharp.R;
 import com.aantaya.codesharp.listeners.MyItemClickListener;
+import com.aantaya.codesharp.models.RecyclerViewQuestionItem;
 import com.aantaya.codesharp.ui.adapters.QuestionsRecyclerViewAdapter;
 
 import java.lang.ref.WeakReference;

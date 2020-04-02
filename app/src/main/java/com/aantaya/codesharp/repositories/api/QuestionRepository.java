@@ -1,5 +1,8 @@
 package com.aantaya.codesharp.repositories.api;
 
+import androidx.lifecycle.LiveData;
+import androidx.lifecycle.MutableLiveData;
+
 import com.aantaya.codesharp.models.QuestionModel;
 
 import java.util.Set;
@@ -21,7 +24,7 @@ public interface QuestionRepository {
      * @param id the id if the question
      * @return the question model if one can be found, else null
      */
-    QuestionModel getQuestion(String id);
+    MutableLiveData<QuestionModel> getQuestion(String id);
 
     /**
      * Get all of the questions that match the set of ids.
@@ -29,12 +32,12 @@ public interface QuestionRepository {
      * @param ids a set of ids to retrieve
      * @return a set of question models that were retrieved in the datastore
      */
-    Set<QuestionModel> getQuestions(Set<String> ids);
+    MutableLiveData<Set<QuestionModel>> getQuestions(Set<String> ids);
 
     /**
      * Get the ids for all questions
      *
      * @return a set of ids that represent all of the questions in the datastore
      */
-    Set<String> getQuestionIds();
+    MutableLiveData<Set<String>> getQuestionIds();
 }

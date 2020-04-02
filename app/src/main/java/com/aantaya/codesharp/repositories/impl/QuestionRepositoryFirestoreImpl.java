@@ -10,9 +10,11 @@ import com.aantaya.codesharp.enums.QuestionDifficulty;
 import com.aantaya.codesharp.enums.QuestionType;
 import com.aantaya.codesharp.models.QuestionModel;
 import com.aantaya.codesharp.models.QuestionPayload;
-import com.aantaya.codesharp.ui.home.RecyclerViewQuestionItem;
+import com.aantaya.codesharp.models.RecyclerViewQuestionItem;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreSettings;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
@@ -23,15 +25,15 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 
-public class QuestionRepositoryFirestoreImpl {
+public class QuestionRepositoryFirestoreImpl{
     private static final String TAG = QuestionRepositoryFirestoreImpl.class.getSimpleName();
 
     private static QuestionRepositoryFirestoreImpl questionRepository;
 
-    //todo: this will probably be removed once we implement firebase
-    private List<QuestionModel> questionItems = new ArrayList<>();
     private FirebaseFirestore db;//todo: revisit this, maybe we don't need to keep this connection open
+    private FirebaseUser user;
 
     private QuestionRepositoryFirestoreImpl(){
         db = FirebaseFirestore.getInstance();
@@ -45,6 +47,8 @@ public class QuestionRepositoryFirestoreImpl {
                 .build();
         db.setFirestoreSettings(settings);
 
+        user = FirebaseAuth.getInstance().getCurrentUser();
+
 //        sendQuestionsToFirebase();
     }
 
@@ -56,10 +60,8 @@ public class QuestionRepositoryFirestoreImpl {
         return questionRepository;
     }
 
-    public MutableLiveData<List<QuestionModel>> getQuestions(){
-        MutableLiveData<List<QuestionModel>> data = new MutableLiveData<>();
-        data.setValue(questionItems);
-        return data;
+    public QuestionModel getQuestion(String id){
+        return null;
     }
 
     public MutableLiveData<List<RecyclerViewQuestionItem>> getQuestionsForRecyclerView(){
@@ -74,13 +76,8 @@ public class QuestionRepositoryFirestoreImpl {
                             List<RecyclerViewQuestionItem> items = new ArrayList<>();
 
                             for (QueryDocumentSnapshot document : task.getResult()) {
-                                //todo: parse this and update the livedata!
-                                Log.d(TAG, document.getId() + " => " + document.getData());
+                                //Convert the document to our POJO
                                 QuestionModel questionModel = document.toObject(QuestionModel.class);
-
-                                Log.d(TAG, "id->" + document.getId());
-                                Log.d(TAG, "title->" + questionModel.getQuestionTitle());
-                                Log.d(TAG, "difficulty->" + questionModel.getDifficulty());
 
                                 items.add(new RecyclerViewQuestionItem(document.getId(),
                                         questionModel.getQuestionTitle(), questionModel.getDifficulty()));
@@ -98,10 +95,20 @@ public class QuestionRepositoryFirestoreImpl {
         return data;
     }
 
+    public int getNumCompletedQuestions(QuestionDifficulty difficulty){
+
+//        String uuid = user.getUid();
+
+        //todo: need to actually implement this
+        Random random = new Random();
+        return random.nextInt(100);
+    }
+
     /**
      * TODO: Remove/replace this with firebase API call
      */
     private void sendQuestionsToFirebase(){
+        List<QuestionModel> questionItems = new ArrayList<>();
 
         QuestionModel question;
         QuestionPayload questionPayload;
