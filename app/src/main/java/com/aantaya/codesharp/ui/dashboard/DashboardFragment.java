@@ -13,23 +13,97 @@ import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 
 import com.aantaya.codesharp.R;
+import com.aantaya.codesharp.models.ProgressModel;
+import com.github.mikephil.charting.charts.PieChart;
+import com.github.mikephil.charting.components.Description;
+import com.github.mikephil.charting.data.PieData;
+import com.github.mikephil.charting.data.PieDataSet;
+import com.github.mikephil.charting.data.PieEntry;
+import com.github.mikephil.charting.utils.ColorTemplate;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class DashboardFragment extends Fragment {
 
     private DashboardViewModel dashboardViewModel;
+    private PieChart totalProgressChart;
+    private TextView totalProgressText;
+    private TextView easyTotalText;
+    private TextView mediumTotalText;
+    private TextView hardTotalText;
 
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         dashboardViewModel = ViewModelProviders.of(this).get(DashboardViewModel.class);
+        dashboardViewModel.init();
+
         View root = inflater.inflate(R.layout.fragment_dashboard, container, false);
 
-        final TextView textView = root.findViewById(R.id.text_dashboard);
-        dashboardViewModel.getText().observe(getViewLifecycleOwner(), new Observer<String>() {
+        totalProgressChart = root.findViewById(R.id.dashboard_progress_pie_chart);
+        totalProgressText = root.findViewById(R.id.dashboard_total_progress_text);
+        easyTotalText = root.findViewById(R.id.dashboard_easy_total);
+        mediumTotalText = root.findViewById(R.id.dashboard_medium_total);
+        hardTotalText = root.findViewById(R.id.dashboard_hard_total);
+
+        return root;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        dashboardViewModel.getTotalProgress().observe(getViewLifecycleOwner(), new Observer<ProgressModel>() {
             @Override
-            public void onChanged(@Nullable String s) {
-                textView.setText(s);
+            public void onChanged(ProgressModel progressModel) {
+
+                int completed = progressModel.getNumCompleted();
+                int total = progressModel.getTotal();
+
+                //Set the values in the graph
+                List<PieEntry> progressEntries = new ArrayList<>();
+                progressEntries.add(new PieEntry(completed, "Completed", 0));
+                progressEntries.add(new PieEntry(total-completed, "Todo", 1));
+
+                PieDataSet dataSet = new PieDataSet(progressEntries, "Total Progress");
+
+                PieData pieData = new PieData(dataSet);
+                dataSet.setColors(ColorTemplate.MATERIAL_COLORS);
+
+                //Pie Chart configurations:
+                //Add animation (slowly close the pie chart), remove description, make the hole
+                //in the middle smaller and match the color with the theme, remove the legend
+                totalProgressChart.setData(pieData);
+                totalProgressChart.animateXY(4000, 4000);
+                totalProgressChart.setHoleRadius(0);
+                Description chartDiscription = new Description();
+                chartDiscription.setText("");
+                totalProgressChart.setDescription(chartDiscription);
+                totalProgressChart.getLegend().setEnabled(false);
+
+                //Set the values in the progress text
+                totalProgressText.setText(completed + "/" + total + "\nSolved");
             }
         });
 
-        return root;
+        dashboardViewModel.getEasyCompleted().observe(getViewLifecycleOwner(), new Observer<Integer>() {
+            @Override
+            public void onChanged(Integer easy) {
+                easyTotalText.setText(easy + " Easy");
+            }
+        });
+
+        dashboardViewModel.getMediumCompleted().observe(getViewLifecycleOwner(), new Observer<Integer>() {
+            @Override
+            public void onChanged(Integer med) {
+                mediumTotalText.setText(med + " Medium");
+            }
+        });
+
+        dashboardViewModel.getHardCompleted().observe(getViewLifecycleOwner(), new Observer<Integer>() {
+            @Override
+            public void onChanged(Integer hard) {
+                hardTotalText.setText(hard + " Hard");
+            }
+        });
     }
 }

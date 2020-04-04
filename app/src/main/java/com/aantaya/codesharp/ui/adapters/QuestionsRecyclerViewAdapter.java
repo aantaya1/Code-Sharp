@@ -66,13 +66,13 @@ public class QuestionsRecyclerViewAdapter extends RecyclerView.Adapter<Questions
                 imageView.setImageDrawable(contextWeakReference.get().getDrawable(R.drawable.circle_green));
                 break;
             case MEDIUM:
-                imageView.setImageDrawable(contextWeakReference.get().getDrawable(R.drawable.circle_yellow));
+                imageView.setImageDrawable(contextWeakReference.get().getDrawable(R.drawable.circle_blue));
                 break;
             case HARD:
                 imageView.setImageDrawable(contextWeakReference.get().getDrawable(R.drawable.circle_red));
                 break;
             default:
-                imageView.setImageDrawable(contextWeakReference.get().getDrawable(R.drawable.circle_yellow));
+                imageView.setImageDrawable(contextWeakReference.get().getDrawable(R.drawable.circle_blue));
                 break;
         }
     }
