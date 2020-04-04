@@ -1,5 +1,6 @@
 package com.aantaya.codesharp.ui.dashboard;
 
+import android.graphics.Color;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -8,6 +9,7 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
@@ -23,12 +25,12 @@ import com.github.mikephil.charting.utils.ColorTemplate;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class DashboardFragment extends Fragment {
 
     private DashboardViewModel dashboardViewModel;
     private PieChart totalProgressChart;
-    private TextView totalProgressText;
     private TextView easyTotalText;
     private TextView mediumTotalText;
     private TextView hardTotalText;
@@ -40,7 +42,6 @@ public class DashboardFragment extends Fragment {
         View root = inflater.inflate(R.layout.fragment_dashboard, container, false);
 
         totalProgressChart = root.findViewById(R.id.dashboard_progress_pie_chart);
-        totalProgressText = root.findViewById(R.id.dashboard_total_progress_text);
         easyTotalText = root.findViewById(R.id.dashboard_easy_total);
         mediumTotalText = root.findViewById(R.id.dashboard_medium_total);
         hardTotalText = root.findViewById(R.id.dashboard_hard_total);
@@ -67,21 +68,28 @@ public class DashboardFragment extends Fragment {
                 PieDataSet dataSet = new PieDataSet(progressEntries, "Total Progress");
 
                 PieData pieData = new PieData(dataSet);
-                dataSet.setColors(ColorTemplate.MATERIAL_COLORS);
+                dataSet.setColors(ColorTemplate.COLORFUL_COLORS);
+                dataSet.setDrawValues(false);//don't draw the actual values on the chart
 
-                //Pie Chart configurations:
-                //Add animation (slowly close the pie chart), remove description, make the hole
-                //in the middle smaller and match the color with the theme, remove the legend
                 totalProgressChart.setData(pieData);
-                totalProgressChart.animateXY(4000, 4000);
-                totalProgressChart.setHoleRadius(0);
+
+                //----------- Pie Chart configurations -------------------//
+                // Add an animation to make the pie chart load slowly (looks koool)
+                totalProgressChart.animateXY(2000, 2000);
+
+                // Make the labels text size larger than the default
+                totalProgressChart.setEntryLabelTextSize(16f);
+
+                // Remove the description and legend
                 Description chartDiscription = new Description();
                 chartDiscription.setText("");
                 totalProgressChart.setDescription(chartDiscription);
                 totalProgressChart.getLegend().setEnabled(false);
 
-                //Set the values in the progress text
-                totalProgressText.setText(completed + "/" + total + "\nSolved");
+                // In the center of the chart, draw the text that breaks down the user's progress
+                // and again increase the font
+                totalProgressChart.setCenterText(completed + "/" + total + "\nSolved");
+                totalProgressChart.setCenterTextSize(16f);
             }
         });
 
