@@ -9,12 +9,14 @@
         android:id="@+id/navigation_home"
         android:name="com.aantaya.codesharp.ui.home.HomeFragment"
         android:label="@string/title_home"
-        tools:layout="@layout/fragment_home" />
+        tools:layout="@layout/fragment_home" >
+    </fragment>
 
     <fragment
         android:id="@+id/navigation_dashboard"
         android:name="com.aantaya.codesharp.ui.dashboard.DashboardFragment"
         android:label="@string/title_dashboard"
-        tools:layout="@layout/fragment_dashboard" />
+        tools:layout="@layout/fragment_dashboard" >
+    </fragment>
 
 </navigation>

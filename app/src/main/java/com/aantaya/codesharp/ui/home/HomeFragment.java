@@ -10,6 +10,7 @@ import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
+import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -66,7 +67,13 @@ public class HomeFragment extends Fragment {
      */
     private void initRecyclerView(){
         mRecyclerView.setHasFixedSize(true);
-        mRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
+        mRecyclerView.setLayoutManager(linearLayoutManager);
+
+        // Add a divider between item in the RecyclerView
+        DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(mRecyclerView.getContext(),
+                linearLayoutManager.getOrientation());
+        mRecyclerView.addItemDecoration(dividerItemDecoration);
 
         mAdapter = new QuestionsRecyclerViewAdapter(new WeakReference<>(getContext()),
                 new MyItemClickListener() {
