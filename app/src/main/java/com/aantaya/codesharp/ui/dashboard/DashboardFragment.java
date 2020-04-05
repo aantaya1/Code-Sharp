@@ -46,13 +46,6 @@ public class DashboardFragment extends Fragment {
         mediumTotalText = root.findViewById(R.id.dashboard_medium_total);
         hardTotalText = root.findViewById(R.id.dashboard_hard_total);
 
-        return root;
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-
         dashboardViewModel.getTotalProgress().observe(getViewLifecycleOwner(), new Observer<ProgressModel>() {
             @Override
             public void onChanged(ProgressModel progressModel) {
@@ -81,9 +74,9 @@ public class DashboardFragment extends Fragment {
                 totalProgressChart.setEntryLabelTextSize(16f);
 
                 // Remove the description and legend
-                Description chartDiscription = new Description();
-                chartDiscription.setText("");
-                totalProgressChart.setDescription(chartDiscription);
+                Description chartDescription = new Description();
+                chartDescription.setText("");
+                totalProgressChart.setDescription(chartDescription);
                 totalProgressChart.getLegend().setEnabled(false);
 
                 // In the center of the chart, draw the text that breaks down the user's progress
@@ -113,5 +106,7 @@ public class DashboardFragment extends Fragment {
                 hardTotalText.setText(hard + " Hard");
             }
         });
+
+        return root;
     }
 }

@@ -30,42 +30,10 @@ public class HomeFragment extends Fragment {
     private RecyclerView mRecyclerView;
     private QuestionsRecyclerViewAdapter mAdapter;
 
-    public View onCreateView(@NonNull LayoutInflater inflater,
-                             ViewGroup container, Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View root = inflater.inflate(R.layout.fragment_home, container, false);
+
         mRecyclerView = root.findViewById(R.id.recyclerview_home);
-
-        initRecyclerView();
-
-        return root;
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-
-        //Get the view model
-        mHomeViewModel = ViewModelProviders.of(this).get(HomeViewModel.class);
-
-        //Initialize the view model with data
-        mHomeViewModel.init();
-
-        //Set up the fragment to observe changes to the questions as they are updated in the viewmodel
-        //and then update the adapter with the new items
-        mHomeViewModel.getQuestions().observe(getViewLifecycleOwner(),
-                new Observer<List<RecyclerViewQuestionItem>>() {
-                    @Override
-                    public void onChanged(List<RecyclerViewQuestionItem> recyclerViewQuestionItems) {
-                        mAdapter.updateItems(recyclerViewQuestionItems);
-                    }
-                });
-    }
-
-    /**
-     * helper function to init the recyclerview along with all the adapter and onClick logic for
-     * items in the recyclerview
-     */
-    private void initRecyclerView(){
         mRecyclerView.setHasFixedSize(true);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
         mRecyclerView.setLayoutManager(linearLayoutManager);
@@ -85,5 +53,23 @@ public class HomeFragment extends Fragment {
                 });
 
         mRecyclerView.setAdapter(mAdapter);
+
+        //Get the view model
+        mHomeViewModel = ViewModelProviders.of(this).get(HomeViewModel.class);
+
+        //Initialize the view model with data
+        mHomeViewModel.init();
+
+        //Set up the fragment to observe changes to the questions as they are updated in the viewmodel
+        //and then update the adapter with the new items
+        mHomeViewModel.getQuestions().observe(getViewLifecycleOwner(),
+                new Observer<List<RecyclerViewQuestionItem>>() {
+                    @Override
+                    public void onChanged(List<RecyclerViewQuestionItem> recyclerViewQuestionItems) {
+                        mAdapter.updateItems(recyclerViewQuestionItems);
+                    }
+                });
+
+        return root;
     }
 }
