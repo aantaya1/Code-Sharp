@@ -2,7 +2,7 @@ package com.aantaya.codesharp.models;
 
 import com.aantaya.codesharp.enums.QuestionDifficulty;
 
-public class RecyclerViewQuestionItem {
+public class RecyclerViewQuestionItem{
     private String questionId;
     private String questionTitle;
     private QuestionDifficulty questionDifficulty;

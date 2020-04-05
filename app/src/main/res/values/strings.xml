@@ -27,7 +27,6 @@
     <string name="sign_out_button_title">Sign Out</string>
 
     <!--  Recyclerviews  -->
-    <string name="question_title">Question Title</string>
     <string name="title_activity_login">Sign in</string>
     <string name="prompt_email">Email</string>
     <string name="prompt_password">Password</string>
@@ -37,4 +36,10 @@
     <string name="invalid_username">Not a valid username</string>
     <string name="invalid_password">Password must be >5 characters</string>
     <string name="login_failed">"Login failed"</string>
+
+    <!--  Placeholders  -->
+    <string name="question_title">Java Garbage Collection</string>
+    <string name="question_description">Select the best answer and submit.</string>
+    <string name="question_submit_button">Submit</string>
+
 </resources>

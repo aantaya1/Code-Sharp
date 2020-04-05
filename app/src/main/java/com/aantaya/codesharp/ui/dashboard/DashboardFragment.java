@@ -1,6 +1,5 @@
 package com.aantaya.codesharp.ui.dashboard;
 
-import android.graphics.Color;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -9,7 +8,6 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
@@ -25,7 +23,6 @@ import com.github.mikephil.charting.utils.ColorTemplate;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 public class DashboardFragment extends Fragment {
 
@@ -36,15 +33,22 @@ public class DashboardFragment extends Fragment {
     private TextView hardTotalText;
 
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        dashboardViewModel = ViewModelProviders.of(this).get(DashboardViewModel.class);
-        dashboardViewModel.init();
-
         View root = inflater.inflate(R.layout.fragment_dashboard, container, false);
 
         totalProgressChart = root.findViewById(R.id.dashboard_progress_pie_chart);
         easyTotalText = root.findViewById(R.id.dashboard_easy_total);
         mediumTotalText = root.findViewById(R.id.dashboard_medium_total);
         hardTotalText = root.findViewById(R.id.dashboard_hard_total);
+
+        return root;
+    }
+
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+
+        dashboardViewModel = ViewModelProviders.of(this).get(DashboardViewModel.class);
+        dashboardViewModel.init();
 
         dashboardViewModel.getTotalProgress().observe(getViewLifecycleOwner(), new Observer<ProgressModel>() {
             @Override
@@ -106,7 +110,5 @@ public class DashboardFragment extends Fragment {
                 hardTotalText.setText(hard + " Hard");
             }
         });
-
-        return root;
     }
 }

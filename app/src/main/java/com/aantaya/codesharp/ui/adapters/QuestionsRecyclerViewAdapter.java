@@ -26,7 +26,7 @@ public class QuestionsRecyclerViewAdapter extends RecyclerView.Adapter<Questions
 
     private List<RecyclerViewQuestionItem> questions = new ArrayList<>();
     private WeakReference<Context> contextWeakReference;
-    private MyItemClickListener listener;
+    private ItemClickListener listener;
 
     /**
      * Default constructor
@@ -35,7 +35,7 @@ public class QuestionsRecyclerViewAdapter extends RecyclerView.Adapter<Questions
      * @param listener item click listener
      */
     public QuestionsRecyclerViewAdapter(WeakReference<Context> contextWeakReference,
-                                        MyItemClickListener listener) {
+                                        ItemClickListener listener) {
         this.contextWeakReference = contextWeakReference;
         this.listener = listener;
     }
@@ -117,9 +117,9 @@ public class QuestionsRecyclerViewAdapter extends RecyclerView.Adapter<Questions
         ImageView difficultyCircle;
         TextView questionTitle;
 
-        MyItemClickListener viewClickListener;
+        ItemClickListener viewClickListener;
 
-        ViewHolder(@NonNull View itemView, MyItemClickListener _listener) {
+        ViewHolder(@NonNull View itemView, ItemClickListener _listener) {
             super(itemView);
 
             difficultyCircle = itemView.findViewById(R.id.question_recyclerview_item_image);
@@ -132,8 +132,14 @@ public class QuestionsRecyclerViewAdapter extends RecyclerView.Adapter<Questions
 
         @Override
         public void onClick(View view) {
-            viewClickListener.onClick(getLayoutPosition());
+            viewClickListener.onClick(questions.get(getLayoutPosition()), getLayoutPosition());
         }
+    }
+
+
+    public interface ItemClickListener{
+        void onClick(RecyclerViewQuestionItem item, int position);
+        void onLongClick(RecyclerViewQuestionItem item, int position);
     }
 
     static class DiffUtilCallback extends DiffUtil.Callback{
