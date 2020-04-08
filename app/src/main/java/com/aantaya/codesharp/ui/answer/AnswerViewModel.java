@@ -2,6 +2,7 @@ package com.aantaya.codesharp.ui.answer;
 
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
+import androidx.lifecycle.Observer;
 import androidx.lifecycle.Transformations;
 import androidx.lifecycle.ViewModel;
 
@@ -13,6 +14,7 @@ import com.aantaya.codesharp.repositories.impl.QuestionRepositoryFirestoreImpl;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 
 import javax.annotation.Nullable;
 
@@ -24,6 +26,13 @@ public class AnswerViewModel extends ViewModel {
     private MutableLiveData<QuestionModel> question;
     private MutableLiveData<Boolean> isInitialising;
     private MutableLiveData<Boolean> loadingQuestion;
+
+    //We need to keep references to these observers so we can remove them
+    // when the ViewModel is destroyed and prevent a memory leak
+    private LiveData<Set<String>> mRepoQuestionIds;
+    private Observer<Set<String>> mRepoQuestionIdsObserver;
+    private LiveData<QuestionModel> mRepoQuestion;
+    private Observer<QuestionModel> mRepoQuestionObserver;
 
     private QuestionRepository questionRepo;
 
@@ -48,19 +57,24 @@ public class AnswerViewModel extends ViewModel {
         QuestionFilterConfig config = new QuestionFilterConfig();
         config.setIncludeCompletedQuestions(false);
 
-        //todo: I need to make sure this lambda is only executed one time...
         String finalInitialQuestionId = initialQuestionId;
-        Transformations.map(questionRepo.getQuestionIds(config), questions -> {
+        mRepoQuestionIds = questionRepo.getQuestionIds(config);
+        mRepoQuestionIdsObserver = new Observer<Set<String>>() {
+            @Override
+            public void onChanged(Set<String> questionIds) {
+                if (!mQuestionIds.isEmpty()) return;
 
-            // If the initial question is contained in the set (it should be)
-            // then we need to remove it since we don't want to display the
-            // same question twice
-            questions.remove(finalInitialQuestionId);
+                // If the initial question is contained in the set (it should be)
+                // then we need to remove it since we don't want to display the
+                // same question twice
+                questionIds.remove(finalInitialQuestionId);
 
-            mQuestionIds.addAll(questions);
-            isInitialising.setValue(false);
-            return null;
-        });
+                mQuestionIds.addAll(questionIds);
+                isInitialising.setValue(false);
+            }
+        };
+
+        mRepoQuestionIds.observeForever(mRepoQuestionIdsObserver);
 
         if (initialQuestionId == null){
             initialQuestionId = mQuestionIds.get(currentQuestionIdx++);
@@ -68,11 +82,16 @@ public class AnswerViewModel extends ViewModel {
 
         //todo: we cannot throw a NPE in production...we should finish the activity if this happens
         // by using a state obj that is observed in the activity
-        Transformations.map(Objects.requireNonNull(questionRepo.getQuestion(initialQuestionId)), question -> {
-            this.question.setValue(question);
-            this.loadingQuestion.setValue(false);
-            return null;
-        });
+        mRepoQuestion = questionRepo.getQuestion(initialQuestionId);
+        mRepoQuestionObserver = new Observer<QuestionModel>() {
+            @Override
+            public void onChanged(QuestionModel questionModel) {
+                question.setValue(questionModel);
+                loadingQuestion.setValue(false);
+            }
+        };
+
+        mRepoQuestion.observeForever(mRepoQuestionObserver);
     }
 
     public LiveData<QuestionModel> getQuestion(){
@@ -89,18 +108,37 @@ public class AnswerViewModel extends ViewModel {
 
     public void loadNextQuestion(){
         //todo: we should finish the activity if this happens by using a state obj that is observed in the activity
-        if (currentQuestionIdx == mQuestionIds.size()-1) return;
+        if (currentQuestionIdx == mQuestionIds.size()) return;
 
         this.loadingQuestion.setValue(true);
 
         String nextQuestionId = mQuestionIds.get(currentQuestionIdx++);
 
+        //todo: is this right??
+        //Before we add the next observer, we need to remove the previous one
+        mRepoQuestion.removeObserver(mRepoQuestionObserver);
+
         //todo: we cannot throw a NPE in production...we should finish the activity if this happens
         // by using a state obj that is observed in the activity
-        Transformations.map(Objects.requireNonNull(questionRepo.getQuestion(nextQuestionId)), question -> {
-            this.question.setValue(question);
-            this.loadingQuestion.setValue(false);
-            return null;
-        });
+        mRepoQuestion = questionRepo.getQuestion(nextQuestionId);
+        mRepoQuestionObserver = new Observer<QuestionModel>() {
+            @Override
+            public void onChanged(QuestionModel questionModel) {
+                question.setValue(questionModel);
+                loadingQuestion.setValue(false);
+            }
+        };
+
+        mRepoQuestion.observeForever(mRepoQuestionObserver);
+    }
+
+    @Override
+    protected void onCleared() {
+        super.onCleared();
+
+        //We need to remove the observers when the ViewModel is destroyed
+        // to prevent a memory leak
+        mRepoQuestionIds.removeObserver(mRepoQuestionIdsObserver);
+        mRepoQuestion.removeObserver(mRepoQuestionObserver);
     }
 }

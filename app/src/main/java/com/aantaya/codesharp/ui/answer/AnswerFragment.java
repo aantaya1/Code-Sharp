@@ -46,16 +46,6 @@ public class AnswerFragment extends Fragment {
         mQuestionAnswersContainer = root.findViewById(R.id.answer_question_answers_container);
         mSubmitButton = root.findViewById(R.id.answer_submit_button);
 
-        //Set an onclick listener because we can't use the onclick attribute for
-        // buttons inside of Fragments
-        mSubmitButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                //todo: need to implement
-                Toast.makeText(getContext(), "Submit clicked!", Toast.LENGTH_SHORT).show();
-            }
-        });
-
         return root;
     }
 
@@ -74,6 +64,17 @@ public class AnswerFragment extends Fragment {
             public void onChanged(QuestionModel questionModel) {
                 mQuestionTitle.setText(questionModel.getQuestionTitle());
 
+            }
+        });
+
+        //Set an onclick listener because we can't use the onclick attribute for
+        // buttons inside of Fragments
+        mSubmitButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //todo: need to implement
+                mViewModel.loadNextQuestion();
+                Toast.makeText(getContext(), "Submit clicked!", Toast.LENGTH_SHORT).show();
             }
         });
     }
