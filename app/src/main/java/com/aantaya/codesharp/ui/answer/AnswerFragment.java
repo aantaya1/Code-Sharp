@@ -1,6 +1,7 @@
 package com.aantaya.codesharp.ui.answer;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,6 +23,11 @@ import com.aantaya.codesharp.models.QuestionPayload;
 import com.aantaya.codesharp.utils.IntentUtils;
 
 import io.github.kbiakov.codeview.CodeView;
+import io.github.kbiakov.codeview.OnCodeLineClickListener;
+import io.github.kbiakov.codeview.adapters.Format;
+import io.github.kbiakov.codeview.adapters.Options;
+import io.github.kbiakov.codeview.highlight.ColorTheme;
+import io.github.kbiakov.codeview.highlight.FontCache;
 
 public class AnswerFragment extends Fragment {
 
@@ -77,28 +83,70 @@ public class AnswerFragment extends Fragment {
 //                mQuestionDescription.setText();
 
 //                mCodeView.setCode(payload.getQuestion(), "md");
-                mCodeView.setCode("public class HomeViewModel extends ViewModel {\n" +
-                        "\n" +
-                        "    private MutableLiveData<List<RecyclerViewQuestionItem>> mQuestionsLiveData;\n" +
-                        "    private QuestionRepository questionRepository;\n" +
-                        "\n" +
-                        "    public HomeViewModel() {\n" +
-                        "\n" +
-                        "    }\n" +
-                        "\n" +
-                        "    public void init(){\n" +
-                        "        if (questionRepository != null){\n" +
-                        "            return;\n" +
-                        "        }\n" +
-                        "\n" +
-                        "        questionRepository = QuestionRepositoryFirestoreImpl.getInstance();\n" +
-                        "        mQuestionsLiveData = questionRepository.getQuestionsForRecycleView(null);\n" +
-                        "    }\n" +
-                        "\n" +
-                        "    public LiveData<List<RecyclerViewQuestionItem>> getQuestions() {\n" +
-                        "        return mQuestionsLiveData;\n" +
-                        "    }\n" +
-                        "}", "java");
+
+                mCodeView.setOptions(new Options(
+                        getContext(),
+                        "public class HomeViewModel extends ViewModel {\n" +
+                                "\n" +
+                                "    private MutableLiveData<List<RecyclerViewQuestionItem>> mQuestionsLiveData;\n" +
+                                "    private QuestionRepository questionRepository;\n" +
+                                "\n" +
+                                "    public HomeViewModel() {\n" +
+                                "\n" +
+                                "    }\n" +
+                                "\n" +
+                                "    public void init(){\n" +
+                                "        if (questionRepository != null){\n" +
+                                "            return;\n" +
+                                "        }\n" +
+                                "\n" +
+                                "        questionRepository = QuestionRepositoryFirestoreImpl.getInstance();\n" +
+                                "        mQuestionsLiveData = questionRepository.getQuestionsForRecycleView(null);\n" +
+                                "    }\n" +
+                                "\n" +
+                                "    public LiveData<List<RecyclerViewQuestionItem>> getQuestions() {\n" +
+                                "        return mQuestionsLiveData;\n" +
+                                "    }\n" +
+                                "}",
+                        "java",
+                        ColorTheme.MONOKAI.theme(),
+                        FontCache.get(getContext()).getTypeface(getContext()),
+                        Format.Default.getCompact(),
+                        true,
+                        true,
+                        false,
+                        getString(R.string.show_all),
+                        50,
+                        new OnCodeLineClickListener() {
+                            @Override
+                            public void onCodeLineClicked(int i, String s) {
+                                Log.i("ListingsActivity", "On " + (i + 1) + " line clicked");
+                            }
+                        }));
+
+
+//                mCodeView.setCode("public class HomeViewModel extends ViewModel {\n" +
+//                        "\n" +
+//                        "    private MutableLiveData<List<RecyclerViewQuestionItem>> mQuestionsLiveData;\n" +
+//                        "    private QuestionRepository questionRepository;\n" +
+//                        "\n" +
+//                        "    public HomeViewModel() {\n" +
+//                        "\n" +
+//                        "    }\n" +
+//                        "\n" +
+//                        "    public void init(){\n" +
+//                        "        if (questionRepository != null){\n" +
+//                        "            return;\n" +
+//                        "        }\n" +
+//                        "\n" +
+//                        "        questionRepository = QuestionRepositoryFirestoreImpl.getInstance();\n" +
+//                        "        mQuestionsLiveData = questionRepository.getQuestionsForRecycleView(null);\n" +
+//                        "    }\n" +
+//                        "\n" +
+//                        "    public LiveData<List<RecyclerViewQuestionItem>> getQuestions() {\n" +
+//                        "        return mQuestionsLiveData;\n" +
+//                        "    }\n" +
+//                        "}", "java");
 
                 //todo: programmatically create buttons with answers
 

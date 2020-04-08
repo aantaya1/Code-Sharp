@@ -5,7 +5,8 @@ package com.aantaya.codesharp.enums;
  */
 public enum ProgrammingLanguage {
     JAVA(1),
-    PYTHON(2);
+    PYTHON(2),
+    MD(3);
 
     int code;
 
