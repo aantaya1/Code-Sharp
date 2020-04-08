@@ -30,6 +30,7 @@ public class AnswerViewModel extends ViewModel {
             //todo: something
         }
 
-        //todo: load all of the questions except for the initial question
+        //todo: load all of the questions except for the initial question and exclude questions
+        // that the user has already finished
     }
 }

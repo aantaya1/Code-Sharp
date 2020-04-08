@@ -66,13 +66,12 @@ public class QuestionRepositoryFirestoreImpl implements QuestionRepository {
     }
 
     /**
-     * Get a set of question ids that the given user has not completed
+     * Get the user's completed question IDs
      *
-     * @param userId the current user's id
-     * @return a set of question IDs
+     * @return a set of question IDs that represent the questions the user has completed
      */
     @Override
-    public MutableLiveData<Set<String>> getUncompletedQuestionIds(String userId) {
+    public MutableLiveData<Set<String>> getUsersCompletedQuestions() {
         //todo: need to implement
         return null;
     }

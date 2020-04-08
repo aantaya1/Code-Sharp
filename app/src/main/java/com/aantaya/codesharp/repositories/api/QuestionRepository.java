@@ -17,14 +17,11 @@ import javax.annotation.Nullable;
  */
 public interface QuestionRepository {
     /**
-     * Get a set of question ids that the given user has not completed
+     * Get the user's completed question IDs
      *
-     * todo: i can probably remove userId as an argument because the repo will have that info already
-     *
-     * @param userId the current user's id
-     * @return a set of question IDs
+     * @return a set of question IDs that represent the questions the user has completed
      */
-    MutableLiveData<Set<String>> getUncompletedQuestionIds(String userId);
+    MutableLiveData<Set<String>> getUsersCompletedQuestions();
 
     /**
      * Get the ids for all questions
