@@ -11,6 +11,7 @@ import com.aantaya.codesharp.enums.QuestionType;
 import com.aantaya.codesharp.models.QuestionModel;
 import com.aantaya.codesharp.models.QuestionPayload;
 import com.aantaya.codesharp.models.RecyclerViewQuestionItem;
+import com.aantaya.codesharp.repositories.api.QuestionRepository;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
@@ -23,11 +24,15 @@ import com.google.firebase.firestore.QuerySnapshot;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
+import java.util.Set;
 
-public class QuestionRepositoryFirestoreImpl{
+import javax.annotation.Nullable;
+
+public class QuestionRepositoryFirestoreImpl implements QuestionRepository {
     private static final String TAG = QuestionRepositoryFirestoreImpl.class.getSimpleName();
 
     private static QuestionRepositoryFirestoreImpl questionRepository;
@@ -60,11 +65,57 @@ public class QuestionRepositoryFirestoreImpl{
         return questionRepository;
     }
 
-    public QuestionModel getQuestion(String id){
+    /**
+     * Get a set of question ids that the given user has not completed
+     *
+     * @param userId the current user's id
+     * @return a set of question IDs
+     */
+    @Override
+    public MutableLiveData<Set<String>> getUncompletedQuestionIds(String userId) {
+        //todo: need to implement
         return null;
     }
 
-    public MutableLiveData<List<RecyclerViewQuestionItem>> getQuestionsForRecyclerView(){
+    /**
+     * Get the ids for all questions
+     *
+     * @return a set of ids that represent all of the questions in the datastore
+     */
+    @Override
+    public MutableLiveData<Set<String>> getAllQuestionIds() {
+        //todo: need to implement
+        return null;
+    }
+
+    /**
+     * Get a question from it's id.
+     *
+     * @param id the id of the question
+     * @return the question model if one can be found, else null
+     */
+    @Nullable
+    @Override
+    public MutableLiveData<QuestionModel> getQuestion(String id) {
+        //todo: need to implement
+        return null;
+    }
+
+    /**
+     * Get a set of RecyclerViewQuestionItem for displaying on the UI. If the given user id
+     * is null, we will return all of the questions, else we will return just the questions that
+     * the user has not finished yet.
+     * <p>
+     * todo: consider removing this method and just using a method that retrieves QuestionModels
+     *
+     * @param userId the user's id or null
+     * @return a set of RecyclerViewQuestionItem
+     */
+    @Override
+    public MutableLiveData<List<RecyclerViewQuestionItem>> getQuestionsForRecycleView(@Nullable String userId) {
+
+        //todo: need to do stuff with the userId...........
+
         final MutableLiveData<List<RecyclerViewQuestionItem>> data = new MutableLiveData<>();
 
         db.collection("questions")
@@ -93,15 +144,6 @@ public class QuestionRepositoryFirestoreImpl{
         data.setValue(new ArrayList<RecyclerViewQuestionItem>());
 
         return data;
-    }
-
-    public int getNumCompletedQuestions(QuestionDifficulty difficulty){
-
-//        String uuid = user.getUid();
-
-        //todo: need to actually implement this
-        Random random = new Random();
-        return random.nextInt(100);
     }
 
     /**

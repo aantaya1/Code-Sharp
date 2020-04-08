@@ -5,14 +5,16 @@ import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
 import com.aantaya.codesharp.models.RecyclerViewQuestionItem;
+import com.aantaya.codesharp.repositories.api.QuestionRepository;
 import com.aantaya.codesharp.repositories.impl.QuestionRepositoryFirestoreImpl;
 
 import java.util.List;
+import java.util.Set;
 
 public class HomeViewModel extends ViewModel {
 
     private MutableLiveData<List<RecyclerViewQuestionItem>> mQuestionsLiveData;
-    private QuestionRepositoryFirestoreImpl questionRepository;
+    private QuestionRepository questionRepository;
 
     public HomeViewModel() {
 
@@ -24,7 +26,7 @@ public class HomeViewModel extends ViewModel {
         }
 
         questionRepository = QuestionRepositoryFirestoreImpl.getInstance();
-        mQuestionsLiveData = questionRepository.getQuestionsForRecyclerView();
+        mQuestionsLiveData = questionRepository.getQuestionsForRecycleView(null);
     }
 
     public LiveData<List<RecyclerViewQuestionItem>> getQuestions() {

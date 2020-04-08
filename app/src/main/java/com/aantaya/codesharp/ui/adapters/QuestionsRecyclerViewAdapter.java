@@ -136,7 +136,6 @@ public class QuestionsRecyclerViewAdapter extends RecyclerView.Adapter<Questions
         }
     }
 
-
     public interface ItemClickListener{
         void onClick(RecyclerViewQuestionItem item, int position);
         void onLongClick(RecyclerViewQuestionItem item, int position);
