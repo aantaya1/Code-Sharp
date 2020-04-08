@@ -8,6 +8,7 @@ import androidx.lifecycle.MutableLiveData;
 import com.aantaya.codesharp.enums.ProgrammingLanguage;
 import com.aantaya.codesharp.enums.QuestionDifficulty;
 import com.aantaya.codesharp.enums.QuestionType;
+import com.aantaya.codesharp.models.QuestionFilterConfig;
 import com.aantaya.codesharp.models.QuestionModel;
 import com.aantaya.codesharp.models.QuestionPayload;
 import com.aantaya.codesharp.models.RecyclerViewQuestionItem;
@@ -16,6 +17,7 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreSettings;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
@@ -66,25 +68,36 @@ public class QuestionRepositoryFirestoreImpl implements QuestionRepository {
     }
 
     /**
-     * Get the user's completed question IDs
+     * Get the ids for questions that match the given filter.
      *
-     * @return a set of question IDs that represent the questions the user has completed
+     * @param filter a config object for filtering questions returned by the method or null to
+     *               return all question ids
+     * @return a set of ids that represent all of the questions in the datastore that match the
+     * given filter
      */
     @Override
-    public MutableLiveData<Set<String>> getUsersCompletedQuestions() {
-        //todo: need to implement
-        return null;
-    }
+    public MutableLiveData<Set<String>> getQuestionIds(@Nullable QuestionFilterConfig filter) {
+        //todo: need to do stuff with the filter...........
 
-    /**
-     * Get the ids for all questions
-     *
-     * @return a set of ids that represent all of the questions in the datastore
-     */
-    @Override
-    public MutableLiveData<Set<String>> getAllQuestionIds() {
-        //todo: need to implement
-        return null;
+        final MutableLiveData<Set<String>> data = new MutableLiveData<>();
+
+        db.collection("questions")
+                .get()
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        Set<String> items = new HashSet<>();
+
+                        for (QueryDocumentSnapshot document : task.getResult()) {
+                            items.add(document.getId());
+                        }
+
+                        data.postValue(items);
+                    } else {
+                        Log.w(TAG, "Error getting documents.", task.getException());
+                    }
+                });
+
+        return data;
     }
 
     /**
@@ -96,8 +109,21 @@ public class QuestionRepositoryFirestoreImpl implements QuestionRepository {
     @Nullable
     @Override
     public MutableLiveData<QuestionModel> getQuestion(String id) {
-        //todo: need to implement
-        return null;
+        final MutableLiveData<QuestionModel> data = new MutableLiveData<>();
+
+        db.collection("questions").document(id)
+                .get()
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        DocumentSnapshot document = task.getResult();
+                        QuestionModel questionModel = document.toObject(QuestionModel.class);
+                        data.postValue(questionModel);
+                    } else {
+                        Log.w(TAG, "Error getting documents.", task.getException());
+                    }
+                });
+
+        return data;
     }
 
     /**
@@ -119,28 +145,23 @@ public class QuestionRepositoryFirestoreImpl implements QuestionRepository {
 
         db.collection("questions")
                 .get()
-                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                    @Override
-                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                        if (task.isSuccessful()) {
-                            List<RecyclerViewQuestionItem> items = new ArrayList<>();
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        List<RecyclerViewQuestionItem> items = new ArrayList<>();
 
-                            for (QueryDocumentSnapshot document : task.getResult()) {
-                                //Convert the document to our POJO
-                                QuestionModel questionModel = document.toObject(QuestionModel.class);
+                        for (QueryDocumentSnapshot document : task.getResult()) {
+                            //Convert the document to our POJO
+                            QuestionModel questionModel = document.toObject(QuestionModel.class);
 
-                                items.add(new RecyclerViewQuestionItem(document.getId(),
-                                        questionModel.getQuestionTitle(), questionModel.getDifficulty()));
-                            }
-
-                            data.postValue(items);
-                        } else {
-                            Log.w(TAG, "Error getting documents.", task.getException());
+                            items.add(new RecyclerViewQuestionItem(document.getId(),
+                                    questionModel.getQuestionTitle(), questionModel.getDifficulty()));
                         }
+
+                        data.postValue(items);
+                    } else {
+                        Log.w(TAG, "Error getting documents.", task.getException());
                     }
                 });
-
-        data.setValue(new ArrayList<RecyclerViewQuestionItem>());
 
         return data;
     }

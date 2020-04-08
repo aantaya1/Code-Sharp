@@ -4,6 +4,7 @@ import androidx.annotation.NonNull;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
+import com.aantaya.codesharp.models.QuestionFilterConfig;
 import com.aantaya.codesharp.models.QuestionModel;
 import com.aantaya.codesharp.models.RecyclerViewQuestionItem;
 
@@ -16,19 +17,16 @@ import javax.annotation.Nullable;
  * API that defines the operations that a question repository implementation should provide.
  */
 public interface QuestionRepository {
-    /**
-     * Get the user's completed question IDs
-     *
-     * @return a set of question IDs that represent the questions the user has completed
-     */
-    MutableLiveData<Set<String>> getUsersCompletedQuestions();
 
     /**
-     * Get the ids for all questions
+     * Get the ids for questions that match the given filter.
      *
-     * @return a set of ids that represent all of the questions in the datastore
+     * @param filter a config object for filtering questions returned by the method or null to
+     *               return all question ids
+     * @return a set of ids that represent all of the questions in the datastore that match the
+     * given filter
      */
-    MutableLiveData<Set<String>> getAllQuestionIds();
+    MutableLiveData<Set<String>> getQuestionIds(@Nullable QuestionFilterConfig filter);
 
     /**
      * Get a question from it's id.

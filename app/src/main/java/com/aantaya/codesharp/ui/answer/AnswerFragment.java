@@ -11,9 +11,11 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 
 import com.aantaya.codesharp.R;
+import com.aantaya.codesharp.models.QuestionModel;
 import com.aantaya.codesharp.utils.IntentUtils;
 
 import io.github.kbiakov.codeview.CodeView;
@@ -64,10 +66,16 @@ public class AnswerFragment extends Fragment {
 
         //If for some reason getArguments is null and we can't load the question the user clicked,
         //then init viewmodel w/o an initial question (we will just start at some random question)
-        String initialQuestionId = (getArguments() != null) ? getArguments().getString(IntentUtils.CLICKED_QUESTION_ID_EXTRA) : "";
+        String initialQuestionId = (getArguments() != null) ? getArguments().getString(IntentUtils.CLICKED_QUESTION_ID_EXTRA) : null;
         mViewModel.init(initialQuestionId);
 
+        mViewModel.getQuestion().observe(getViewLifecycleOwner(), new Observer<QuestionModel>() {
+            @Override
+            public void onChanged(QuestionModel questionModel) {
+                mQuestionTitle.setText(questionModel.getQuestionTitle());
 
+            }
+        });
     }
 
 }
