@@ -5,6 +5,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -15,7 +16,9 @@ import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 
 import com.aantaya.codesharp.R;
+import com.aantaya.codesharp.enums.ProgrammingLanguage;
 import com.aantaya.codesharp.models.QuestionModel;
+import com.aantaya.codesharp.models.QuestionPayload;
 import com.aantaya.codesharp.utils.IntentUtils;
 
 import io.github.kbiakov.codeview.CodeView;
@@ -27,7 +30,7 @@ public class AnswerFragment extends Fragment {
     private TextView mQuestionTitle;
     private TextView mQuestionDescription;
     private CodeView mCodeView;
-    private View mQuestionAnswersContainer;
+    private LinearLayout mQuestionAnswersContainer;
     private Button mSubmitButton;
 
     public static AnswerFragment newInstance() {
@@ -64,6 +67,54 @@ public class AnswerFragment extends Fragment {
             public void onChanged(QuestionModel questionModel) {
                 mQuestionTitle.setText(questionModel.getQuestionTitle());
 
+                //todo: check the user's prefs and load the language from there
+                QuestionPayload payload = questionModel.getQuestionPayloadMap().get(ProgrammingLanguage.JAVA.toString());
+
+                //todo: if requested language is not supported pick another one
+                if (payload == null) return;
+
+                //todo: this is missing from the question payload model
+//                mQuestionDescription.setText();
+
+//                mCodeView.setCode(payload.getQuestion(), "md");
+                mCodeView.setCode("public class HomeViewModel extends ViewModel {\n" +
+                        "\n" +
+                        "    private MutableLiveData<List<RecyclerViewQuestionItem>> mQuestionsLiveData;\n" +
+                        "    private QuestionRepository questionRepository;\n" +
+                        "\n" +
+                        "    public HomeViewModel() {\n" +
+                        "\n" +
+                        "    }\n" +
+                        "\n" +
+                        "    public void init(){\n" +
+                        "        if (questionRepository != null){\n" +
+                        "            return;\n" +
+                        "        }\n" +
+                        "\n" +
+                        "        questionRepository = QuestionRepositoryFirestoreImpl.getInstance();\n" +
+                        "        mQuestionsLiveData = questionRepository.getQuestionsForRecycleView(null);\n" +
+                        "    }\n" +
+                        "\n" +
+                        "    public LiveData<List<RecyclerViewQuestionItem>> getQuestions() {\n" +
+                        "        return mQuestionsLiveData;\n" +
+                        "    }\n" +
+                        "}", "java");
+
+                //todo: programmatically create buttons with answers
+
+                mQuestionAnswersContainer.removeAllViews();
+
+                int i=0;
+
+                for (String response : payload.getWrongAnswers()){
+                    //set the properties for button
+                    Button btnTag = new Button(getContext());
+                    btnTag.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT));
+                    btnTag.setText(response);
+                    btnTag.setId(i++);
+
+                    mQuestionAnswersContainer.addView(btnTag);
+                }
             }
         });
 

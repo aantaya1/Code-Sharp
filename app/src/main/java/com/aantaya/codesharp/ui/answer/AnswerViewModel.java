@@ -37,7 +37,6 @@ public class AnswerViewModel extends ViewModel {
     private QuestionRepository questionRepo;
 
     public void init(@Nullable String initialQuestionId){
-
         //If the ViewModel has already been initialized, no need to re-init
         if (questionRepo != null) return;
 
