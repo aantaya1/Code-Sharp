@@ -26,7 +26,7 @@
     <!-- Sign Out Preferences -->
     <string name="sign_out_button_title">Sign Out</string>
 
-    <!--  Recyclerviews  -->
+    <!--  Login Strings for FirebaseUI  -->
     <string name="title_activity_login">Sign in</string>
     <string name="prompt_email">Email</string>
     <string name="prompt_password">Password</string>
@@ -38,8 +38,8 @@
     <string name="login_failed">"Login failed"</string>
 
     <!--  Placeholders  -->
-    <string name="question_title">Java Garbage Collection</string>
-    <string name="question_description">Select the best answer and submit.</string>
+    <string name="question_title"><b>Title:</b> %1$s</string>
+    <string name="question_description"><b>Description:</b> %1$s</string>
     <string name="question_submit_button">Submit</string>
 
     <string name="question_content">

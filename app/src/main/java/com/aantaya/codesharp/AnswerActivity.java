@@ -1,6 +1,8 @@
 package com.aantaya.codesharp;
 
+import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
 
 import android.os.Bundle;
@@ -16,6 +18,15 @@ public class AnswerActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.answer_activity);
 
+        //Setup the toolbar
+        Toolbar myToolbar = findViewById(R.id.my_toolbar);
+        setSupportActionBar(myToolbar);
+
+        if (getSupportActionBar() != null){
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+            getSupportActionBar().setDisplayShowHomeEnabled(true);
+        }
+
         //Pass the ID of the question that was clicked through to the fragment
         String currentQuestionId = getIntent().getStringExtra(IntentUtils.CLICKED_QUESTION_ID_EXTRA);
         Bundle argBundle = new Bundle();
@@ -29,5 +40,11 @@ public class AnswerActivity extends AppCompatActivity {
                     .replace(R.id.container, answerFragment)
                     .commitNow();
         }
+    }
+
+    @Override
+    public boolean onSupportNavigateUp() {
+        onBackPressed();
+        return super.onSupportNavigateUp();
     }
 }
