@@ -6,14 +6,14 @@
             app:title="@string/dark_mode_title"
             app:defaultValue="true"/>
 
-<!--        todo: save as a reference (these are from default android studio)-->
-<!--        <ListPreference-->
-<!--            app:defaultValue="reply"-->
-<!--            app:entries="@array/reply_entries"-->
-<!--            app:entryValues="@array/reply_values"-->
-<!--            app:key="reply"-->
-<!--            app:title="@string/reply_title"-->
-<!--            app:useSimpleSummaryProvider="true" />-->
+        <ListPreference
+            app:key="prog_lang_pref"
+            app:defaultValue="java"
+            app:entries="@array/prog_lang_entries"
+            app:entryValues="@array/prog_lang_values"
+            app:title="@string/prog_lang_title"
+            app:summary="@string/prog_lang_summary"
+            app:useSimpleSummaryProvider="true" />
 
     </PreferenceCategory>
 

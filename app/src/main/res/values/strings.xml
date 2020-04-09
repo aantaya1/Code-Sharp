@@ -19,6 +19,8 @@
 
     <!-- General Preferences -->
     <string name="dark_mode_title">Dark Mode</string>
+    <string name="prog_lang_title">Preferred Programming Language</string>
+    <string name="prog_lang_summary">We will display questions/answers in your preferred programming language if available</string>
 
     <!-- Sync Preferences -->
     <string name="sync_title">Sync questions periodically</string>

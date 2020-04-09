@@ -1,12 +1,21 @@
 package com.aantaya.codesharp.models;
 
+import android.content.Context;
+import android.content.SharedPreferences;
+
+import androidx.annotation.NonNull;
+import androidx.preference.PreferenceManager;
+
 import com.aantaya.codesharp.enums.ProgrammingLanguage;
 import com.aantaya.codesharp.enums.QuestionDifficulty;
 import com.aantaya.codesharp.enums.QuestionType;
 
 import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+
+import javax.annotation.Nullable;
 
 public class QuestionModel {
     private String id;
@@ -28,6 +37,29 @@ public class QuestionModel {
         this.difficulty = difficulty;
         this.tags = tags;
         this.modified = modified;
+    }
+
+    /**
+     * Static helper method for getting the QuestionPayload from a question model that is the
+     * user's preferred programming language of if that is not available, then return a random
+     * one.
+     *
+     * @param questionModel the QuestionModel we would like to extract the payload from
+     * @param context context so we can get shared prefs
+     * @return QuestionPayload associated to user's preferred language, or if that's not available, a random one
+     */
+    @Nullable
+    public static QuestionPayload getPayloadWithPreferredLanguage(@NonNull QuestionModel questionModel, @NonNull Context context){
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        String preferredLanguage = prefs.getString("prog_lang_pref", "java");
+        ProgrammingLanguage preferred = ProgrammingLanguage.valueOf(preferredLanguage.toUpperCase().trim());
+
+        if (questionModel.getQuestionPayloadMap().containsKey(preferred.toString())){
+            return questionModel.getQuestionPayloadMap().get(preferred.toString());
+        }else {
+            Iterator<QuestionPayload> i = questionModel.getQuestionPayloadMap().values().iterator();
+            return i.next();
+        }
     }
 
     public String getId() {

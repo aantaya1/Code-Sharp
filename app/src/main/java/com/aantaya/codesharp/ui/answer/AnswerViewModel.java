@@ -3,7 +3,6 @@ package com.aantaya.codesharp.ui.answer;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.Observer;
-import androidx.lifecycle.Transformations;
 import androidx.lifecycle.ViewModel;
 
 import com.aantaya.codesharp.models.QuestionFilterConfig;
@@ -13,7 +12,6 @@ import com.aantaya.codesharp.repositories.impl.QuestionRepositoryFirestoreImpl;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import java.util.Set;
 
 import javax.annotation.Nullable;

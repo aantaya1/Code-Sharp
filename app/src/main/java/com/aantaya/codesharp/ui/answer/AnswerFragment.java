@@ -15,6 +15,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.preference.PreferenceManager;
 
@@ -24,6 +25,9 @@ import com.aantaya.codesharp.models.QuestionModel;
 import com.aantaya.codesharp.models.QuestionPayload;
 import com.aantaya.codesharp.utils.IntentUtils;
 import com.aantaya.codesharp.utils.MyTextUtils;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import br.tiagohm.codeview.CodeView;
 import br.tiagohm.codeview.Language;
@@ -38,6 +42,8 @@ public class AnswerFragment extends Fragment {
     private CodeView mCodeView;
     private LinearLayout mQuestionAnswersContainer;
     private Button mSubmitButton;
+
+    private String mSelectedAnswer = "";
 
     public static AnswerFragment newInstance() {
         return new AnswerFragment();
@@ -61,7 +67,7 @@ public class AnswerFragment extends Fragment {
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        mViewModel = ViewModelProviders.of(this).get(AnswerViewModel.class);
+        mViewModel = new ViewModelProvider(this).get(AnswerViewModel.class);
 
         //If for some reason getArguments is null and we can't load the question the user clicked,
         //then init viewmodel w/o an initial question (we will just start at some random question)
@@ -74,11 +80,14 @@ public class AnswerFragment extends Fragment {
             public void onChanged(QuestionModel questionModel) {
                 mQuestionTitle.setText(MyTextUtils.getText(getContext(), R.string.question_title, questionModel.getQuestionTitle()));
 
-                //todo: check the user's prefs and load the language from there
-                QuestionPayload payload = questionModel.getQuestionPayloadMap().get(ProgrammingLanguage.JAVA.toString());
+                QuestionPayload payload = QuestionModel.getPayloadWithPreferredLanguage(questionModel, getContext());
 
-                //todo: if requested language is not supported pick another one
-                if (payload == null) return;
+                if (payload == null) {
+                    //This should never happen but if it does...
+                    //todo: display a msg to user that something went wrong
+                    mViewModel.loadNextQuestion();
+                    return;
+                }
 
                 //todo: need to set this properly in payload...
                 mQuestionDescription.setText(MyTextUtils.getText(getContext(), R.string.question_description, "Select the best answer below and submit!"));
@@ -157,26 +166,45 @@ public class AnswerFragment extends Fragment {
 
                 int i=0;
 
-                for (String response : payload.getWrongAnswers()){
+                List<String> possibleResponses = new ArrayList<>();
+                possibleResponses.add(payload.getAnswer());
+                possibleResponses.addAll(payload.getWrongAnswers());
+
+                for (String response : possibleResponses){
                     //set the properties for button
                     Button btnTag = new Button(getContext());
                     btnTag.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT));
                     btnTag.setText(response);
                     btnTag.setId(i++);
+                    btnTag.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            mSelectedAnswer = ((Button) view).getText().toString();
+                        }
+                    });
 
                     mQuestionAnswersContainer.addView(btnTag);
                 }
             }
         });
 
-        //Set an onclick listener because we can't use the onclick attribute for
+        //Set an onclick listener because we can't use the onclick xml attribute for
         // buttons inside of Fragments
         mSubmitButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //todo: need to implement
-                mViewModel.loadNextQuestion();
-                Toast.makeText(getContext(), "Submit clicked!", Toast.LENGTH_SHORT).show();
+
+                QuestionPayload payload = QuestionModel.getPayloadWithPreferredLanguage(mViewModel.getQuestion().getValue(), getContext());
+
+                if (payload.getAnswer().equals(mSelectedAnswer)){
+                    //todo: update the user's correct answers
+                    //todo: display something better than a toast
+                    Toast.makeText(getContext(), "Correct!", Toast.LENGTH_SHORT).show();
+                    mViewModel.loadNextQuestion();
+                }else {
+                    //todo: display something better than a toast
+                    Toast.makeText(getContext(), "Incorrect!", Toast.LENGTH_SHORT).show();
+                }
             }
         });
     }
