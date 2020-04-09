@@ -23,8 +23,6 @@ import com.aantaya.codesharp.utils.ColorUtils;
 import com.aantaya.codesharp.utils.ThemeHelper;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
-import io.github.kbiakov.codeview.classifier.CodeProcessor;
-
 public class MainActivity extends AppCompatActivity {
 
     @Override
@@ -64,7 +62,7 @@ public class MainActivity extends AppCompatActivity {
         NavigationUI.setupWithNavController(navView, navController);
 
         // Initialize the code processor that auto-detects programming languages for CodeViews
-        CodeProcessor.init(this);
+//        CodeProcessor.init(this);
     }
 
     @Override

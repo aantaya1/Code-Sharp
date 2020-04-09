@@ -54,12 +54,11 @@
                 android:layout_height="2dp"
                 android:background="#c0c0c0"/>
 
-            <io.github.kbiakov.codeview.CodeView
+            <br.tiagohm.codeview.CodeView
                 android:id="@+id/answer_question_content"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_margin="@dimen/margin_xsmall"
-                app:animateOnStart="true"/>
+                android:layout_margin="@dimen/margin_xsmall"/>
 
             <View
                 android:layout_width="match_parent"
