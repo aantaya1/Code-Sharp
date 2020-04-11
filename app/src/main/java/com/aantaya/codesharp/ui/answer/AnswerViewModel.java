@@ -1,5 +1,6 @@
 package com.aantaya.codesharp.ui.answer;
 
+import androidx.annotation.NonNull;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.Observer;
@@ -11,6 +12,7 @@ import com.aantaya.codesharp.repositories.api.QuestionRepository;
 import com.aantaya.codesharp.repositories.impl.QuestionRepositoryFirestoreImpl;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -21,41 +23,61 @@ public class AnswerViewModel extends ViewModel {
     private List<String> mQuestionIds = new ArrayList<>();
     private int currentQuestionIdx = 0;
 
-    private MutableLiveData<QuestionModel> question;
-    private MutableLiveData<Boolean> isInitialising;
-    private MutableLiveData<Boolean> loadingQuestion;
+    private Set<String> mCompletedQuestionIds = new HashSet<>();
+
+    private MutableLiveData<QuestionModel> mQuestion;
+    private MutableLiveData<Boolean> mIsInitialising;
+    private MutableLiveData<Boolean> mLoadingQuestion;
 
     //We need to keep references to these observers so we can remove them
     // when the ViewModel is destroyed and prevent a memory leak
     private LiveData<Set<String>> mRepoQuestionIds;
     private Observer<Set<String>> mRepoQuestionIdsObserver;
+    private LiveData<Set<String>> mRepoCompletedQuestionIds;
+    private Observer<Set<String>> mRepoCompletedQuestionIdsObserver;
     private LiveData<QuestionModel> mRepoQuestion;
     private Observer<QuestionModel> mRepoQuestionObserver;
 
-    private QuestionRepository questionRepo;
+    private QuestionRepository mQuestionRepo;
 
     public void init(@Nullable String initialQuestionId){
         //If the ViewModel has already been initialized, no need to re-init
-        if (questionRepo != null) return;
+        if (mQuestionRepo != null) return;
 
         //Keep track of whether or not we have finished loading the question ids
-        isInitialising = new MutableLiveData<>();
-        isInitialising.setValue(true);
+        mIsInitialising = new MutableLiveData<>();
+        mIsInitialising.setValue(true);
 
         //Keep track of whether or not we are loading a question
-        loadingQuestion = new MutableLiveData<>();
-        loadingQuestion.setValue(true);
+        mLoadingQuestion = new MutableLiveData<>();
+        mLoadingQuestion.setValue(true);
 
-        question = new MutableLiveData<>();
+        mQuestion = new MutableLiveData<>();
 
-        questionRepo = QuestionRepositoryFirestoreImpl.getInstance();
+        mQuestionRepo = QuestionRepositoryFirestoreImpl.getInstance();
+
+        QuestionFilterConfig config = new QuestionFilterConfig();
+        config.setIncludeCompletedQuestions(true);
+        config.setIncludeIncompleteQuestions(false);
+
+        mRepoCompletedQuestionIds = mQuestionRepo.getQuestionIds(config);
+        mRepoCompletedQuestionIdsObserver = new Observer<Set<String>>() {
+            @Override
+            public void onChanged(Set<String> questionIds) {
+                if (!mCompletedQuestionIds.isEmpty()) return;
+
+                mCompletedQuestionIds.addAll(questionIds);
+            }
+        };
+
+        mRepoCompletedQuestionIds.observeForever(mRepoCompletedQuestionIdsObserver);
 
         //todo: eventually we will want to check the user's shared prefs for filtering questions
-        QuestionFilterConfig config = new QuestionFilterConfig();
+        config = new QuestionFilterConfig();
         config.setIncludeCompletedQuestions(false);
 
         String finalInitialQuestionId = initialQuestionId;
-        mRepoQuestionIds = questionRepo.getQuestionIds(config);
+        mRepoQuestionIds = mQuestionRepo.getQuestionIds(config);
         mRepoQuestionIdsObserver = new Observer<Set<String>>() {
             @Override
             public void onChanged(Set<String> questionIds) {
@@ -67,7 +89,7 @@ public class AnswerViewModel extends ViewModel {
                 questionIds.remove(finalInitialQuestionId);
 
                 mQuestionIds.addAll(questionIds);
-                isInitialising.setValue(false);
+                mIsInitialising.setValue(false);
             }
         };
 
@@ -79,12 +101,12 @@ public class AnswerViewModel extends ViewModel {
 
         //todo: we cannot throw a NPE in production...we should finish the activity if this happens
         // by using a state obj that is observed in the activity
-        mRepoQuestion = questionRepo.getQuestion(initialQuestionId);
+        mRepoQuestion = mQuestionRepo.getQuestion(initialQuestionId);
         mRepoQuestionObserver = new Observer<QuestionModel>() {
             @Override
             public void onChanged(QuestionModel questionModel) {
-                question.setValue(questionModel);
-                loadingQuestion.setValue(false);
+                mQuestion.setValue(questionModel);
+                mLoadingQuestion.setValue(false);
             }
         };
 
@@ -92,22 +114,22 @@ public class AnswerViewModel extends ViewModel {
     }
 
     public LiveData<QuestionModel> getQuestion(){
-        return question;
+        return mQuestion;
     }
 
     public LiveData<Boolean> getIsInitialising(){
-        return isInitialising;
+        return mIsInitialising;
     }
 
     public LiveData<Boolean> getIsQuestionLoading(){
-        return loadingQuestion;
+        return mLoadingQuestion;
     }
 
     public void loadNextQuestion(){
         //todo: we should finish the activity if this happens by using a state obj that is observed in the activity
         if (currentQuestionIdx == mQuestionIds.size()) return;
 
-        this.loadingQuestion.setValue(true);
+        this.mLoadingQuestion.setValue(true);
 
         String nextQuestionId = mQuestionIds.get(currentQuestionIdx++);
 
@@ -117,16 +139,25 @@ public class AnswerViewModel extends ViewModel {
 
         //todo: we cannot throw a NPE in production...we should finish the activity if this happens
         // by using a state obj that is observed in the activity
-        mRepoQuestion = questionRepo.getQuestion(nextQuestionId);
+        mRepoQuestion = mQuestionRepo.getQuestion(nextQuestionId);
         mRepoQuestionObserver = new Observer<QuestionModel>() {
             @Override
             public void onChanged(QuestionModel questionModel) {
-                question.setValue(questionModel);
-                loadingQuestion.setValue(false);
+                mQuestion.setValue(questionModel);
+                mLoadingQuestion.setValue(false);
             }
         };
 
         mRepoQuestion.observeForever(mRepoQuestionObserver);
+    }
+
+    public void uploadCorrectQuestion(@NonNull String questionId){
+        //If the user completes the question more than once, we don't need
+        // to re-upload the completion of the question
+        //todo: need to uncomment this once I implement filtering correctly on repo
+//        if (mCompletedQuestionIds.contains(questionId)) return;
+
+        mQuestionRepo.uploadCompletedQuestion(questionId);
     }
 
     @Override
@@ -136,6 +167,7 @@ public class AnswerViewModel extends ViewModel {
         //We need to remove the observers when the ViewModel is destroyed
         // to prevent a memory leak
         mRepoQuestionIds.removeObserver(mRepoQuestionIdsObserver);
+        mRepoCompletedQuestionIds.removeObserver(mRepoCompletedQuestionIdsObserver);
         mRepoQuestion.removeObserver(mRepoQuestionObserver);
     }
 }

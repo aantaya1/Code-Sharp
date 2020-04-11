@@ -18,10 +18,12 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreSettings;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
+import com.google.firebase.firestore.SetOptions;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -116,7 +118,10 @@ public class QuestionRepositoryFirestoreImpl implements QuestionRepository {
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
                         DocumentSnapshot document = task.getResult();
+
                         QuestionModel questionModel = document.toObject(QuestionModel.class);
+                        questionModel.setId(document.getId());
+
                         data.postValue(questionModel);
                     } else {
                         Log.w(TAG, "Error getting documents.", task.getException());
@@ -164,6 +169,21 @@ public class QuestionRepositoryFirestoreImpl implements QuestionRepository {
                 });
 
         return data;
+    }
+
+    /**
+     * Mark a question as being completed in the repository impl.
+     *
+     * @param questionId question id that was successfully completed
+     */
+    @Override
+    public void uploadCompletedQuestion(@NonNull String questionId) {
+        Map<Object, Object> data = new HashMap<>();
+        data.put("question_ids", FieldValue.arrayUnion(questionId));
+
+        db.collection("completed_questions")
+                .document(user.getUid())
+                .set(data, SetOptions.merge());
     }
 
     /**

@@ -50,4 +50,11 @@ public interface QuestionRepository {
      * @return a set of RecyclerViewQuestionItem
      */
     MutableLiveData<List<RecyclerViewQuestionItem>> getQuestionsForRecycleView(@Nullable String userId);
+
+    /**
+     * Mark a question as being completed in the repository impl.
+     *
+     * @param questionId question id that was successfully completed
+     */
+    void uploadCompletedQuestion(@NonNull String questionId);
 }

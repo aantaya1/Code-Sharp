@@ -194,12 +194,17 @@ public class AnswerFragment extends Fragment {
             @Override
             public void onClick(View v) {
 
-                QuestionPayload payload = QuestionModel.getPayloadWithPreferredLanguage(mViewModel.getQuestion().getValue(), getContext());
+                QuestionModel currentQuestion = mViewModel.getQuestion().getValue();
+
+                //todo: we should make sure we handle NPE
+                QuestionPayload payload = QuestionModel.getPayloadWithPreferredLanguage(currentQuestion, getContext());
 
                 if (payload.getAnswer().equals(mSelectedAnswer)){
                     //todo: update the user's correct answers
                     //todo: display something better than a toast
+                    //https://www.dev2qa.com/android-custom-toast-example/
                     Toast.makeText(getContext(), "Correct!", Toast.LENGTH_SHORT).show();
+                    mViewModel.uploadCorrectQuestion(currentQuestion.getId());
                     mViewModel.loadNextQuestion();
                 }else {
                     //todo: display something better than a toast
