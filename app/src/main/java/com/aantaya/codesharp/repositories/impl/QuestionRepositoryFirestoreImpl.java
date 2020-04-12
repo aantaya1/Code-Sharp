@@ -1,5 +1,6 @@
 package com.aantaya.codesharp.repositories.impl;
 
+import android.util.ArraySet;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
@@ -13,6 +14,8 @@ import com.aantaya.codesharp.models.QuestionModel;
 import com.aantaya.codesharp.models.QuestionPayload;
 import com.aantaya.codesharp.models.RecyclerViewQuestionItem;
 import com.aantaya.codesharp.repositories.api.QuestionRepository;
+import com.aantaya.codesharp.repositories.callbacks.IdQueryCallback;
+import com.aantaya.codesharp.repositories.callbacks.QuestionQueryCallback;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
@@ -38,6 +41,9 @@ import javax.annotation.Nullable;
 
 public class QuestionRepositoryFirestoreImpl implements QuestionRepository {
     private static final String TAG = QuestionRepositoryFirestoreImpl.class.getSimpleName();
+    private static final String QUESTION_COLLECTION = "questions";
+    private static final String COMPLETED_QUESTION_COLLECTION = "completed_questions";
+    private static final String QUESTION_ID_FIELD = "question_ids";
 
     private static QuestionRepositoryFirestoreImpl questionRepository;
 
@@ -77,29 +83,92 @@ public class QuestionRepositoryFirestoreImpl implements QuestionRepository {
      * @return a set of ids that represent all of the questions in the datastore that match the
      * given filter
      */
-    @Override
     public MutableLiveData<Set<String>> getQuestionIds(@Nullable QuestionFilterConfig filter) {
-        //todo: need to do stuff with the filter...........
 
         final MutableLiveData<Set<String>> data = new MutableLiveData<>();
 
-        db.collection("questions")
+        if (filter == null || filter.includeCompletedQuestions()){
+            db.collection(QUESTION_COLLECTION)
+                    .get()
+                    .addOnCompleteListener(task -> {
+                        if (task.isSuccessful()) {
+                            Set<String> items = new HashSet<>();
+
+                            for (QueryDocumentSnapshot document : task.getResult()) {
+                                items.add(document.getId());
+                            }
+
+                            data.postValue(items);
+                        } else {
+                            Log.w(TAG, "Error getting documents.", task.getException());
+                        }
+                    });
+        }else {
+            db.collection(COMPLETED_QUESTION_COLLECTION)
+                    .document(user.getUid())
+                    .get()
+                    .addOnCompleteListener(task -> {
+                        if (task.isSuccessful()) {
+                            DocumentSnapshot document = task.getResult();
+                            List<String> ids = (document != null) ? (List<String>) document.get("question_ids") : new ArrayList<>();
+
+                            Set<String> completedQuestionIds = new HashSet<>();
+
+                            //add all of the completed question ids
+                            if (ids != null) completedQuestionIds.addAll(ids);
+
+                            db.collection(QUESTION_COLLECTION)
+                                    .get()
+                                    .addOnCompleteListener(task2 -> {
+                                        if (task2.isSuccessful()) {
+                                            Set<String> questionIds = new HashSet<>();
+
+                                            // only return the question ids that the user has not completed yet
+                                            for (QueryDocumentSnapshot document2 : task2.getResult()) {
+                                                if (!completedQuestionIds.contains(document2.getId())){
+                                                    questionIds.add(document2.getId());
+                                                }
+                                            }
+
+                                            data.postValue(questionIds);
+                                        } else {
+                                            Log.w(TAG, "Error getting documents.", task.getException());
+                                        }
+                                    });
+                        } else {
+                            Log.w(TAG, "Error getting documents.", task.getException());
+                        }
+                    });
+        }
+
+        return data;
+    }
+
+    /**
+     * Get a set of question ids that represent the questions a user has successfully
+     * finished
+     *
+     * @param callback will be called on the conclusion of query
+     */
+    @Override
+    public void getCompletedQuestions(IdQueryCallback callback) {
+        db.collection(COMPLETED_QUESTION_COLLECTION)
+                .document(user.getUid())
                 .get()
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
+                        DocumentSnapshot document = task.getResult();
+                        List<String> ids = (document != null) ? (List<String>) document.get("question_ids") : new ArrayList<>();
+
                         Set<String> items = new HashSet<>();
 
-                        for (QueryDocumentSnapshot document : task.getResult()) {
-                            items.add(document.getId());
-                        }
+                        if (ids != null) items.addAll(ids);
 
-                        data.postValue(items);
+                        callback.onSuccess(items);
                     } else {
                         Log.w(TAG, "Error getting documents.", task.getException());
                     }
                 });
-
-        return data;
     }
 
     /**
@@ -110,10 +179,8 @@ public class QuestionRepositoryFirestoreImpl implements QuestionRepository {
      */
     @Nullable
     @Override
-    public MutableLiveData<QuestionModel> getQuestion(String id) {
-        final MutableLiveData<QuestionModel> data = new MutableLiveData<>();
-
-        db.collection("questions").document(id)
+    public void getQuestion(String id, QuestionQueryCallback callback) {
+        db.collection(QUESTION_COLLECTION).document(id)
                 .get()
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
@@ -122,53 +189,45 @@ public class QuestionRepositoryFirestoreImpl implements QuestionRepository {
                         QuestionModel questionModel = document.toObject(QuestionModel.class);
                         questionModel.setId(document.getId());
 
-                        data.postValue(questionModel);
+                        Set<QuestionModel> res = new HashSet<>();
+                        res.add(questionModel);
+
+                        callback.onSuccess(res);
                     } else {
+                        callback.onFailure("");
                         Log.w(TAG, "Error getting documents.", task.getException());
                     }
                 });
-
-        return data;
     }
 
     /**
-     * Get a set of RecyclerViewQuestionItem for displaying on the UI. If the given user id
-     * is null, we will return all of the questions, else we will return just the questions that
-     * the user has not finished yet.
-     * <p>
-     * todo: consider removing this method and just using a method that retrieves QuestionModels
+     * Get questions that match the given question ids. If questionIds is null, get all of the
+     * questions.
      *
-     * @param userId the user's id or null
-     * @return a set of RecyclerViewQuestionItem
+     * @param questionIds list of questions to retrieve or null to get all questions
+     * @param callback    will be called on the conclusion of query
      */
     @Override
-    public MutableLiveData<List<RecyclerViewQuestionItem>> getQuestionsForRecycleView(@Nullable String userId) {
-
-        //todo: need to do stuff with the userId...........
-
-        final MutableLiveData<List<RecyclerViewQuestionItem>> data = new MutableLiveData<>();
-
-        db.collection("questions")
+    public void getQuestions(@Nullable List<String> questionIds, QuestionQueryCallback callback) {
+        db.collection(QUESTION_COLLECTION)
                 .get()
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
-                        List<RecyclerViewQuestionItem> items = new ArrayList<>();
+                        Set<QuestionModel> res = new HashSet<>();
 
-                        for (QueryDocumentSnapshot document : task.getResult()) {
-                            //Convert the document to our POJO
+                        for(QueryDocumentSnapshot document : task.getResult()){
                             QuestionModel questionModel = document.toObject(QuestionModel.class);
+                            questionModel.setId(document.getId());
 
-                            items.add(new RecyclerViewQuestionItem(document.getId(),
-                                    questionModel.getQuestionTitle(), questionModel.getDifficulty()));
+                            res.add(questionModel);
                         }
 
-                        data.postValue(items);
+                        callback.onSuccess(res);
                     } else {
+                        callback.onFailure("");
                         Log.w(TAG, "Error getting documents.", task.getException());
                     }
                 });
-
-        return data;
     }
 
     /**
@@ -179,9 +238,9 @@ public class QuestionRepositoryFirestoreImpl implements QuestionRepository {
     @Override
     public void uploadCompletedQuestion(@NonNull String questionId) {
         Map<Object, Object> data = new HashMap<>();
-        data.put("question_ids", FieldValue.arrayUnion(questionId));
+        data.put(QUESTION_ID_FIELD, FieldValue.arrayUnion(questionId));
 
-        db.collection("completed_questions")
+        db.collection(COMPLETED_QUESTION_COLLECTION)
                 .document(user.getUid())
                 .set(data, SetOptions.merge());
     }

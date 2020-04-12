@@ -7,6 +7,8 @@ import androidx.lifecycle.MutableLiveData;
 import com.aantaya.codesharp.models.QuestionFilterConfig;
 import com.aantaya.codesharp.models.QuestionModel;
 import com.aantaya.codesharp.models.RecyclerViewQuestionItem;
+import com.aantaya.codesharp.repositories.callbacks.IdQueryCallback;
+import com.aantaya.codesharp.repositories.callbacks.QuestionQueryCallback;
 
 import java.util.List;
 import java.util.Set;
@@ -19,14 +21,12 @@ import javax.annotation.Nullable;
 public interface QuestionRepository {
 
     /**
-     * Get the ids for questions that match the given filter.
+     * Get a set of question ids that represent the questions a user has successfully
+     * finished
      *
-     * @param filter a config object for filtering questions returned by the method or null to
-     *               return all question ids
-     * @return a set of ids that represent all of the questions in the datastore that match the
-     * given filter
+     * @param callback will be called on the conclusion of query
      */
-    MutableLiveData<Set<String>> getQuestionIds(@Nullable QuestionFilterConfig filter);
+    void getCompletedQuestions(IdQueryCallback callback);
 
     /**
      * Get a question from it's id.
@@ -37,19 +37,16 @@ public interface QuestionRepository {
      * @return the question model if one can be found, else null
      */
     @Nullable
-    MutableLiveData<QuestionModel> getQuestion(String id);
+    void getQuestion(String id, QuestionQueryCallback callback);
 
     /**
-     * Get a set of RecyclerViewQuestionItem for displaying on the UI. If the given user id
-     * is null, we will return all of the questions, else we will return just the questions that
-     * the user has not finished yet.
+     * Get questions that match the given question ids. If questionIds is null, get all of the
+     * questions.
      *
-     * todo: consider removing this method and just using a method that retrieves QuestionModels
-     *
-     * @param userId the user's id or null
-     * @return a set of RecyclerViewQuestionItem
+     * @param questionIds list of questions to retrieve or null to get all questions
+     * @param callback will be called on the conclusion of query
      */
-    MutableLiveData<List<RecyclerViewQuestionItem>> getQuestionsForRecycleView(@Nullable String userId);
+    void getQuestions(@Nullable List<String> questionIds, QuestionQueryCallback callback);
 
     /**
      * Mark a question as being completed in the repository impl.

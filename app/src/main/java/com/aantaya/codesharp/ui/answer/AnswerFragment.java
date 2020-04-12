@@ -3,11 +3,13 @@ package com.aantaya.codesharp.ui.answer;
 import android.annotation.SuppressLint;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.LinearLayout;
+import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -25,6 +27,8 @@ import com.aantaya.codesharp.models.QuestionModel;
 import com.aantaya.codesharp.models.QuestionPayload;
 import com.aantaya.codesharp.utils.IntentUtils;
 import com.aantaya.codesharp.utils.MyTextUtils;
+import com.facebook.shimmer.ShimmerFrameLayout;
+import com.github.ybq.android.spinkit.SpinKitView;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -32,6 +36,11 @@ import java.util.List;
 import br.tiagohm.codeview.CodeView;
 import br.tiagohm.codeview.Language;
 import br.tiagohm.codeview.Theme;
+
+import static com.aantaya.codesharp.ui.answer.AnswerViewModel.STATE_COMPLETED_ALL_QUESTIONS;
+import static com.aantaya.codesharp.ui.answer.AnswerViewModel.STATE_FAILED;
+import static com.aantaya.codesharp.ui.answer.AnswerViewModel.STATE_LOADING;
+import static com.aantaya.codesharp.ui.answer.AnswerViewModel.STATE_NORMAL;
 
 public class AnswerFragment extends Fragment {
 
@@ -42,6 +51,8 @@ public class AnswerFragment extends Fragment {
     private CodeView mCodeView;
     private LinearLayout mQuestionAnswersContainer;
     private Button mSubmitButton;
+    private ScrollView mScrollviewLayout;
+    private SpinKitView mLoadingAnimation;
 
     private String mSelectedAnswer = "";
 
@@ -60,6 +71,8 @@ public class AnswerFragment extends Fragment {
         mCodeView = root.findViewById(R.id.answer_question_content);
         mQuestionAnswersContainer = root.findViewById(R.id.answer_question_answers_container);
         mSubmitButton = root.findViewById(R.id.answer_submit_button);
+        mScrollviewLayout = root.findViewById(R.id.scroll_view_layout);
+        mLoadingAnimation = root.findViewById(R.id.loading_animation);
 
         return root;
     }
@@ -73,6 +86,34 @@ public class AnswerFragment extends Fragment {
         //then init viewmodel w/o an initial question (we will just start at some random question)
         String initialQuestionId = (getArguments() != null) ? getArguments().getString(IntentUtils.CLICKED_QUESTION_ID_EXTRA) : null;
         mViewModel.init(initialQuestionId);
+
+        mViewModel.getState().observe(getViewLifecycleOwner(), new Observer<Integer>() {
+            @Override
+            public void onChanged(Integer state) {
+                switch (state){
+                    case STATE_NORMAL:
+                        Log.e("AnswerFragment", "shimmer: end");
+                        //todo: need to implement
+                        hideLoading();
+                        break;
+                    case STATE_LOADING:
+                        Log.e("AnswerFragment", "shimmer: start");
+                        //todo: need to implement
+                        displayLoading();
+                        break;
+                    case STATE_COMPLETED_ALL_QUESTIONS:
+                        //todo: need to create a custom toast for this
+
+                        //Once the user has finished all the questions finish the activity
+                        getActivity().finish();
+                        break;
+                    case STATE_FAILED:
+                        //todo: need to implement
+                        Toast.makeText(getContext(), "State Failed!", Toast.LENGTH_LONG).show();
+                        break;
+                }
+            }
+        });
 
         mViewModel.getQuestion().observe(getViewLifecycleOwner(), new Observer<QuestionModel>() {
             @SuppressLint("ClickableViewAccessibility")
@@ -135,9 +176,7 @@ public class AnswerFragment extends Fragment {
                                 "    private MutableLiveData<List<RecyclerViewQuestionItem>> mQuestionsLiveData;\n" +
                                 "    private QuestionRepository questionRepository;\n" +
                                 "\n" +
-                                "    public HomeViewModel() {\n" +
-                                "\n" +
-                                "    }\n" +
+                                "    public HomeViewModel() {}\n" +
                                 "\n" +
                                 "    public void init(){\n" +
                                 "        if (questionRepository != null){\n" +
@@ -148,9 +187,6 @@ public class AnswerFragment extends Fragment {
                                 "        mQuestionsLiveData = questionRepository.getQuestionsForRecycleView(null);\n" +
                                 "    }\n" +
                                 "\n" +
-                                "    public LiveData<List<RecyclerViewQuestionItem>> getQuestions() {\n" +
-                                "        return mQuestionsLiveData;\n" +
-                                "    }\n" +
                                 "}")
                         .setLanguage(Language.JAVA)
                         .setWrapLine(false)
@@ -212,5 +248,15 @@ public class AnswerFragment extends Fragment {
                 }
             }
         });
+    }
+
+    private void displayLoading(){
+        mScrollviewLayout.setVisibility(View.INVISIBLE);
+        mLoadingAnimation.setVisibility(View.VISIBLE);
+    }
+
+    private void hideLoading(){
+        mScrollviewLayout.setVisibility(View.VISIBLE);
+        mLoadingAnimation.setVisibility(View.INVISIBLE);
     }
 }

@@ -10,7 +10,22 @@
     android:animateLayoutChanges="true"
     tools:context=".ui.answer.AnswerFragment">
 
+    <com.github.ybq.android.spinkit.SpinKitView
+        android:id="@+id/loading_animation"
+        style="@style/SpinKitView.Large.CubeGrid"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/scroll_view_layout"
+        android:fitsSystemWindows="true"
+        android:indeterminate="true"
+        app:SpinKit_Color="@color/colorAccent"/>
+
     <ScrollView
+        android:id="@+id/scroll_view_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:nestedScrollingEnabled="true"
@@ -85,6 +100,6 @@
                 android:layout_gravity="center_horizontal"
                 android:text="@string/question_submit_button"/>
         </LinearLayout>
-    </ScrollView>
 
+    </ScrollView>
 </androidx.constraintlayout.widget.ConstraintLayout>

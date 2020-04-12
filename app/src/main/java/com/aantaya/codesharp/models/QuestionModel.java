@@ -20,6 +20,7 @@ import javax.annotation.Nullable;
 public class QuestionModel {
     private String id;
     private String questionTitle;
+    private String description;
     private QuestionType questionType;
     private Map<String, QuestionPayload> questionPayloadMap;
     private QuestionDifficulty difficulty;
@@ -30,8 +31,9 @@ public class QuestionModel {
         //blank constructor
     }
 
-    public QuestionModel(String questionTitle, QuestionType questionType, Map<String, QuestionPayload> questionPayloadMap, QuestionDifficulty difficulty, List<String> tags, Date modified) {
+    public QuestionModel(String questionTitle, String description, QuestionType questionType, Map<String, QuestionPayload> questionPayloadMap, QuestionDifficulty difficulty, List<String> tags, Date modified) {
         this.questionTitle = questionTitle;
+        this.description = description;
         this.questionType = questionType;
         this.questionPayloadMap = questionPayloadMap;
         this.difficulty = difficulty;
@@ -76,6 +78,14 @@ public class QuestionModel {
 
     public void setQuestionTitle(String questionTitle) {
         this.questionTitle = questionTitle;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 
     public QuestionType getQuestionType() {

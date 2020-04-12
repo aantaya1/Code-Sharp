@@ -56,6 +56,10 @@ dependencies {
     //Code Viewer
     implementation 'com.github.tiagohm:CodeView:0.4.0'
 
+    //Animations for loading
+    implementation 'com.facebook.shimmer:shimmer:0.4.0'
+    implementation 'com.github.ybq:Android-SpinKit:1.4.0'
+
     //Testing Dependencies
     implementation 'androidx.annotation:annotation:1.1.0'
     testImplementation 'junit:junit:4.12'
