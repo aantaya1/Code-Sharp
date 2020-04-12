@@ -14,6 +14,32 @@
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"/>
 
+    <!--  This will display cool a shimmering layout while recyclerview items are loading  -->
+    <com.facebook.shimmer.ShimmerFrameLayout
+        android:id="@+id/shimmer_layout"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/my_toolbar"
+        app:shimmer_auto_start="true">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+            <include layout="@layout/questions_recyclerview_shimmer_placeholder"/>
+            <include layout="@layout/questions_recyclerview_shimmer_placeholder"/>
+            <include layout="@layout/questions_recyclerview_shimmer_placeholder"/>
+            <include layout="@layout/questions_recyclerview_shimmer_placeholder"/>
+            <include layout="@layout/questions_recyclerview_shimmer_placeholder"/>
+            <include layout="@layout/questions_recyclerview_shimmer_placeholder"/>
+
+        </LinearLayout>
+    </com.facebook.shimmer.ShimmerFrameLayout>
+
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerview_home"
         android:layout_width="0dp"

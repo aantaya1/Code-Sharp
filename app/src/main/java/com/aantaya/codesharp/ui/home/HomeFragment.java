@@ -28,9 +28,14 @@ import com.aantaya.codesharp.models.RecyclerViewQuestionItem;
 import com.aantaya.codesharp.ui.adapters.QuestionsRecyclerViewAdapter;
 import com.aantaya.codesharp.ui.settings.SettingsActivity;
 import com.aantaya.codesharp.utils.IntentUtils;
+import com.facebook.shimmer.ShimmerFrameLayout;
 
 import java.lang.ref.WeakReference;
 import java.util.List;
+
+import static com.aantaya.codesharp.ui.home.HomeViewModel.STATE_FAILED;
+import static com.aantaya.codesharp.ui.home.HomeViewModel.STATE_LOADING;
+import static com.aantaya.codesharp.ui.home.HomeViewModel.STATE_NORMAL;
 
 public class HomeFragment extends Fragment {
 
@@ -39,6 +44,7 @@ public class HomeFragment extends Fragment {
     private HomeViewModel mHomeViewModel;
     private RecyclerView mRecyclerView;
     private QuestionsRecyclerViewAdapter mAdapter;
+    private ShimmerFrameLayout mShimmerLayout;
 
 
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -70,6 +76,8 @@ public class HomeFragment extends Fragment {
 
         mRecyclerView.setAdapter(mAdapter);
 
+        mShimmerLayout = root.findViewById(R.id.shimmer_layout);
+
         //This tells android that we have a options menu that we would like to render
         // if we don't set this, the menu callbacks will not be called
         setHasOptionsMenu(true);
@@ -89,6 +97,23 @@ public class HomeFragment extends Fragment {
 
         //Initialize the view model with data
         mHomeViewModel.init();
+
+        mHomeViewModel.getState().observe(getViewLifecycleOwner(), new Observer<Integer>() {
+            @Override
+            public void onChanged(Integer state) {
+                switch (state){
+                    case STATE_NORMAL:
+                        finishShowingLoadingView();
+                        break;
+                    case STATE_LOADING:
+                        startShowingLoadingView();
+                        break;
+                    case STATE_FAILED:
+                        //todo: what should we do here?
+                        break;
+                }
+            }
+        });
 
         //Set up the fragment to observe changes to the questions as they are updated in the viewmodel
         //and then update the adapter with the new items
@@ -123,5 +148,17 @@ public class HomeFragment extends Fragment {
             default:
                 return super.onOptionsItemSelected(item);
         }
+    }
+
+    private void startShowingLoadingView(){
+        mShimmerLayout.startShimmer();
+        mShimmerLayout.setVisibility(View.VISIBLE);
+        mRecyclerView.setVisibility(View.INVISIBLE);
+    }
+
+    private void finishShowingLoadingView(){
+        mShimmerLayout.stopShimmer();
+        mShimmerLayout.setVisibility(View.GONE);
+        mRecyclerView.setVisibility(View.VISIBLE);
     }
 }

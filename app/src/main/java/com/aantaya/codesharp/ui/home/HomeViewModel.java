@@ -16,7 +16,12 @@ import java.util.Set;
 
 public class HomeViewModel extends ViewModel {
 
-    private MutableLiveData<List<RecyclerViewQuestionItem>> mQuestionsLiveData;
+    public static final int STATE_NORMAL = 0;
+    public static final int STATE_LOADING = 1;
+    public static final int STATE_FAILED = 2;
+
+    private MutableLiveData<List<RecyclerViewQuestionItem>> mQuestionsLiveData = new MutableLiveData<>();
+    private MutableLiveData<Integer> mState = new MutableLiveData<>();
     private QuestionRepository questionRepo;
 
     public HomeViewModel() {
@@ -28,8 +33,9 @@ public class HomeViewModel extends ViewModel {
             return;
         }
 
+        mState.setValue(STATE_LOADING);
+
         questionRepo = QuestionRepositoryFirestoreImpl.getInstance();
-        mQuestionsLiveData = new MutableLiveData<>();
 
         questionRepo.getQuestions(null, new QuestionQueryCallback() {
             @Override
@@ -41,16 +47,21 @@ public class HomeViewModel extends ViewModel {
                 }
 
                 mQuestionsLiveData.setValue(items);
+                mState.setValue(STATE_NORMAL);
             }
 
             @Override
             public void onFailure(String failureString) {
-
+                mState.setValue(STATE_FAILED);
             }
         });
     }
 
     public LiveData<List<RecyclerViewQuestionItem>> getQuestions() {
         return mQuestionsLiveData;
+    }
+
+    public LiveData<Integer> getState(){
+        return mState;
     }
 }

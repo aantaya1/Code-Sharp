@@ -39,6 +39,9 @@
     <string name="invalid_password">Password must be >5 characters</string>
     <string name="login_failed">"Login failed"</string>
 
+    <!--  Loading Placeholders  -->
+    <string name="question_title_placeholder">CodeSharp</string>
+
     <!--  Placeholders  -->
     <string name="question_title"><b>Title:</b> %1$s</string>
     <string name="question_description"><b>Description:</b> %1$s</string>
