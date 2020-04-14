@@ -5,6 +5,7 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
+import com.aantaya.codesharp.enums.QuestionDifficulty;
 import com.aantaya.codesharp.models.QuestionModel;
 import com.aantaya.codesharp.repositories.api.QuestionRepository;
 import com.aantaya.codesharp.repositories.callbacks.QuestionQueryCallback;
@@ -110,13 +111,13 @@ public class AnswerViewModel extends ViewModel {
         });
     }
 
-    public void uploadCorrectQuestion(@NonNull String questionId){
+    public void uploadCorrectQuestion(@NonNull String questionId, @NonNull QuestionDifficulty difficulty){
         //If the user completes the question more than once, we don't need
         // to re-upload the completion of the question
         //todo: need to uncomment this once I implement filtering correctly on repo
 //        if (mCompletedQuestionIds.contains(questionId)) return;
 
-        mQuestionRepo.uploadCompletedQuestion(questionId);
+        mQuestionRepo.uploadCompletedQuestion(questionId, difficulty);
     }
 
     public LiveData<QuestionModel> getQuestion(){

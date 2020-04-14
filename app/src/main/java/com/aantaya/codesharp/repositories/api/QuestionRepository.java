@@ -4,11 +4,14 @@ import androidx.annotation.NonNull;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
+import com.aantaya.codesharp.enums.QuestionDifficulty;
 import com.aantaya.codesharp.models.QuestionFilterConfig;
 import com.aantaya.codesharp.models.QuestionModel;
 import com.aantaya.codesharp.models.RecyclerViewQuestionItem;
 import com.aantaya.codesharp.repositories.callbacks.IdQueryCallback;
 import com.aantaya.codesharp.repositories.callbacks.QuestionQueryCallback;
+import com.aantaya.codesharp.repositories.callbacks.SystemStatsCallback;
+import com.aantaya.codesharp.repositories.callbacks.UserStatsCallback;
 
 import java.util.List;
 import java.util.Set;
@@ -31,8 +34,6 @@ public interface QuestionRepository {
     /**
      * Get a question from it's id.
      *
-     * todo: i can probably remove userId as an argument because the repo will have that info already
-     *
      * @param id the id of the question
      * @return the question model if one can be found, else null
      */
@@ -52,6 +53,21 @@ public interface QuestionRepository {
      * Mark a question as being completed in the repository impl.
      *
      * @param questionId question id that was successfully completed
+     * @param difficulty the difficulty of the question completed
      */
-    void uploadCompletedQuestion(@NonNull String questionId);
+    void uploadCompletedQuestion(@NonNull String questionId, @NonNull QuestionDifficulty difficulty);
+
+    /**
+     * Get systems stats such as the number of questions in our datastore
+     *
+     * @param callback will be called upon completion of the query
+     */
+    void getSystemStats(SystemStatsCallback callback);
+
+    /**
+     * Get user stats such as the number of easy/med/hard questions the user has finished
+     *
+     * @param callback will be called upon completion of the query
+     */
+    void getUserStats(UserStatsCallback callback);
 }

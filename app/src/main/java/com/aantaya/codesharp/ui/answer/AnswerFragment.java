@@ -229,7 +229,7 @@ public class AnswerFragment extends Fragment {
                     //todo: display something better than a toast
                     //https://www.dev2qa.com/android-custom-toast-example/
                     Toast.makeText(getContext(), "Correct!", Toast.LENGTH_SHORT).show();
-                    mViewModel.uploadCorrectQuestion(currentQuestion.getId());
+                    mViewModel.uploadCorrectQuestion(currentQuestion.getId(), currentQuestion.getDifficulty());
                     mViewModel.loadNextQuestion();
                 }else {
                     //todo: display something better than a toast
@@ -247,7 +247,6 @@ public class AnswerFragment extends Fragment {
 
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-
         switch (item.getItemId()){
             case R.id.answer_menu_skip:
                 mViewModel.loadNextQuestion();

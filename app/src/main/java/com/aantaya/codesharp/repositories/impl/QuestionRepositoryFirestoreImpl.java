@@ -11,9 +11,13 @@ import com.aantaya.codesharp.enums.QuestionType;
 import com.aantaya.codesharp.models.QuestionFilterConfig;
 import com.aantaya.codesharp.models.QuestionModel;
 import com.aantaya.codesharp.models.QuestionPayload;
+import com.aantaya.codesharp.models.SystemStatsModel;
+import com.aantaya.codesharp.models.UserStatsModel;
 import com.aantaya.codesharp.repositories.api.QuestionRepository;
 import com.aantaya.codesharp.repositories.callbacks.IdQueryCallback;
 import com.aantaya.codesharp.repositories.callbacks.QuestionQueryCallback;
+import com.aantaya.codesharp.repositories.callbacks.SystemStatsCallback;
+import com.aantaya.codesharp.repositories.callbacks.UserStatsCallback;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -36,8 +40,16 @@ import javax.annotation.Nullable;
 public class QuestionRepositoryFirestoreImpl implements QuestionRepository {
     private static final String TAG = QuestionRepositoryFirestoreImpl.class.getSimpleName();
     private static final String QUESTION_COLLECTION = "questions";
+    private static final String STATS_COLLECTION = "stats";
     private static final String COMPLETED_QUESTION_COLLECTION = "completed_questions";
+
+    private static final String STATS_QUESTION_DOC = "questions";
+
     private static final String QUESTION_ID_FIELD = "question_ids";
+    private static final String STATS_NUM_QUESTIONS_FIELD = "numQuestions";
+    private static final String USER_STATS_NUM_EASY_FIELD = "num_easy";
+    private static final String USER_STATS_NUM_MED_FIELD = "num_med";
+    private static final String USER_STATS_NUM_HARD_FIELD = "num_hard";
 
     private static QuestionRepositoryFirestoreImpl questionRepository;
 
@@ -159,14 +171,123 @@ public class QuestionRepositoryFirestoreImpl implements QuestionRepository {
      * Mark a question as being completed in the repository impl.
      *
      * @param questionId question id that was successfully completed
+     * @param difficulty the difficulty of the question completed
      */
     @Override
-    public void uploadCompletedQuestion(@NonNull String questionId) {
+    public void uploadCompletedQuestion(@NonNull String questionId, @NonNull QuestionDifficulty difficulty) {
         Map<Object, Object> data = new HashMap<>();
         data.put(QUESTION_ID_FIELD, FieldValue.arrayUnion(questionId));
 
         db.collection(COMPLETED_QUESTION_COLLECTION)
                 .document(user.getUid())
+                .set(data, SetOptions.merge());
+
+        //We also need to update the number of easy/med/hard questions the user has finished
+        String field;
+
+        if (difficulty.equals(QuestionDifficulty.EASY)) field = USER_STATS_NUM_EASY_FIELD;
+        else if (difficulty.equals(QuestionDifficulty.MEDIUM)) field = USER_STATS_NUM_MED_FIELD;
+        else field = USER_STATS_NUM_HARD_FIELD;
+
+        data = new HashMap<>();
+        data.put(field, FieldValue.increment(1));
+
+        db.collection(COMPLETED_QUESTION_COLLECTION)
+                .document(user.getUid())
+                .set(data, SetOptions.merge());
+    }
+
+    /**
+     * Get systems stats such as the number of questions in our datastore
+     *
+     * @param callback will be called upon completion of the query
+     */
+    @Override
+    public void getSystemStats(SystemStatsCallback callback) {
+        db.collection(STATS_COLLECTION)
+                .document(STATS_QUESTION_DOC)
+                .get()
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        DocumentSnapshot document = task.getResult();
+
+                        if (document != null){
+                            SystemStatsModel statsModel = new SystemStatsModel();
+
+                            if (document.contains(STATS_NUM_QUESTIONS_FIELD)){
+                                statsModel.setNumTotalQuestions(((Long) document.get(STATS_NUM_QUESTIONS_FIELD)).intValue());
+                            }
+
+                            callback.onSuccess(statsModel);
+                        }else {
+                            //todo: need to implement
+                            callback.onFailure("");
+                        }
+                    } else {
+                        //todo: need to implement
+                        callback.onFailure("");
+                        Log.w(TAG, "Error getting documents.", task.getException());
+                    }
+                });
+    }
+
+    /**
+     * Get user stats such as the number of easy/med/hard questions the user has finished
+     *
+     * @param callback will be called upon completion of the query
+     */
+    @Override
+    public void getUserStats(UserStatsCallback callback) {
+        db.collection(COMPLETED_QUESTION_COLLECTION)
+                .document(user.getUid())
+                .get()
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        DocumentSnapshot document = task.getResult();
+
+                        if (document != null){
+                            UserStatsModel statsModel = new UserStatsModel();
+
+                            if (document.contains(USER_STATS_NUM_EASY_FIELD)){
+                                statsModel.setNumEasyCompleted(((Long) document.get(USER_STATS_NUM_EASY_FIELD)).intValue());
+                            }
+
+                            if (document.contains(USER_STATS_NUM_MED_FIELD)){
+                                statsModel.setNumEasyCompleted(((Long) document.get(USER_STATS_NUM_MED_FIELD)).intValue());
+                            }
+
+                            if (document.contains(USER_STATS_NUM_HARD_FIELD)){
+                                statsModel.setNumEasyCompleted(((Long) document.get(USER_STATS_NUM_HARD_FIELD)).intValue());
+                            }
+
+                            callback.onSuccess(statsModel);
+                        }else {
+                            //todo: need to implement
+                            callback.onFailure("");
+                        }
+                    } else {
+                        //todo: need to implement
+                        callback.onFailure("");
+                        Log.w(TAG, "Error getting documents.", task.getException());
+                    }
+                });
+    }
+
+    private void incrementQuestionCount(){
+        Map<Object, Object> data = new HashMap<>();
+        data.put(STATS_NUM_QUESTIONS_FIELD, FieldValue.increment(1));
+
+        db.collection(STATS_COLLECTION)
+                .document(STATS_QUESTION_DOC)
+                .set(data, SetOptions.merge());
+    }
+
+    private void decrementQuestionCount(){
+        Map<Object, Object> data = new HashMap<>();
+        data.put(STATS_NUM_QUESTIONS_FIELD, FieldValue.increment(-1));
+
+        db.collection(STATS_COLLECTION)
+                .document(STATS_QUESTION_DOC)
                 .set(data, SetOptions.merge());
     }
 
