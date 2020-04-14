@@ -10,7 +10,7 @@ public enum ProgrammingLanguage {
 
     JAVA(1),
     PYTHON(2),
-    MD(3);
+    MARKDOWN(3);
 
     int code;
 

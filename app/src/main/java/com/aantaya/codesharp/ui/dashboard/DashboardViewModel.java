@@ -6,6 +6,8 @@ import androidx.lifecycle.ViewModel;
 
 import com.aantaya.codesharp.models.ProgressModel;
 
+import javax.annotation.Nullable;
+
 public class DashboardViewModel extends ViewModel {
 
     private MutableLiveData<ProgressModel> mTotalProgress;

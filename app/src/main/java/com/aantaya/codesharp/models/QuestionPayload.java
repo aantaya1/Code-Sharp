@@ -1,5 +1,7 @@
 package com.aantaya.codesharp.models;
 
+import com.aantaya.codesharp.enums.ProgrammingLanguage;
+
 import java.util.List;
 
 /**
@@ -13,6 +15,7 @@ import java.util.List;
  *
  */
 public class QuestionPayload {
+    private ProgrammingLanguage programmingLanguage;
     private String question;
     private List<String> hints;
     private List<String> wrongAnswers;
@@ -20,6 +23,22 @@ public class QuestionPayload {
 
     public QuestionPayload() {
         //blank constructor
+    }
+
+    public QuestionPayload(ProgrammingLanguage programmingLanguage, String question, List<String> hints, List<String> wrongAnswers, String answer) {
+        this.programmingLanguage = programmingLanguage;
+        this.question = question;
+        this.hints = hints;
+        this.wrongAnswers = wrongAnswers;
+        this.answer = answer;
+    }
+
+    public ProgrammingLanguage getProgrammingLanguage() {
+        return programmingLanguage;
+    }
+
+    public void setProgrammingLanguage(ProgrammingLanguage programmingLanguage) {
+        this.programmingLanguage = programmingLanguage;
     }
 
     public String getQuestion() {

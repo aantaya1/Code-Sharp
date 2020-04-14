@@ -5,6 +5,9 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -15,10 +18,12 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
-import androidx.lifecycle.ViewModelProviders;
 import androidx.preference.PreferenceManager;
 
 import com.aantaya.codesharp.R;
@@ -27,7 +32,6 @@ import com.aantaya.codesharp.models.QuestionModel;
 import com.aantaya.codesharp.models.QuestionPayload;
 import com.aantaya.codesharp.utils.IntentUtils;
 import com.aantaya.codesharp.utils.MyTextUtils;
-import com.facebook.shimmer.ShimmerFrameLayout;
 import com.github.ybq.android.spinkit.SpinKitView;
 
 import java.util.ArrayList;
@@ -73,6 +77,8 @@ public class AnswerFragment extends Fragment {
         mSubmitButton = root.findViewById(R.id.answer_submit_button);
         mScrollviewLayout = root.findViewById(R.id.scroll_view_layout);
         mLoadingAnimation = root.findViewById(R.id.loading_animation);
+
+        setHasOptionsMenu(true);
 
         return root;
     }
@@ -130,8 +136,7 @@ public class AnswerFragment extends Fragment {
                     return;
                 }
 
-                //todo: need to set this properly in payload...
-                mQuestionDescription.setText(MyTextUtils.getText(getContext(), R.string.question_description, "Select the best answer below and submit!"));
+                mQuestionDescription.setText(MyTextUtils.getText(getContext(), R.string.question_description, questionModel.getDescription()));
 
                 CodeView.OnHighlightListener listener = new CodeView.OnHighlightListener() {
                     @Override
@@ -166,30 +171,14 @@ public class AnswerFragment extends Fragment {
                 if (useDarkMode){
                     codeTheme = Theme.AGATE;
                 }else {
-                    codeTheme = Theme.SOLARIZED_LIGHT;
+                    codeTheme = Theme.ATELIER_LAKESIDE_LIGHT;
                 }
 
                 mCodeView.setOnHighlightListener(listener)
                         .setTheme(codeTheme)
-                        .setCode("public class HomeViewModel extends ViewModel {\n" +
-                                "\n" +
-                                "    private MutableLiveData<List<RecyclerViewQuestionItem>> mQuestionsLiveData;\n" +
-                                "    private QuestionRepository questionRepository;\n" +
-                                "\n" +
-                                "    public HomeViewModel() {}\n" +
-                                "\n" +
-                                "    public void init(){\n" +
-                                "        if (questionRepository != null){\n" +
-                                "            return;\n" +
-                                "        }\n" +
-                                "\n" +
-                                "        questionRepository = QuestionRepositoryFirestoreImpl.getInstance();\n" +
-                                "        mQuestionsLiveData = questionRepository.getQuestionsForRecycleView(null);\n" +
-                                "    }\n" +
-                                "\n" +
-                                "}")
-                        .setLanguage(Language.JAVA)
-                        .setWrapLine(false)
+                        .setCode(payload.getQuestion() + "\n")
+                        .setLanguage(Language.valueOf(payload.getProgrammingLanguage().toString().toUpperCase()))
+                        .setWrapLine(payload.getProgrammingLanguage().equals(ProgrammingLanguage.MARKDOWN))
                         .setFontSize(14)
                         .setZoomEnabled(false)
                         .setShowLineNumber(true)
@@ -248,6 +237,24 @@ public class AnswerFragment extends Fragment {
                 }
             }
         });
+    }
+
+    @Override
+    public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
+        inflater.inflate(R.menu.answer_menu, menu);
+        super.onCreateOptionsMenu(menu, inflater);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+
+        switch (item.getItemId()){
+            case R.id.answer_menu_skip:
+                mViewModel.loadNextQuestion();
+                break;
+        }
+
+        return super.onOptionsItemSelected(item);
     }
 
     private void displayLoading(){

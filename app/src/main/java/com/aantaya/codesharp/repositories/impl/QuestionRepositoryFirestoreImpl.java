@@ -1,6 +1,5 @@
 package com.aantaya.codesharp.repositories.impl;
 
-import android.util.ArraySet;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
@@ -12,12 +11,9 @@ import com.aantaya.codesharp.enums.QuestionType;
 import com.aantaya.codesharp.models.QuestionFilterConfig;
 import com.aantaya.codesharp.models.QuestionModel;
 import com.aantaya.codesharp.models.QuestionPayload;
-import com.aantaya.codesharp.models.RecyclerViewQuestionItem;
 import com.aantaya.codesharp.repositories.api.QuestionRepository;
 import com.aantaya.codesharp.repositories.callbacks.IdQueryCallback;
 import com.aantaya.codesharp.repositories.callbacks.QuestionQueryCallback;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -25,7 +21,6 @@ import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreSettings;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
-import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.firestore.SetOptions;
 
 import java.util.ArrayList;
@@ -34,7 +29,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Random;
 import java.util.Set;
 
 import javax.annotation.Nullable;
@@ -73,75 +67,6 @@ public class QuestionRepositoryFirestoreImpl implements QuestionRepository {
         }
 
         return questionRepository;
-    }
-
-    /**
-     * Get the ids for questions that match the given filter.
-     *
-     * @param filter a config object for filtering questions returned by the method or null to
-     *               return all question ids
-     * @return a set of ids that represent all of the questions in the datastore that match the
-     * given filter
-     */
-    public MutableLiveData<Set<String>> getQuestionIds(@Nullable QuestionFilterConfig filter) {
-
-        final MutableLiveData<Set<String>> data = new MutableLiveData<>();
-
-        if (filter == null || filter.includeCompletedQuestions()){
-            db.collection(QUESTION_COLLECTION)
-                    .get()
-                    .addOnCompleteListener(task -> {
-                        if (task.isSuccessful()) {
-                            Set<String> items = new HashSet<>();
-
-                            for (QueryDocumentSnapshot document : task.getResult()) {
-                                items.add(document.getId());
-                            }
-
-                            data.postValue(items);
-                        } else {
-                            Log.w(TAG, "Error getting documents.", task.getException());
-                        }
-                    });
-        }else {
-            db.collection(COMPLETED_QUESTION_COLLECTION)
-                    .document(user.getUid())
-                    .get()
-                    .addOnCompleteListener(task -> {
-                        if (task.isSuccessful()) {
-                            DocumentSnapshot document = task.getResult();
-                            List<String> ids = (document != null) ? (List<String>) document.get("question_ids") : new ArrayList<>();
-
-                            Set<String> completedQuestionIds = new HashSet<>();
-
-                            //add all of the completed question ids
-                            if (ids != null) completedQuestionIds.addAll(ids);
-
-                            db.collection(QUESTION_COLLECTION)
-                                    .get()
-                                    .addOnCompleteListener(task2 -> {
-                                        if (task2.isSuccessful()) {
-                                            Set<String> questionIds = new HashSet<>();
-
-                                            // only return the question ids that the user has not completed yet
-                                            for (QueryDocumentSnapshot document2 : task2.getResult()) {
-                                                if (!completedQuestionIds.contains(document2.getId())){
-                                                    questionIds.add(document2.getId());
-                                                }
-                                            }
-
-                                            data.postValue(questionIds);
-                                        } else {
-                                            Log.w(TAG, "Error getting documents.", task.getException());
-                                        }
-                                    });
-                        } else {
-                            Log.w(TAG, "Error getting documents.", task.getException());
-                        }
-                    });
-        }
-
-        return data;
     }
 
     /**
@@ -249,6 +174,9 @@ public class QuestionRepositoryFirestoreImpl implements QuestionRepository {
      * TODO: Remove/replace this with firebase API call
      */
     private void sendQuestionsToFirebase(){
+
+        String descriptionMultipleChoice = "Select the best answer to the question and submit.";
+
         List<QuestionModel> questionItems = new ArrayList<>();
 
         QuestionModel question;
@@ -256,6 +184,7 @@ public class QuestionRepositoryFirestoreImpl implements QuestionRepository {
         Map<String, QuestionPayload> map;
 
         questionPayload = new QuestionPayload();
+        questionPayload.setProgrammingLanguage(ProgrammingLanguage.MARKDOWN);
         questionPayload.setQuestion("How do you start an activity in Android?");
         questionPayload.setAnswer("Create a new intent with the current activity and the class of " +
                 "the destination activity. Then call startActivity() with that intent.");
@@ -267,11 +196,12 @@ public class QuestionRepositoryFirestoreImpl implements QuestionRepository {
                         "UI with a call to setContentView()")));
 
         map = new HashMap<>();
-        map.put(ProgrammingLanguage.JAVA.toString(), questionPayload);
+        map.put(ProgrammingLanguage.MARKDOWN.toString(), questionPayload);
 
         question = new QuestionModel();
         question.setQuestionPayloadMap(map);
         question.setQuestionTitle("Starting an Android Activity");
+        question.setDescription(descriptionMultipleChoice);
         question.setDifficulty(QuestionDifficulty.EASY);
         question.setQuestionType(QuestionType.TOPIC_QUESTION);
         question.setTags(new ArrayList<String>());
@@ -281,6 +211,7 @@ public class QuestionRepositoryFirestoreImpl implements QuestionRepository {
         //--------------------------------
 
         questionPayload = new QuestionPayload();
+        questionPayload.setProgrammingLanguage(ProgrammingLanguage.MARKDOWN);
         questionPayload.setQuestion("What are the Android Components?");
         questionPayload.setAnswer("Activities, Services, Broadcast Receivers, and Content Providers");
         questionPayload.setHints(new ArrayList<>(Arrays.asList("App components are the essential " +
@@ -292,11 +223,12 @@ public class QuestionRepositoryFirestoreImpl implements QuestionRepository {
                 "onCreate(), onResume(), onPause(), and onDestroy()")));
 
         map = new HashMap<>();
-        map.put(ProgrammingLanguage.JAVA.toString(), questionPayload);
+        map.put(ProgrammingLanguage.MARKDOWN.toString(), questionPayload);
 
         question = new QuestionModel();
         question.setQuestionPayloadMap(map);
         question.setQuestionTitle("Android Components");
+        question.setDescription(descriptionMultipleChoice);
         question.setDifficulty(QuestionDifficulty.EASY);
         question.setQuestionType(QuestionType.TOPIC_QUESTION);
         question.setTags(new ArrayList<String>());
@@ -306,6 +238,7 @@ public class QuestionRepositoryFirestoreImpl implements QuestionRepository {
         //----------------------------------
 
         questionPayload = new QuestionPayload();
+        questionPayload.setProgrammingLanguage(ProgrammingLanguage.MARKDOWN);
         questionPayload.setQuestion("How does the Java garbage collector know when to deallocate memory for a given object?");
         questionPayload.setAnswer("When an object is no longer referenced by any part of your program.");
         questionPayload.setHints(new ArrayList<>(Arrays.asList("Sometimes you should get rid of things " +
@@ -316,11 +249,12 @@ public class QuestionRepositoryFirestoreImpl implements QuestionRepository {
                 "When the JVM runs out of memory on the heap.")));
 
         map = new HashMap<>();
-        map.put(ProgrammingLanguage.JAVA.toString(), questionPayload);
+        map.put(ProgrammingLanguage.MARKDOWN.toString(), questionPayload);
 
         question = new QuestionModel();
         question.setQuestionPayloadMap(map);
         question.setQuestionTitle("Java Garbage Collection");
+        question.setDescription(descriptionMultipleChoice);
         question.setDifficulty(QuestionDifficulty.EASY);
         question.setQuestionType(QuestionType.TOPIC_QUESTION);
         question.setTags(new ArrayList<String>());

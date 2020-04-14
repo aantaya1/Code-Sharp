@@ -1,14 +1,11 @@
 package com.aantaya.codesharp;
 
-import androidx.appcompat.app.ActionBar;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
-import androidx.fragment.app.Fragment;
-
 import android.os.Bundle;
 
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+
 import com.aantaya.codesharp.ui.answer.AnswerFragment;
-import com.aantaya.codesharp.ui.home.HomeFragment;
 import com.aantaya.codesharp.utils.IntentUtils;
 
 public class AnswerActivity extends AppCompatActivity {
