@@ -36,6 +36,13 @@
             <include layout="@layout/questions_recyclerview_shimmer_placeholder"/>
             <include layout="@layout/questions_recyclerview_shimmer_placeholder"/>
             <include layout="@layout/questions_recyclerview_shimmer_placeholder"/>
+            <include layout="@layout/questions_recyclerview_shimmer_placeholder"/>
+            <include layout="@layout/questions_recyclerview_shimmer_placeholder"/>
+            <include layout="@layout/questions_recyclerview_shimmer_placeholder"/>
+            <include layout="@layout/questions_recyclerview_shimmer_placeholder"/>
+            <include layout="@layout/questions_recyclerview_shimmer_placeholder"/>
+            <include layout="@layout/questions_recyclerview_shimmer_placeholder"/>
+            <include layout="@layout/questions_recyclerview_shimmer_placeholder"/>
 
         </LinearLayout>
     </com.facebook.shimmer.ShimmerFrameLayout>

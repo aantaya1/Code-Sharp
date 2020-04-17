@@ -21,9 +21,7 @@ public class DashboardViewModel extends ViewModel {
     public static final int STATE_FAILED = 2;
 
     private MutableLiveData<ProgressModel> mTotalProgress = new MutableLiveData<>();
-    private MutableLiveData<Integer> mEasyCompleted = new MutableLiveData<>();
-    private MutableLiveData<Integer> mMediumCompleted = new MutableLiveData<>();
-    private MutableLiveData<Integer> mHardCompleted = new MutableLiveData<>();
+    private MutableLiveData<UserStatsModel> mUserStats = new MutableLiveData<>();
     private MutableLiveData<Integer> mTotalNumberOfQuestions = new MutableLiveData<>();
     private MutableLiveData<Integer> mState = new MutableLiveData<>();
 
@@ -49,9 +47,7 @@ public class DashboardViewModel extends ViewModel {
         questionRepo.getUserStats(new UserStatsCallback() {
             @Override
             public void onSuccess(UserStatsModel userStats) {
-                mEasyCompleted.setValue(userStats.getNumEasyCompleted());
-                mMediumCompleted.setValue(userStats.getNumMediumCompleted());
-                mHardCompleted.setValue(userStats.getNumHardCompleted());
+                mUserStats.setValue(userStats);
 
                 if (++completedQueries == totalQueries){
                     finishedInit();
@@ -88,7 +84,9 @@ public class DashboardViewModel extends ViewModel {
         //this should never happen
         if (completedQueries != totalQueries) return;
 
-        int totalCompleted = mEasyCompleted.getValue() + mMediumCompleted.getValue() + mHardCompleted.getValue();
+        UserStatsModel userStats = mUserStats.getValue();
+
+        int totalCompleted = userStats.getNumEasyCompleted() + userStats.getNumMediumCompleted() + userStats.getNumHardCompleted();
         mTotalProgress.setValue(new ProgressModel(totalCompleted, mTotalNumberOfQuestions.getValue()));
         mState.setValue(STATE_NORMAL);
     }
@@ -97,16 +95,8 @@ public class DashboardViewModel extends ViewModel {
         return mTotalProgress;
     }
 
-    public LiveData<Integer> getEasyCompleted() {
-        return mEasyCompleted;
-    }
-
-    public LiveData<Integer> getMediumCompleted() {
-        return mMediumCompleted;
-    }
-
-    public LiveData<Integer> getHardCompleted() {
-        return mHardCompleted;
+    public LiveData<UserStatsModel> getUserStats(){
+        return mUserStats;
     }
 
     public LiveData<Integer> getState(){

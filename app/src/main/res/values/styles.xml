@@ -6,6 +6,18 @@
         <item name="colorSecondary">@color/secondary</item>
         <item name="colorError">@color/error</item>
         <item name="android:textColor">?attr/colorOnBackground</item>
+        <item name="android:fontFamily">@font/montserrat</item>
+    </style>
+
+    <style name="ToolbarTheme" parent="Widget.MaterialComponents.Toolbar.Primary">
+        <item name="android:fontFamily">@font/montserrat</item>
+    </style>
+
+    <style name="FirebaseUI.AuthMethodPicker.Logo">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">0dp</item>
+        <item name="android:layout_gravity">center</item>
+        <item name="android:paddingTop">48dp</item>
     </style>
 
 </resources>

@@ -1,20 +1,31 @@
 package com.aantaya.codesharp.ui.dashboard;
 
+import android.content.Intent;
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.core.content.res.ResourcesCompat;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.aantaya.codesharp.R;
 import com.aantaya.codesharp.models.ProgressModel;
+import com.aantaya.codesharp.models.UserStatsModel;
+import com.aantaya.codesharp.ui.settings.SettingsActivity;
 import com.github.mikephil.charting.charts.PieChart;
 import com.github.mikephil.charting.components.Description;
 import com.github.mikephil.charting.data.PieData;
@@ -30,6 +41,8 @@ public class DashboardFragment extends Fragment {
 
     private DashboardViewModel mDashboardViewModel;
     private PieChart mTotalProgressChart;
+    private TextView mTotalProgressTextView;
+    private PieChart mDifficultyProgressChart;
     private TextView mEasyTotalText;
     private TextView mMediumTotalText;
     private TextView mHardTotalText;
@@ -40,11 +53,20 @@ public class DashboardFragment extends Fragment {
         View root = inflater.inflate(R.layout.fragment_dashboard, container, false);
 
         mTotalProgressChart = root.findViewById(R.id.dashboard_progress_pie_chart);
+        mTotalProgressTextView = root.findViewById(R.id.total_progress_textview);
+        mDifficultyProgressChart = root.findViewById(R.id.dashboard_difficulty_progress_pie_chart);
         mEasyTotalText = root.findViewById(R.id.dashboard_easy_total);
         mMediumTotalText = root.findViewById(R.id.dashboard_medium_total);
         mHardTotalText = root.findViewById(R.id.dashboard_hard_total);
         mDashboardLayout = root.findViewById(R.id.dashboard_layout);
         mLoadingAnimation = root.findViewById(R.id.loading_animation);
+
+        //This tells android that we have a options menu that we would like to render
+        // if we don't set this, the menu callbacks will not be called
+        setHasOptionsMenu(true);
+
+        Toolbar toolbar = root.findViewById(R.id.my_toolbar);
+        ((AppCompatActivity)getActivity()).setSupportActionBar(toolbar);
 
         return root;
     }
@@ -83,13 +105,15 @@ public class DashboardFragment extends Fragment {
                 //Set the values in the graph
                 List<PieEntry> progressEntries = new ArrayList<>();
                 progressEntries.add(new PieEntry(completed, "Completed", 0));
-                progressEntries.add(new PieEntry(total-completed, "Todo", 1));
+                if (total-completed != 0) progressEntries.add(new PieEntry(total-completed, "Todo", 1));
 
                 PieDataSet dataSet = new PieDataSet(progressEntries, "Total Progress");
 
                 PieData pieData = new PieData(dataSet);
-                dataSet.setColors(ColorTemplate.COLORFUL_COLORS);
+                dataSet.setColors(ColorTemplate.LIBERTY_COLORS);
                 dataSet.setDrawValues(false);//don't draw the actual values on the chart
+                Typeface typeface = ResourcesCompat.getFont(getActivity(), R.font.montserrat);
+                dataSet.setValueTypeface(typeface);
 
                 mTotalProgressChart.setData(pieData);
 
@@ -105,34 +129,40 @@ public class DashboardFragment extends Fragment {
                 chartDescription.setText("");
                 mTotalProgressChart.setDescription(chartDescription);
                 mTotalProgressChart.getLegend().setEnabled(false);
+                mTotalProgressChart.setHoleRadius(0.0f);
+                mTotalProgressChart.setDrawHoleEnabled(false);
 
-                // In the center of the chart, draw the text that breaks down the user's progress
-                // and again increase the font
-                mTotalProgressChart.setCenterText(completed + "/" + total + "\nSolved");
-                mTotalProgressChart.setCenterTextSize(16f);
+                mTotalProgressTextView.setText(completed + "/" + total + "\nSolved");
             }
         });
 
-        mDashboardViewModel.getEasyCompleted().observe(getViewLifecycleOwner(), new Observer<Integer>() {
+        mDashboardViewModel.getUserStats().observe(getViewLifecycleOwner(), new Observer<UserStatsModel>() {
             @Override
-            public void onChanged(Integer easy) {
-                mEasyTotalText.setText(easy + " Easy");
-            }
-        });
+            public void onChanged(UserStatsModel userStatsModel) {
+                mEasyTotalText.setText(userStatsModel.getNumEasyCompleted() + " Easy");
+                mMediumTotalText.setText(userStatsModel.getNumMediumCompleted() + " Medium");
+                mHardTotalText.setText(userStatsModel.getNumHardCompleted() + " Hard");
 
-        mDashboardViewModel.getMediumCompleted().observe(getViewLifecycleOwner(), new Observer<Integer>() {
-            @Override
-            public void onChanged(Integer med) {
-                mMediumTotalText.setText(med + " Medium");
+                
             }
         });
+    }
 
-        mDashboardViewModel.getHardCompleted().observe(getViewLifecycleOwner(), new Observer<Integer>() {
-            @Override
-            public void onChanged(Integer hard) {
-                mHardTotalText.setText(hard + " Hard");
-            }
-        });
+    @Override
+    public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
+        super.onCreateOptionsMenu(menu, inflater);
+        inflater.inflate(R.menu.dashboard_menu, menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        switch (item.getItemId()){
+            case R.id.action_more:
+                startActivity(new Intent(getContext(), SettingsActivity.class));
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
     }
 
     private void displayLoading(){
