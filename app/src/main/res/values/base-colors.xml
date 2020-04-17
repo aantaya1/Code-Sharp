@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="green">#32CD32</color>
+    <color name="easy">#32CD32</color>
     <color name="yellow">#FFFF00</color>
-    <color name="blue">#8C00FF</color>
-    <color name="red">#8B0000</color>
+    <color name="medium">#FFA500</color>
+    <color name="hard">#FF0000</color>
     <color name="black">#000000</color>
     <color name="white">#FFFFFF</color>
 

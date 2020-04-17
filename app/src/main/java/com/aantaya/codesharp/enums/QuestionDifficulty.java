@@ -40,13 +40,13 @@ public enum QuestionDifficulty {
     public static int getColor(QuestionDifficulty difficulty){
         switch (difficulty){
             case EASY:
-                return R.color.green;
+                return R.color.easy;
             case MEDIUM:
-                return R.color.yellow;
+                return R.color.medium;
             case HARD:
-                return R.color.red;
+                return R.color.hard;
             default:
-                return R.color.yellow;
+                return R.color.medium;
         }
     }
 }

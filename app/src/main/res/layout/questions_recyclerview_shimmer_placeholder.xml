@@ -12,7 +12,7 @@
         android:id="@+id/placeholder_image"
         android:layout_width="@dimen/recyclerview_question_difficulty_circle"
         android:layout_height="@dimen/recyclerview_question_difficulty_circle"
-        android:src="@drawable/circle_green"
+        android:src="@drawable/circle_easy"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />

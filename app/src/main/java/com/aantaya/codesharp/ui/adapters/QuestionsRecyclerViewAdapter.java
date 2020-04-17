@@ -14,7 +14,6 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.aantaya.codesharp.R;
 import com.aantaya.codesharp.enums.QuestionDifficulty;
 import com.aantaya.codesharp.models.RecyclerViewQuestionItem;
-import com.aantaya.codesharp.listeners.MyItemClickListener;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
@@ -63,16 +62,16 @@ public class QuestionsRecyclerViewAdapter extends RecyclerView.Adapter<Questions
     private void setDifficultyColor(ImageView imageView, QuestionDifficulty difficulty){
         switch (difficulty){
             case EASY:
-                imageView.setImageDrawable(contextWeakReference.get().getDrawable(R.drawable.circle_green));
+                imageView.setImageDrawable(contextWeakReference.get().getDrawable(R.drawable.circle_easy));
                 break;
             case MEDIUM:
-                imageView.setImageDrawable(contextWeakReference.get().getDrawable(R.drawable.circle_blue));
+                imageView.setImageDrawable(contextWeakReference.get().getDrawable(R.drawable.circle_medium));
                 break;
             case HARD:
-                imageView.setImageDrawable(contextWeakReference.get().getDrawable(R.drawable.circle_red));
+                imageView.setImageDrawable(contextWeakReference.get().getDrawable(R.drawable.circle_hard));
                 break;
             default:
-                imageView.setImageDrawable(contextWeakReference.get().getDrawable(R.drawable.circle_blue));
+                imageView.setImageDrawable(contextWeakReference.get().getDrawable(R.drawable.circle_medium));
                 break;
         }
     }
