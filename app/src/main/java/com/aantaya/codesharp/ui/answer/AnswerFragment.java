@@ -231,15 +231,14 @@ public class AnswerFragment extends Fragment {
                 TextView toastText = toastView.findViewById(R.id.custom_toast_text);
 
                 if (payload.getAnswer().equals(mSelectedAnswer)){
-
                     toastIcon.setImageDrawable(getResources().getDrawable(R.drawable.ic_correct));
-                    toastText.setText("Correct, good job!");
+                    toastText.setText(getResources().getString(R.string.correct_answer));
 
                     mViewModel.uploadCorrectQuestion(currentQuestion.getId(), currentQuestion.getDifficulty());
                     mViewModel.loadNextQuestion();
                 }else {
                     toastIcon.setImageDrawable(getResources().getDrawable(R.drawable.ic_wrong));
-                    toastText.setText("That's not right, try again.");
+                    toastText.setText(getResources().getString(R.string.incorrect_answer));
                 }
 
                 // Initiate the Toast instance.

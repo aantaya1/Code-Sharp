@@ -7,6 +7,8 @@
     <dimen name="recyclerview_question_difficulty_circle">24dp</dimen>
     <dimen name="recyclerview_question_difficulty_circle_outline">2dp</dimen>
 
+    <dimen name="feedback_toast_icon_width_height">50dp</dimen>
+
     <dimen name="margin_medium">16dp</dimen>
     <dimen name="margin_small">8dp</dimen>
     <dimen name="margin_xsmall">4dp</dimen>

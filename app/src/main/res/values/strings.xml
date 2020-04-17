@@ -47,4 +47,6 @@
     <string name="question_title"><b>Title:</b> %1$s</string>
     <string name="question_description"><b>Description:</b> %1$s</string>
     <string name="question_submit_button">Submit</string>
+    <string name="correct_answer">Correct, good job!</string>
+    <string name="incorrect_answer">Incorrect, try again.</string>
 </resources>
