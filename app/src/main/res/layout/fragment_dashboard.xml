@@ -40,44 +40,52 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/my_toolbar">
 
-        <TextView
-            android:id="@+id/dashboard_easy_total"
+        <LinearLayout
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:background="@drawable/rounded_corner_easy_question"
-            android:gravity="center_horizontal"
-            android:text="5 Easy"
-            android:textColor="@color/white"
-            app:layout_constraintBottom_toTopOf="@+id/guideline6"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="@+id/guideline5"
-            app:layout_constraintTop_toTopOf="@+id/guideline4" />
-
-        <TextView
-            android:id="@+id/dashboard_medium_total"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:background="@drawable/rounded_corner_med_question"
-            android:gravity="center_horizontal"
-            android:text="10 Medium"
-            android:textColor="@color/white"
-            app:layout_constraintBottom_toTopOf="@+id/guideline7"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="@+id/guideline5"
-            app:layout_constraintTop_toTopOf="@+id/guideline6" />
-
-        <TextView
-            android:id="@+id/dashboard_hard_total"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:background="@drawable/rounded_corner_hard_question"
-            android:gravity="center_horizontal"
-            android:text="10 Hard"
-            android:textColor="@color/white"
+            android:layout_height="0dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="@+id/guideline5"
-            app:layout_constraintTop_toTopOf="@+id/guideline7" />
+            app:layout_constraintTop_toTopOf="@+id/guideline4"
+            android:orientation="vertical"
+            android:gravity="center_vertical">
+
+            <TextView
+                android:id="@+id/dashboard_easy_total"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/margin_small"
+                android:layout_marginBottom="@dimen/margin_small"
+                android:background="@drawable/rounded_corner_easy_question"
+                android:gravity="center_horizontal"
+                android:text="5 Easy"
+                android:textColor="@color/white" />
+
+            <TextView
+                android:id="@+id/dashboard_medium_total"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/margin_small"
+                android:layout_marginBottom="@dimen/margin_small"
+                android:background="@drawable/rounded_corner_med_question"
+                android:gravity="center_horizontal"
+                android:text="10 Medium"
+                android:textColor="@color/white" />
+
+            <TextView
+                android:id="@+id/dashboard_hard_total"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/margin_small"
+                android:layout_marginBottom="@dimen/margin_small"
+                android:background="@drawable/rounded_corner_hard_question"
+                android:gravity="center_horizontal"
+                android:text="10 Hard"
+                android:textColor="@color/white" />
+
+        </LinearLayout>
+
+
 
         <androidx.constraintlayout.widget.Guideline
             android:id="@+id/guideline5"

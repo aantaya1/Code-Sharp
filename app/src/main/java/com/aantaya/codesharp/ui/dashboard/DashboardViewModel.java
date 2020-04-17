@@ -49,6 +49,9 @@ public class DashboardViewModel extends ViewModel {
             public void onSuccess(UserStatsModel userStats) {
                 mUserStats.setValue(userStats);
 
+                //uncomment for testing
+//                mUserStats.setValue(new UserStatsModel(10, 5, 3));
+
                 if (++completedQueries == totalQueries){
                     finishedInit();
                 }
@@ -63,7 +66,11 @@ public class DashboardViewModel extends ViewModel {
         questionRepo.getSystemStats(new SystemStatsCallback() {
             @Override
             public void onSuccess(SystemStatsModel stats) {
+
                 mTotalNumberOfQuestions.setValue(stats.getNumTotalQuestions());
+
+                //uncomment for testing
+//                mTotalNumberOfQuestions.setValue(46);
 
                 if (++completedQueries == totalQueries){
                     finishedInit();
