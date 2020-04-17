@@ -127,7 +127,7 @@ public class AnswerFragment extends Fragment {
             @SuppressLint("ClickableViewAccessibility")
             @Override
             public void onChanged(QuestionModel questionModel) {
-                mQuestionTitle.setText(MyTextUtils.getText(getContext(), R.string.question_title, questionModel.getQuestionTitle()));
+                mQuestionTitle.setText(questionModel.getQuestionTitle());
 
                 QuestionPayload payload = QuestionModel.getPayloadWithPreferredLanguage(questionModel, getContext());
 
@@ -138,7 +138,7 @@ public class AnswerFragment extends Fragment {
                     return;
                 }
 
-                mQuestionDescription.setText(MyTextUtils.getText(getContext(), R.string.question_description, questionModel.getDescription()));
+                mQuestionDescription.setText(questionModel.getDescription());
 
                 CodeView.OnHighlightListener listener = new CodeView.OnHighlightListener() {
                     @Override
