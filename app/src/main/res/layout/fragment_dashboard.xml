@@ -79,6 +79,7 @@
                 android:layout_marginTop="@dimen/margin_small"
                 android:layout_marginBottom="@dimen/margin_small"
                 android:background="@drawable/rounded_corner_hard_question"
+                android:fontFamily="@font/montserrat"
                 android:gravity="center_horizontal"
                 android:text="10 Hard"
                 android:textColor="@color/white" />

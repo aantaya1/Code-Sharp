@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -11,6 +12,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
@@ -224,17 +226,29 @@ public class AnswerFragment extends Fragment {
                 //todo: we should make sure we handle NPE
                 QuestionPayload payload = QuestionModel.getPayloadWithPreferredLanguage(currentQuestion, getContext());
 
+                View toastView = getLayoutInflater().inflate(R.layout.question_feedback_toast_layout, null);
+                ImageView toastIcon = toastView.findViewById(R.id.custom_toast_icon);
+                TextView toastText = toastView.findViewById(R.id.custom_toast_text);
+
                 if (payload.getAnswer().equals(mSelectedAnswer)){
-                    //todo: update the user's correct answers
-                    //todo: display something better than a toast
-                    //https://www.dev2qa.com/android-custom-toast-example/
-                    Toast.makeText(getContext(), "Correct!", Toast.LENGTH_SHORT).show();
+
+                    toastIcon.setImageDrawable(getResources().getDrawable(R.drawable.ic_correct));
+                    toastText.setText("Correct, good job!");
+
                     mViewModel.uploadCorrectQuestion(currentQuestion.getId(), currentQuestion.getDifficulty());
                     mViewModel.loadNextQuestion();
                 }else {
-                    //todo: display something better than a toast
-                    Toast.makeText(getContext(), "Incorrect!", Toast.LENGTH_SHORT).show();
+                    toastIcon.setImageDrawable(getResources().getDrawable(R.drawable.ic_wrong));
+                    toastText.setText("That's not right, try again.");
                 }
+
+                // Initiate the Toast instance.
+                Toast toast = new Toast(getContext());
+                // Set custom view in toast.
+                toast.setView(toastView);
+                toast.setDuration(Toast.LENGTH_SHORT);
+                toast.setGravity(Gravity.CENTER, 0,0);
+                toast.show();
             }
         });
     }
