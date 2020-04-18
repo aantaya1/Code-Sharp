@@ -27,6 +27,8 @@
         android:indeterminate="true"
         app:SpinKit_Color="@color/colorAccent"/>
 
+
+
     <ScrollView
         android:id="@+id/scroll_view_layout"
         android:layout_width="match_parent"

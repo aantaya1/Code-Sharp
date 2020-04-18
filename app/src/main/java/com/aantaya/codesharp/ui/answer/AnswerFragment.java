@@ -20,10 +20,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.preference.PreferenceManager;
@@ -33,8 +30,8 @@ import com.aantaya.codesharp.enums.ProgrammingLanguage;
 import com.aantaya.codesharp.models.QuestionModel;
 import com.aantaya.codesharp.models.QuestionPayload;
 import com.aantaya.codesharp.utils.IntentUtils;
-import com.aantaya.codesharp.utils.MyTextUtils;
 import com.github.ybq.android.spinkit.SpinKitView;
+import com.google.android.material.button.MaterialButton;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -199,10 +196,12 @@ public class AnswerFragment extends Fragment {
 
                 for (String response : possibleResponses){
                     //set the properties for button
-                    Button btnTag = new Button(getContext());
+                    MaterialButton btnTag = new MaterialButton(getContext(), null, R.attr.materialButtonOutlinedStyle);
                     btnTag.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT));
+                    btnTag.setTransformationMethod(null);
                     btnTag.setText(response);
                     btnTag.setId(i++);
+
                     btnTag.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View view) {

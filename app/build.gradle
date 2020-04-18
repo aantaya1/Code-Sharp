@@ -34,10 +34,10 @@ dependencies {
 
     // General Android UI/SDK Dependencies
     implementation 'androidx.appcompat:appcompat:1.1.0'
-    implementation 'androidx.navigation:navigation-fragment:2.2.1'
-    implementation 'androidx.navigation:navigation-ui:2.2.1'
+    implementation 'androidx.navigation:navigation-fragment:2.2.2'
+    implementation 'androidx.navigation:navigation-ui:2.2.2'
     implementation 'androidx.lifecycle:lifecycle-extensions:2.2.0'
-    implementation 'androidx.preference:preference:1.1.0'
+    implementation 'androidx.preference:preference:1.1.1'
 
     //Android UI Dependencies
     implementation 'com.google.android.material:material:1.1.0'
