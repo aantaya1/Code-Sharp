@@ -34,7 +34,9 @@ import com.github.ybq.android.spinkit.SpinKitView;
 import com.google.android.material.button.MaterialButton;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import br.tiagohm.codeview.CodeView;
 import br.tiagohm.codeview.Language;
@@ -59,6 +61,8 @@ public class AnswerFragment extends Fragment {
 
     private String mSelectedAnswer = "";
 
+    private Set<View> mAnswerButtonViews;
+
     public static AnswerFragment newInstance() {
         return new AnswerFragment();
     }
@@ -76,6 +80,8 @@ public class AnswerFragment extends Fragment {
         mSubmitButton = root.findViewById(R.id.answer_submit_button);
         mScrollviewLayout = root.findViewById(R.id.scroll_view_layout);
         mLoadingAnimation = root.findViewById(R.id.loading_animation);
+
+        mAnswerButtonViews = new HashSet<>();
 
         setHasOptionsMenu(true);
 
@@ -196,15 +202,25 @@ public class AnswerFragment extends Fragment {
 
                 for (String response : possibleResponses){
                     //set the properties for button
-                    MaterialButton btnTag = new MaterialButton(getContext(), null, R.attr.materialButtonOutlinedStyle);
-                    btnTag.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT));
+                    MaterialButton btnTag = new MaterialButton(getContext(), null,
+                            R.attr.materialButtonOutlinedStyle);
+
+                    btnTag.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,
+                            LinearLayout.LayoutParams.WRAP_CONTENT));
                     btnTag.setTransformationMethod(null);
                     btnTag.setText(response);
                     btnTag.setId(i++);
 
+                    mAnswerButtonViews.add(btnTag);
+
                     btnTag.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View view) {
+
+                            //todo: need to figutre thus out
+//                            for (View v : mAnswerButtonViews) v.setBackgroundColor(R.attr);
+
+                            view.setBackgroundColor(R.attr.colorOnBackground);
                             mSelectedAnswer = ((Button) view).getText().toString();
                         }
                     });
