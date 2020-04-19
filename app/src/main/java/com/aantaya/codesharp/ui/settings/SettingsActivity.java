@@ -55,13 +55,10 @@ public class SettingsActivity extends AppCompatActivity {
 
             SwitchPreferenceCompat darkModePreference = findPreference("dark_mode");
             if (darkModePreference != null) {
-                darkModePreference.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
-                    @Override
-                    public boolean onPreferenceChange(Preference preference, Object newValue) {
-                        boolean useDarkMode = (Boolean) newValue;
-                        ThemeHelper.applyTheme(useDarkMode);
-                        return true;
-                    }
+                darkModePreference.setOnPreferenceChangeListener((preference, newValue) -> {
+                    boolean useDarkMode = (Boolean) newValue;
+                    ThemeHelper.applyTheme(useDarkMode);
+                    return true;
                 });
             }
 
@@ -69,23 +66,18 @@ public class SettingsActivity extends AppCompatActivity {
             // Firebase AuthUI to handle of the redirection and UI things
             Preference signOut = findPreference("sign_out");
             if (signOut != null){
-                signOut.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
-                    @Override
-                    public boolean onPreferenceClick(Preference preference) {
-                        AuthUI.getInstance()
-                                .signOut(getContext())
-                                .addOnCompleteListener(new OnCompleteListener<Void>() {
-                                    public void onComplete(@NonNull Task<Void> task) {
-                                        // user is now signed out
-                                        startActivity(new Intent(getContext(), LoginActivity.class));
-                                        if (getActivity() != null){
-                                            getActivity().finish();
-                                        }
-                                    }
-                                });
+                signOut.setOnPreferenceClickListener(preference -> {
+                    AuthUI.getInstance()
+                            .signOut(getContext())
+                            .addOnCompleteListener(task -> {
+                                // user is now signed out
+                                startActivity(new Intent(getContext(), LoginActivity.class));
+                                if (getActivity() != null){
+                                    getActivity().finish();
+                                }
+                            });
 
-                        return false;
-                    }
+                    return false;
                 });
             }
         }

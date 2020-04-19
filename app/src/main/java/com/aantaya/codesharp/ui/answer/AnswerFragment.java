@@ -92,162 +92,149 @@ public class AnswerFragment extends Fragment {
         String initialQuestionId = (getArguments() != null) ? getArguments().getString(IntentUtils.CLICKED_QUESTION_ID_EXTRA) : null;
         mViewModel.init(initialQuestionId);
 
-        mViewModel.getState().observe(getViewLifecycleOwner(), new Observer<Integer>() {
-            @Override
-            public void onChanged(Integer state) {
-                switch (state){
-                    case STATE_NORMAL:
-                        hideLoading();
-                        break;
-                    case STATE_LOADING:
-                        displayLoading();
-                        break;
-                    case STATE_COMPLETED_ALL_QUESTIONS:
-                        //todo: need to create a custom toast for this
+        mViewModel.getState().observe(getViewLifecycleOwner(), state -> {
+            switch (state){
+                case STATE_NORMAL:
+                    hideLoading();
+                    break;
+                case STATE_LOADING:
+                    displayLoading();
+                    break;
+                case STATE_COMPLETED_ALL_QUESTIONS:
+                    //todo: need to create a custom toast for this
 
-                        //Once the user has finished all the questions finish the activity
-                        getActivity().finish();
-                        break;
-                    case STATE_FAILED:
-                        //todo: need to implement
-                        Toast.makeText(getContext(), "State Failed!", Toast.LENGTH_LONG).show();
-                        break;
-                }
+                    //Once the user has finished all the questions finish the activity
+                    getActivity().finish();
+                    break;
+                case STATE_FAILED:
+                    //todo: need to implement
+                    Toast.makeText(getContext(), "State Failed!", Toast.LENGTH_LONG).show();
+                    break;
             }
         });
 
-        mViewModel.getQuestion().observe(getViewLifecycleOwner(), new Observer<QuestionModel>() {
-            @SuppressLint("ClickableViewAccessibility")
-            @Override
-            public void onChanged(QuestionModel questionModel) {
-                mQuestionTitle.setText(questionModel.getQuestionTitle());
+        mViewModel.getQuestion().observe(getViewLifecycleOwner(), questionModel -> {
+            mQuestionTitle.setText(questionModel.getQuestionTitle());
 
-                QuestionPayload payload = QuestionModel.getPayloadWithPreferredLanguage(questionModel, getContext());
+            QuestionPayload payload = QuestionModel.getPayloadWithPreferredLanguage(questionModel, getContext());
 
-                if (payload == null) {
-                    //This should never happen but if it does...
-                    //todo: display a msg to user that something went wrong
-                    mViewModel.loadNextQuestion();
-                    return;
+            if (payload == null) {
+                //This should never happen but if it does...
+                //todo: display a msg to user that something went wrong
+                mViewModel.loadNextQuestion();
+                return;
+            }
+
+            mQuestionDescription.setText(questionModel.getDescription());
+
+            CodeView.OnHighlightListener listener = new CodeView.OnHighlightListener() {
+                @Override
+                public void onStartCodeHighlight() {
+
                 }
 
-                mQuestionDescription.setText(questionModel.getDescription());
+                @Override
+                public void onFinishCodeHighlight() {
 
-                CodeView.OnHighlightListener listener = new CodeView.OnHighlightListener() {
-                    @Override
-                    public void onStartCodeHighlight() {
-
-                    }
-
-                    @Override
-                    public void onFinishCodeHighlight() {
-
-                    }
-
-                    @Override
-                    public void onLanguageDetected(Language language, int i) {
-
-                    }
-
-                    @Override
-                    public void onFontSizeChanged(int i) {
-
-                    }
-
-                    @Override
-                    public void onLineClicked(int i, String s) {
-
-                    }
-                };
-
-                SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
-                boolean useDarkMode = prefs.getBoolean("dark_mode", true);
-                Theme codeTheme;
-                if (useDarkMode){
-                    codeTheme = Theme.AGATE;
-                }else {
-                    codeTheme = Theme.ATELIER_LAKESIDE_LIGHT;
                 }
 
-                mCodeView.setOnHighlightListener(listener)
-                        .setTheme(codeTheme)
-                        .setCode(payload.getQuestion() + "\n")
-                        .setLanguage(Language.valueOf(payload.getProgrammingLanguage().toString().toUpperCase()))
-                        .setWrapLine(payload.getProgrammingLanguage().equals(ProgrammingLanguage.MARKDOWN))
-                        .setFontSize(14)
-                        .setZoomEnabled(false)
-                        .setShowLineNumber(true)
-                        .setStartLineNumber(1)
-                        .apply();
+                @Override
+                public void onLanguageDetected(Language language, int i) {
 
-                int i=0;
-
-                List<String> possibleResponses = new ArrayList<>();
-                possibleResponses.add(payload.getAnswer());
-                possibleResponses.addAll(payload.getWrongAnswers());
-
-                //It is very important that we remove all of the buttons
-                // from the prev question!
-                mQuestionAnswersContainer.removeAllViews();
-
-                for (String response : possibleResponses){
-
-                    //set the properties for button
-                    MaterialRadioButton btnTag = new MaterialRadioButton(getContext());
-
-                    btnTag.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,
-                            LinearLayout.LayoutParams.WRAP_CONTENT));
-                    btnTag.setTransformationMethod(null);
-                    btnTag.setText(response);
-                    btnTag.setId(i++);
-
-                    btnTag.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View view) {
-                            //todo: do i need to do anything else?
-                            mSelectedAnswer = ((MaterialRadioButton) view).getText().toString();
-                        }
-                    });
-
-                    mQuestionAnswersContainer.addView(btnTag);
                 }
+
+                @Override
+                public void onFontSizeChanged(int i) {
+
+                }
+
+                @Override
+                public void onLineClicked(int i, String s) {
+
+                }
+            };
+
+            SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
+            boolean useDarkMode = prefs.getBoolean("dark_mode", true);
+            Theme codeTheme;
+            if (useDarkMode){
+                codeTheme = Theme.AGATE;
+            }else {
+                codeTheme = Theme.ATELIER_LAKESIDE_LIGHT;
+            }
+
+            mCodeView.setOnHighlightListener(listener)
+                    .setTheme(codeTheme)
+                    .setCode(payload.getQuestion() + "\n")
+                    .setLanguage(Language.valueOf(payload.getProgrammingLanguage().toString().toUpperCase()))
+                    .setWrapLine(payload.getProgrammingLanguage().equals(ProgrammingLanguage.MARKDOWN))
+                    .setFontSize(14)
+                    .setZoomEnabled(false)
+                    .setShowLineNumber(true)
+                    .setStartLineNumber(1)
+                    .apply();
+
+            int i=0;
+
+            List<String> possibleResponses = new ArrayList<>();
+            possibleResponses.add(payload.getAnswer());
+            possibleResponses.addAll(payload.getWrongAnswers());
+
+            //It is very important that we remove all of the buttons
+            // from the prev question!
+            mQuestionAnswersContainer.removeAllViews();
+
+            for (String response : possibleResponses){
+
+                //set the properties for button
+                MaterialRadioButton btnTag = new MaterialRadioButton(getContext());
+
+                btnTag.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,
+                        LinearLayout.LayoutParams.WRAP_CONTENT));
+                btnTag.setTransformationMethod(null);
+                btnTag.setText(response);
+                btnTag.setId(i++);
+
+                btnTag.setOnClickListener(view -> {
+                    //todo: do i need to do anything else?
+                    mSelectedAnswer = ((MaterialRadioButton) view).getText().toString();
+                });
+
+                mQuestionAnswersContainer.addView(btnTag);
             }
         });
 
         //Set an onclick listener because we can't use the onclick xml attribute for
         // buttons inside of Fragments
-        mSubmitButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
+        mSubmitButton.setOnClickListener(v -> {
 
-                QuestionModel currentQuestion = mViewModel.getQuestion().getValue();
+            QuestionModel currentQuestion = mViewModel.getQuestion().getValue();
 
-                //todo: we should make sure we handle NPE
-                QuestionPayload payload = QuestionModel.getPayloadWithPreferredLanguage(currentQuestion, getContext());
+            //todo: we should make sure we handle NPE
+            QuestionPayload payload = QuestionModel.getPayloadWithPreferredLanguage(currentQuestion, getContext());
 
-                View toastView = getLayoutInflater().inflate(R.layout.question_feedback_toast_layout, null);
-                ImageView toastIcon = toastView.findViewById(R.id.custom_toast_icon);
-                TextView toastText = toastView.findViewById(R.id.custom_toast_text);
+            View toastView = getLayoutInflater().inflate(R.layout.question_feedback_toast_layout, null);
+            ImageView toastIcon = toastView.findViewById(R.id.custom_toast_icon);
+            TextView toastText = toastView.findViewById(R.id.custom_toast_text);
 
-                if (payload.getAnswer().equals(mSelectedAnswer)){
-                    toastIcon.setImageDrawable(getResources().getDrawable(R.drawable.ic_correct));
-                    toastText.setText(getResources().getString(R.string.correct_answer));
+            if (payload.getAnswer().equals(mSelectedAnswer)){
+                toastIcon.setImageDrawable(getResources().getDrawable(R.drawable.ic_correct));
+                toastText.setText(getResources().getString(R.string.correct_answer));
 
-                    mViewModel.uploadCorrectQuestion(currentQuestion.getId(), currentQuestion.getDifficulty());
-                    mViewModel.loadNextQuestion();
-                }else {
-                    toastIcon.setImageDrawable(getResources().getDrawable(R.drawable.ic_wrong));
-                    toastText.setText(getResources().getString(R.string.incorrect_answer));
-                }
-
-                // Initiate the Toast instance.
-                Toast toast = new Toast(getContext());
-                // Set custom view in toast.
-                toast.setView(toastView);
-                toast.setDuration(Toast.LENGTH_SHORT);
-                toast.setGravity(Gravity.CENTER, 0,0);
-                toast.show();
+                mViewModel.uploadCorrectQuestion(currentQuestion.getId(), currentQuestion.getDifficulty());
+                mViewModel.loadNextQuestion();
+            }else {
+                toastIcon.setImageDrawable(getResources().getDrawable(R.drawable.ic_wrong));
+                toastText.setText(getResources().getString(R.string.incorrect_answer));
             }
+
+            // Initiate the Toast instance.
+            Toast toast = new Toast(getContext());
+            // Set custom view in toast.
+            toast.setView(toastView);
+            toast.setDuration(Toast.LENGTH_SHORT);
+            toast.setGravity(Gravity.CENTER, 0,0);
+            toast.show();
         });
     }
 

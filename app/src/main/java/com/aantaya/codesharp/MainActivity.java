@@ -29,12 +29,9 @@ public class MainActivity extends AppCompatActivity {
         //Setup the bottom navigation draws
         BottomNavigationView navView = findViewById(R.id.nav_view);
 
-        navView.setOnNavigationItemReselectedListener(new BottomNavigationView.OnNavigationItemReselectedListener() {
-            @Override
-            public void onNavigationItemReselected(@NonNull MenuItem item) {
-                // Do nothing. We don't want to re-load the fragment every time the
-                // user clicks the menu item and they are already on that fragment.
-            }
+        navView.setOnNavigationItemReselectedListener(item -> {
+            // Do nothing. We don't want to re-load the fragment every time the
+            // user clicks the menu item and they are already on that fragment.
         });
 
         NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment);

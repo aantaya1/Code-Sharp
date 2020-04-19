@@ -78,131 +78,122 @@ public class DashboardFragment extends Fragment {
         mDashboardViewModel = new ViewModelProvider(this).get(DashboardViewModel.class);
         mDashboardViewModel.init();
 
-        mDashboardViewModel.getState().observe(getViewLifecycleOwner(), new Observer<Integer>() {
-            @Override
-            public void onChanged(Integer state) {
-                switch (state){
-                    case DashboardViewModel.STATE_NORMAL:
-                        hideLoading();
-                        break;
-                    case DashboardViewModel.STATE_LOADING:
-                        displayLoading();
-                        break;
-                    case DashboardViewModel.STATE_FAILED:
-                        //todo: need to implement
-                        break;
-                }
+        mDashboardViewModel.getState().observe(getViewLifecycleOwner(), state -> {
+            switch (state){
+                case DashboardViewModel.STATE_NORMAL:
+                    hideLoading();
+                    break;
+                case DashboardViewModel.STATE_LOADING:
+                    displayLoading();
+                    break;
+                case DashboardViewModel.STATE_FAILED:
+                    //todo: need to implement
+                    break;
             }
         });
 
-        mDashboardViewModel.getTotalProgress().observe(getViewLifecycleOwner(), new Observer<ProgressModel>() {
-            @Override
-            public void onChanged(ProgressModel progressModel) {
+        mDashboardViewModel.getTotalProgress().observe(getViewLifecycleOwner(), progressModel -> {
 
-                int completed = progressModel.getNumCompleted();
-                int total = progressModel.getTotal();
+            int completed = progressModel.getNumCompleted();
+            int total = progressModel.getTotal();
 
-                //Set the values in the graph
-                List<PieEntry> progressEntries = new ArrayList<>();
-                progressEntries.add(new PieEntry(completed, "Completed", 0));
-                if (total-completed != 0) progressEntries.add(new PieEntry(total-completed, "", 1));
+            //Set the values in the graph
+            List<PieEntry> progressEntries = new ArrayList<>();
+            progressEntries.add(new PieEntry(completed, "Completed", 0));
+            if (total-completed != 0) progressEntries.add(new PieEntry(total-completed, "", 1));
 
-                PieDataSet dataSet = new PieDataSet(progressEntries, "Total Progress");
+            PieDataSet dataSet = new PieDataSet(progressEntries, "Total Progress");
 
-                PieData pieData = new PieData(dataSet);
-                dataSet.setColors(ColorTemplate.LIBERTY_COLORS);
-                dataSet.setDrawValues(false);//don't draw the actual values on the chart
-                //todo: for some reason this font is not being displayed properly
-                Typeface typeface = ResourcesCompat.getFont(getActivity(), R.font.montserrat);
-                dataSet.setValueTypeface(typeface);
+            PieData pieData = new PieData(dataSet);
+            dataSet.setColors(ColorTemplate.LIBERTY_COLORS);
+            dataSet.setDrawValues(false);//don't draw the actual values on the chart
+            //todo: for some reason this font is not being displayed properly
+            Typeface typeface = ResourcesCompat.getFont(getActivity(), R.font.montserrat);
+            dataSet.setValueTypeface(typeface);
 
-                mTotalProgressChart.setData(pieData);
+            mTotalProgressChart.setData(pieData);
 
-                //----------- Pie Chart configurations -------------------//
-                // Add an animation to make the pie chart load slowly (looks koool)
-                mTotalProgressChart.animateXY(2000, 2000);
+            //----------- Pie Chart configurations -------------------//
+            // Add an animation to make the pie chart load slowly (looks koool)
+            mTotalProgressChart.animateXY(2000, 2000);
 
-                // Make the labels text size larger than the default
-                mTotalProgressChart.setEntryLabelTextSize(16f);
+            // Make the labels text size larger than the default
+            mTotalProgressChart.setEntryLabelTextSize(16f);
 
-                // Remove the description and legend
-                Description chartDescription = new Description();
-                chartDescription.setText("");
-                mTotalProgressChart.setDescription(chartDescription);
-                mTotalProgressChart.getLegend().setEnabled(false);
-                mTotalProgressChart.setHoleRadius(0.0f);
-                mTotalProgressChart.setDrawHoleEnabled(false);
+            // Remove the description and legend
+            Description chartDescription = new Description();
+            chartDescription.setText("");
+            mTotalProgressChart.setDescription(chartDescription);
+            mTotalProgressChart.getLegend().setEnabled(false);
+            mTotalProgressChart.setHoleRadius(0.0f);
+            mTotalProgressChart.setDrawHoleEnabled(false);
 
-                mTotalProgressTextView.setText(completed + "/" + total + "\nSolved");
-            }
+            mTotalProgressTextView.setText(completed + "/" + total + "\nSolved");
         });
 
-        mDashboardViewModel.getUserStats().observe(getViewLifecycleOwner(), new Observer<UserStatsModel>() {
-            @Override
-            public void onChanged(UserStatsModel userStatsModel) {
+        mDashboardViewModel.getUserStats().observe(getViewLifecycleOwner(), userStatsModel -> {
 
-                int numEasy = userStatsModel.getNumEasyCompleted();
-                int numMed = userStatsModel.getNumMediumCompleted();
-                int numHard = userStatsModel.getNumHardCompleted();
+            int numEasy = userStatsModel.getNumEasyCompleted();
+            int numMed = userStatsModel.getNumMediumCompleted();
+            int numHard = userStatsModel.getNumHardCompleted();
 
-                mEasyTotalText.setText(numEasy + " Easy");
-                mMediumTotalText.setText(numMed + " Medium");
-                mHardTotalText.setText(numHard + " Hard");
+            mEasyTotalText.setText(numEasy + " Easy");
+            mMediumTotalText.setText(numMed + " Medium");
+            mHardTotalText.setText(numHard + " Hard");
 
-                Resources res = getResources();
+            Resources res = getResources();
 
-                int easyColor = res.getColor(R.color.easy);
-                int medColor = res.getColor(R.color.medium);
-                int hardColor = res.getColor(R.color.hard);
+            int easyColor = res.getColor(R.color.easy);
+            int medColor = res.getColor(R.color.medium);
+            int hardColor = res.getColor(R.color.hard);
 
-                List<Integer> colors = new ArrayList<>();
-                List<PieEntry> entries = new ArrayList<>();
-                int idx = 0;
+            List<Integer> colors = new ArrayList<>();
+            List<PieEntry> entries = new ArrayList<>();
+            int idx = 0;
 
-                //We only want to add entries that have > 0 completed or
-                // else the colors will not match up
-                if (numEasy != 0){
-                    colors.add(easyColor);
-                    entries.add(new PieEntry(numEasy, "", idx++));
-                }
-                if (numMed != 0){
-                    colors.add(medColor);
-                    entries.add(new PieEntry(numMed, "", idx++));
-                }
-                if (numHard != 0){
-                    colors.add(hardColor);
-                    entries.add(new PieEntry(numHard, "", idx++));
-                }
-
-                //The API can't take an array of Integer (need to convert to array int)
-                int[] colorInts = new int[colors.size()];
-                for (int i=0; i< colorInts.length; i++){
-                    colorInts[i] = colors.get(i);
-                }
-
-                PieDataSet dataSet = new PieDataSet(entries, "");
-
-                PieData pieData = new PieData(dataSet);
-                dataSet.setColors(colorInts);
-                dataSet.setDrawValues(false);//don't draw the actual values on the chart
-
-                mDifficultyProgressChart.setData(pieData);
-
-                //----------- Pie Chart configurations -------------------//
-                // Add an animation to make the pie chart load slowly (looks koool)
-                mDifficultyProgressChart.animateXY(2000, 2000);
-
-                // Make the labels text size larger than the default
-                mDifficultyProgressChart.setEntryLabelTextSize(16f);
-
-                // Remove the description and legend
-                Description chartDescription = new Description();
-                chartDescription.setText("");
-                mDifficultyProgressChart.setDescription(chartDescription);
-                mDifficultyProgressChart.getLegend().setEnabled(false);
-                mDifficultyProgressChart.setHoleRadius(0.0f);
-                mDifficultyProgressChart.setDrawHoleEnabled(false);
+            //We only want to add entries that have > 0 completed or
+            // else the colors will not match up
+            if (numEasy != 0){
+                colors.add(easyColor);
+                entries.add(new PieEntry(numEasy, "", idx++));
             }
+            if (numMed != 0){
+                colors.add(medColor);
+                entries.add(new PieEntry(numMed, "", idx++));
+            }
+            if (numHard != 0){
+                colors.add(hardColor);
+                entries.add(new PieEntry(numHard, "", idx++));
+            }
+
+            //The API can't take an array of Integer (need to convert to array int)
+            int[] colorInts = new int[colors.size()];
+            for (int i=0; i< colorInts.length; i++){
+                colorInts[i] = colors.get(i);
+            }
+
+            PieDataSet dataSet = new PieDataSet(entries, "");
+
+            PieData pieData = new PieData(dataSet);
+            dataSet.setColors(colorInts);
+            dataSet.setDrawValues(false);//don't draw the actual values on the chart
+
+            mDifficultyProgressChart.setData(pieData);
+
+            //----------- Pie Chart configurations -------------------//
+            // Add an animation to make the pie chart load slowly (looks koool)
+            mDifficultyProgressChart.animateXY(2000, 2000);
+
+            // Make the labels text size larger than the default
+            mDifficultyProgressChart.setEntryLabelTextSize(16f);
+
+            // Remove the description and legend
+            Description chartDescription = new Description();
+            chartDescription.setText("");
+            mDifficultyProgressChart.setDescription(chartDescription);
+            mDifficultyProgressChart.getLegend().setEnabled(false);
+            mDifficultyProgressChart.setHoleRadius(0.0f);
+            mDifficultyProgressChart.setDrawHoleEnabled(false);
         });
     }
 

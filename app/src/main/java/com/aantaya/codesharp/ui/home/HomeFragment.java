@@ -15,7 +15,6 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -30,7 +29,6 @@ import com.aantaya.codesharp.utils.IntentUtils;
 import com.facebook.shimmer.ShimmerFrameLayout;
 
 import java.lang.ref.WeakReference;
-import java.util.List;
 
 import static com.aantaya.codesharp.ui.home.HomeViewModel.STATE_FAILED;
 import static com.aantaya.codesharp.ui.home.HomeViewModel.STATE_LOADING;
@@ -97,32 +95,24 @@ public class HomeFragment extends Fragment {
         //Initialize the view model with data
         mHomeViewModel.init();
 
-        mHomeViewModel.getState().observe(getViewLifecycleOwner(), new Observer<Integer>() {
-            @Override
-            public void onChanged(Integer state) {
-                switch (state){
-                    case STATE_NORMAL:
-                        finishShowingLoadingView();
-                        break;
-                    case STATE_LOADING:
-                        startShowingLoadingView();
-                        break;
-                    case STATE_FAILED:
-                        //todo: what should we do here?
-                        break;
-                }
+        mHomeViewModel.getState().observe(getViewLifecycleOwner(), state -> {
+            switch (state){
+                case STATE_NORMAL:
+                    finishShowingLoadingView();
+                    break;
+                case STATE_LOADING:
+                    startShowingLoadingView();
+                    break;
+                case STATE_FAILED:
+                    //todo: what should we do here?
+                    break;
             }
         });
 
         //Set up the fragment to observe changes to the questions as they are updated in the viewmodel
         //and then update the adapter with the new items
         mHomeViewModel.getQuestions().observe(getViewLifecycleOwner(),
-                new Observer<List<RecyclerViewQuestionItem>>() {
-                    @Override
-                    public void onChanged(List<RecyclerViewQuestionItem> recyclerViewQuestionItems) {
-                        mAdapter.updateItems(recyclerViewQuestionItems);
-                    }
-                });
+                recyclerViewQuestionItems -> mAdapter.updateItems(recyclerViewQuestionItems));
     }
 
     @Override
