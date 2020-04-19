@@ -6,14 +6,15 @@
         android:id="@+id/main_menu_search"
         android:title="@string/search_icon"
         android:icon="@drawable/ic_search_foreground"
+        android:focusableInTouchMode="true"
         app:showAsAction="collapseActionView|ifRoom"
-        app:actionViewClass="android.widget.SearchView"/>
+        app:actionViewClass="androidx.appcompat.widget.SearchView"/>
 
     <item
         android:id="@+id/main_menu_filter"
         android:title="@string/filter_icon"
         android:icon="@drawable/ic_filter_foreground"
-        app:showAsAction="collapseActionView|ifRoom"/>
+        app:showAsAction="ifRoom|collapseActionView"/>
 
     <item
         android:id="@+id/action_more"
