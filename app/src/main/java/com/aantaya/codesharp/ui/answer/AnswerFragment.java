@@ -14,6 +14,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RadioGroup;
 import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -32,6 +33,8 @@ import com.aantaya.codesharp.models.QuestionPayload;
 import com.aantaya.codesharp.utils.IntentUtils;
 import com.github.ybq.android.spinkit.SpinKitView;
 import com.google.android.material.button.MaterialButton;
+import com.google.android.material.button.MaterialButtonToggleGroup;
+import com.google.android.material.radiobutton.MaterialRadioButton;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -54,14 +57,12 @@ public class AnswerFragment extends Fragment {
     private TextView mQuestionTitle;
     private TextView mQuestionDescription;
     private CodeView mCodeView;
-    private LinearLayout mQuestionAnswersContainer;
+    private RadioGroup mQuestionAnswersContainer;
     private Button mSubmitButton;
     private ScrollView mScrollviewLayout;
     private SpinKitView mLoadingAnimation;
 
     private String mSelectedAnswer = "";
-
-    private Set<View> mAnswerButtonViews;
 
     public static AnswerFragment newInstance() {
         return new AnswerFragment();
@@ -80,8 +81,6 @@ public class AnswerFragment extends Fragment {
         mSubmitButton = root.findViewById(R.id.answer_submit_button);
         mScrollviewLayout = root.findViewById(R.id.scroll_view_layout);
         mLoadingAnimation = root.findViewById(R.id.loading_animation);
-
-        mAnswerButtonViews = new HashSet<>();
 
         setHasOptionsMenu(true);
 
@@ -190,10 +189,6 @@ public class AnswerFragment extends Fragment {
                         .setStartLineNumber(1)
                         .apply();
 
-                //todo: programmatically create buttons with answers
-
-                mQuestionAnswersContainer.removeAllViews();
-
                 int i=0;
 
                 List<String> possibleResponses = new ArrayList<>();
@@ -201,9 +196,9 @@ public class AnswerFragment extends Fragment {
                 possibleResponses.addAll(payload.getWrongAnswers());
 
                 for (String response : possibleResponses){
+
                     //set the properties for button
-                    MaterialButton btnTag = new MaterialButton(getContext(), null,
-                            R.attr.materialButtonOutlinedStyle);
+                    MaterialRadioButton btnTag = new MaterialRadioButton(getContext());
 
                     btnTag.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,
                             LinearLayout.LayoutParams.WRAP_CONTENT));
@@ -211,17 +206,11 @@ public class AnswerFragment extends Fragment {
                     btnTag.setText(response);
                     btnTag.setId(i++);
 
-                    mAnswerButtonViews.add(btnTag);
-
                     btnTag.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View view) {
-
-                            //todo: need to figutre thus out
-//                            for (View v : mAnswerButtonViews) v.setBackgroundColor(R.attr);
-
-                            view.setBackgroundColor(R.attr.colorOnBackground);
-                            mSelectedAnswer = ((Button) view).getText().toString();
+                            //todo: do i need to do anything else?
+                            mSelectedAnswer = ((MaterialRadioButton) view).getText().toString();
                         }
                     });
 
