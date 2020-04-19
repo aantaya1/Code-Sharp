@@ -8,6 +8,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.SearchView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -23,7 +24,6 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.aantaya.codesharp.AnswerActivity;
 import com.aantaya.codesharp.R;
 import com.aantaya.codesharp.models.RecyclerViewQuestionItem;
-import com.aantaya.codesharp.ui.adapters.QuestionsRecyclerViewAdapter;
 import com.aantaya.codesharp.ui.settings.SettingsActivity;
 import com.aantaya.codesharp.utils.IntentUtils;
 import com.facebook.shimmer.ShimmerFrameLayout;
@@ -42,7 +42,6 @@ public class HomeFragment extends Fragment {
     private RecyclerView mRecyclerView;
     private QuestionsRecyclerViewAdapter mAdapter;
     private ShimmerFrameLayout mShimmerLayout;
-
 
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View root = inflater.inflate(R.layout.fragment_home, container, false);
@@ -121,7 +120,20 @@ public class HomeFragment extends Fragment {
 
         inflater.inflate(R.menu.main_menu, menu);
 
-        //todo: implement the search capability
+        final MenuItem searchItem = menu.findItem(R.id.main_menu_search);
+        SearchView searchView = (SearchView) searchItem.getActionView();
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                mAdapter.getFilter().filter(newText);
+                return true;
+            }
+        });
     }
 
     @Override
