@@ -31,6 +31,7 @@ import com.aantaya.codesharp.enums.ProgrammingLanguage;
 import com.aantaya.codesharp.models.QuestionModel;
 import com.aantaya.codesharp.models.QuestionPayload;
 import com.aantaya.codesharp.utils.IntentUtils;
+import com.facebook.shimmer.ShimmerFrameLayout;
 import com.github.ybq.android.spinkit.SpinKitView;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.button.MaterialButtonToggleGroup;
@@ -60,7 +61,7 @@ public class AnswerFragment extends Fragment {
     private RadioGroup mQuestionAnswersContainer;
     private Button mSubmitButton;
     private ScrollView mScrollviewLayout;
-    private SpinKitView mLoadingAnimation;
+    private ShimmerFrameLayout mShimmerLayout;
 
     private String mSelectedAnswer = "";
 
@@ -80,7 +81,7 @@ public class AnswerFragment extends Fragment {
         mQuestionAnswersContainer = root.findViewById(R.id.answer_question_answers_container);
         mSubmitButton = root.findViewById(R.id.answer_submit_button);
         mScrollviewLayout = root.findViewById(R.id.scroll_view_layout);
-        mLoadingAnimation = root.findViewById(R.id.loading_animation);
+        mShimmerLayout = root.findViewById(R.id.shimmer_layout);
 
         setHasOptionsMenu(true);
 
@@ -102,13 +103,9 @@ public class AnswerFragment extends Fragment {
             public void onChanged(Integer state) {
                 switch (state){
                     case STATE_NORMAL:
-                        Log.e("AnswerFragment", "shimmer: end");
-                        //todo: need to implement
                         hideLoading();
                         break;
                     case STATE_LOADING:
-                        Log.e("AnswerFragment", "shimmer: start");
-                        //todo: need to implement
                         displayLoading();
                         break;
                     case STATE_COMPLETED_ALL_QUESTIONS:
@@ -195,6 +192,10 @@ public class AnswerFragment extends Fragment {
                 possibleResponses.add(payload.getAnswer());
                 possibleResponses.addAll(payload.getWrongAnswers());
 
+                //It is very important that we remove all of the buttons
+                // from the prev question!
+                mQuestionAnswersContainer.removeAllViews();
+
                 for (String response : possibleResponses){
 
                     //set the properties for button
@@ -274,12 +275,14 @@ public class AnswerFragment extends Fragment {
     }
 
     private void displayLoading(){
+        mShimmerLayout.startShimmer();
+        mShimmerLayout.setVisibility(View.VISIBLE);
         mScrollviewLayout.setVisibility(View.INVISIBLE);
-        mLoadingAnimation.setVisibility(View.VISIBLE);
     }
 
     private void hideLoading(){
+        mShimmerLayout.stopShimmer();
+        mShimmerLayout.setVisibility(View.GONE);
         mScrollviewLayout.setVisibility(View.VISIBLE);
-        mLoadingAnimation.setVisibility(View.INVISIBLE);
     }
 }

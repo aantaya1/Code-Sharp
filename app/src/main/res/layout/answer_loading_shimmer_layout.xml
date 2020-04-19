@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merge xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/margin_medium"
+            android:layout_marginStart="@dimen/margin_xsmall"
+            android:layout_marginEnd="@dimen/margin_xsmall"
+            android:layout_marginBottom="@dimen/margin_xsmall"
+            android:gravity="center"
+            android:background="#dddddd"
+            android:textSize="32sp"/>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/margin_xsmall"
+            android:gravity="center"
+            android:background="#dddddd"
+            android:textSize="14sp"/>
+
+        <br.tiagohm.codeview.CodeView
+            android:layout_width="match_parent"
+            android:layout_height="100dp"
+            android:backgroundTint="#dddddd"
+            android:layout_marginTop="@dimen/margin_large"/>
+
+        <RadioGroup
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/margin_xsmall">
+
+            <Button
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:backgroundTint="#dddddd"/>
+            <Button
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:backgroundTint="#dddddd"/>
+            <Button
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:backgroundTint="#dddddd"/>
+            <Button
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:backgroundTint="#dddddd"/>
+        </RadioGroup>
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:backgroundTint="#dddddd"
+            android:text="@string/question_submit_button"/>
+    </LinearLayout>
+
+</merge>

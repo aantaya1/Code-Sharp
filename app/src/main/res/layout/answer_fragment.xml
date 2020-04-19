@@ -13,19 +13,19 @@
     android:animateLayoutChanges="true"
     tools:context=".ui.answer.AnswerFragment">
 
-    <com.github.ybq.android.spinkit.SpinKitView
-        android:id="@+id/loading_animation"
-        style="@style/SpinKitView.Large.CubeGrid"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
+    <com.facebook.shimmer.ShimmerFrameLayout
+        android:id="@+id/shimmer_layout"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/scroll_view_layout"
-        android:fitsSystemWindows="true"
-        android:indeterminate="true"
-        app:SpinKit_Color="@color/colorAccent"/>
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <include
+            layout="@layout/answer_loading_shimmer_layout" />
+
+    </com.facebook.shimmer.ShimmerFrameLayout>
 
     <ScrollView
         android:id="@+id/scroll_view_layout"
