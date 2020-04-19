@@ -14,7 +14,7 @@
             android:layout_marginEnd="@dimen/margin_xsmall"
             android:layout_marginBottom="@dimen/margin_xsmall"
             android:gravity="center"
-            android:background="#dddddd"
+            android:background="@color/shimmer_grey"
             android:textSize="32sp"/>
 
         <TextView
@@ -22,13 +22,13 @@
             android:layout_height="wrap_content"
             android:layout_margin="@dimen/margin_xsmall"
             android:gravity="center"
-            android:background="#dddddd"
+            android:background="@color/shimmer_grey"
             android:textSize="14sp"/>
 
         <br.tiagohm.codeview.CodeView
             android:layout_width="match_parent"
             android:layout_height="100dp"
-            android:backgroundTint="#dddddd"
+            android:backgroundTint="@color/shimmer_grey"
             android:layout_marginTop="@dimen/margin_large"/>
 
         <RadioGroup
@@ -39,26 +39,26 @@
             <Button
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
-                android:backgroundTint="#dddddd"/>
+                android:backgroundTint="@color/shimmer_grey"/>
             <Button
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
-                android:backgroundTint="#dddddd"/>
+                android:backgroundTint="@color/shimmer_grey"/>
             <Button
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
-                android:backgroundTint="#dddddd"/>
+                android:backgroundTint="@color/shimmer_grey"/>
             <Button
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
-                android:backgroundTint="#dddddd"/>
+                android:backgroundTint="@color/shimmer_grey"/>
         </RadioGroup>
 
         <Button
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
-            android:backgroundTint="#dddddd"
+            android:backgroundTint="@color/shimmer_grey"
             android:text="@string/question_submit_button"/>
     </LinearLayout>
 

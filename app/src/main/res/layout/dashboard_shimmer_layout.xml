@@ -1,78 +1,42 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:forceDarkAllowed="true"
-    tools:context=".ui.dashboard.DashboardFragment">
-
-    <include
-        layout="@layout/toolbar"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintLeft_toLeftOf="parent"/>
-
-    <com.facebook.shimmer.ShimmerFrameLayout
-        android:id="@+id/shimmer_layout"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/my_toolbar"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent">
-
-        <include
-            layout="@layout/dashboard_shimmer_layout" />
-
-    </com.facebook.shimmer.ShimmerFrameLayout>
+<merge xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/dashboard_layout"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
+        android:layout_height="match_parent"
         android:layout_marginStart="@dimen/margin_xsmall"
-        android:layout_marginEnd="@dimen/margin_xsmall"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/my_toolbar">
+        android:layout_marginEnd="@dimen/margin_xsmall">
 
         <LinearLayout
             android:layout_width="0dp"
             android:layout_height="0dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="@+id/guideline5"
-            app:layout_constraintTop_toTopOf="@+id/guideline4"
+            app:layout_constraintStart_toStartOf="@+id/shimmer_guideline5"
+            app:layout_constraintTop_toTopOf="@+id/shimmer_guideline4"
             android:orientation="vertical"
             android:gravity="center_vertical">
 
             <TextView
-                android:id="@+id/dashboard_easy_total"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/margin_small"
                 android:layout_marginBottom="@dimen/margin_small"
                 android:background="@drawable/rounded_corner_easy_question"
                 android:gravity="center_horizontal"
-                android:text="5 Easy"
                 android:textColor="@color/white" />
 
             <TextView
-                android:id="@+id/dashboard_medium_total"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/margin_small"
                 android:layout_marginBottom="@dimen/margin_small"
                 android:background="@drawable/rounded_corner_med_question"
                 android:gravity="center_horizontal"
-                android:text="10 Medium"
                 android:textColor="@color/white" />
 
             <TextView
-                android:id="@+id/dashboard_hard_total"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/margin_small"
@@ -80,73 +44,69 @@
                 android:background="@drawable/rounded_corner_hard_question"
                 android:fontFamily="@font/montserrat"
                 android:gravity="center_horizontal"
-                android:text="10 Hard"
                 android:textColor="@color/white" />
 
         </LinearLayout>
-
-
-
+        
         <androidx.constraintlayout.widget.Guideline
-            android:id="@+id/guideline5"
+            android:id="@+id/shimmer_guideline5"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="vertical"
             app:layout_constraintGuide_percent="0.70" />
 
         <androidx.constraintlayout.widget.Guideline
-            android:id="@+id/guideline6"
+            android:id="@+id/shimmer_guideline6"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
             app:layout_constraintGuide_percent="0.66" />
 
         <androidx.constraintlayout.widget.Guideline
-            android:id="@+id/guideline7"
+            android:id="@+id/shimmer_guideline7"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
             app:layout_constraintGuide_percent="0.83" />
 
         <androidx.constraintlayout.widget.Guideline
-            android:id="@+id/guideline4"
+            android:id="@+id/shimmer_guideline4"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
             app:layout_constraintGuide_percent="0.5" />
 
-        <com.github.mikephil.charting.charts.PieChart
-            android:id="@+id/dashboard_progress_pie_chart"
+        <ImageView
             android:layout_width="0dp"
             android:layout_height="0dp"
-            android:layout_marginTop="@dimen/margin_medium"
-            android:layout_marginBottom="@dimen/margin_medium"
-            app:layout_constraintBottom_toTopOf="@+id/guideline4"
-            app:layout_constraintEnd_toStartOf="@+id/guideline5"
+            android:src="@drawable/graph_circle"
+            android:layout_margin="@dimen/margin_medium"
+            app:layout_constraintBottom_toTopOf="@+id/shimmer_guideline4"
+            app:layout_constraintEnd_toStartOf="@+id/shimmer_guideline5"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
-        <com.github.mikephil.charting.charts.PieChart
-            android:id="@+id/dashboard_difficulty_progress_pie_chart"
+        <ImageView
             android:layout_width="0dp"
             android:layout_height="0dp"
-            android:layout_marginTop="@dimen/margin_medium"
-            android:layout_marginBottom="@dimen/margin_medium"
+            android:src="@drawable/graph_circle"
+            android:layout_margin="@dimen/margin_medium"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@+id/guideline5"
+            app:layout_constraintEnd_toStartOf="@+id/shimmer_guideline5"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="@+id/guideline4" />
+            app:layout_constraintTop_toTopOf="@+id/shimmer_guideline4" />
 
         <TextView
-            android:id="@+id/total_progress_textview"
-            android:layout_width="0dp"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:gravity="center_horizontal"
-            android:text="TextView"
-            app:layout_constraintBottom_toTopOf="@+id/guideline4"
+            android:background="@color/shimmer_grey"
+            android:text="                  \n"
+            app:layout_constraintBottom_toTopOf="@+id/shimmer_guideline4"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="@+id/guideline5"
+            app:layout_constraintStart_toStartOf="@+id/shimmer_guideline5"
             app:layout_constraintTop_toTopOf="parent" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
-</androidx.constraintlayout.widget.ConstraintLayout>
+    
+</merge>

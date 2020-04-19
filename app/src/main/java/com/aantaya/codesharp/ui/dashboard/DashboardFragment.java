@@ -26,13 +26,13 @@ import com.aantaya.codesharp.R;
 import com.aantaya.codesharp.models.ProgressModel;
 import com.aantaya.codesharp.models.UserStatsModel;
 import com.aantaya.codesharp.ui.settings.SettingsActivity;
+import com.facebook.shimmer.ShimmerFrameLayout;
 import com.github.mikephil.charting.charts.PieChart;
 import com.github.mikephil.charting.components.Description;
 import com.github.mikephil.charting.data.PieData;
 import com.github.mikephil.charting.data.PieDataSet;
 import com.github.mikephil.charting.data.PieEntry;
 import com.github.mikephil.charting.utils.ColorTemplate;
-import com.github.ybq.android.spinkit.SpinKitView;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -47,7 +47,7 @@ public class DashboardFragment extends Fragment {
     private TextView mMediumTotalText;
     private TextView mHardTotalText;
     private ConstraintLayout mDashboardLayout;
-    private SpinKitView mLoadingAnimation;
+    private ShimmerFrameLayout mShimmerLayout;
 
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View root = inflater.inflate(R.layout.fragment_dashboard, container, false);
@@ -59,7 +59,7 @@ public class DashboardFragment extends Fragment {
         mMediumTotalText = root.findViewById(R.id.dashboard_medium_total);
         mHardTotalText = root.findViewById(R.id.dashboard_hard_total);
         mDashboardLayout = root.findViewById(R.id.dashboard_layout);
-        mLoadingAnimation = root.findViewById(R.id.loading_animation);
+        mShimmerLayout = root.findViewById(R.id.shimmer_layout);
 
         //This tells android that we have a options menu that we would like to render
         // if we don't set this, the menu callbacks will not be called
@@ -224,12 +224,14 @@ public class DashboardFragment extends Fragment {
     }
 
     private void displayLoading(){
+        mShimmerLayout.startShimmer();
+        mShimmerLayout.setVisibility(View.VISIBLE);
         mDashboardLayout.setVisibility(View.INVISIBLE);
-        mLoadingAnimation.setVisibility(View.VISIBLE);
     }
 
     private void hideLoading(){
+        mShimmerLayout.stopShimmer();
+        mShimmerLayout.setVisibility(View.GONE);
         mDashboardLayout.setVisibility(View.VISIBLE);
-        mLoadingAnimation.setVisibility(View.INVISIBLE);
     }
 }

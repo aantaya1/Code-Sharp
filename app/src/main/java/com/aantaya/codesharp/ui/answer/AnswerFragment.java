@@ -3,7 +3,6 @@ package com.aantaya.codesharp.ui.answer;
 import android.annotation.SuppressLint;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -32,15 +31,10 @@ import com.aantaya.codesharp.models.QuestionModel;
 import com.aantaya.codesharp.models.QuestionPayload;
 import com.aantaya.codesharp.utils.IntentUtils;
 import com.facebook.shimmer.ShimmerFrameLayout;
-import com.github.ybq.android.spinkit.SpinKitView;
-import com.google.android.material.button.MaterialButton;
-import com.google.android.material.button.MaterialButtonToggleGroup;
 import com.google.android.material.radiobutton.MaterialRadioButton;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import br.tiagohm.codeview.CodeView;
 import br.tiagohm.codeview.Language;

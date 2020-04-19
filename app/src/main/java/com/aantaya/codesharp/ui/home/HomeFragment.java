@@ -22,7 +22,6 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.aantaya.codesharp.AnswerActivity;
-import com.aantaya.codesharp.MainActivity;
 import com.aantaya.codesharp.R;
 import com.aantaya.codesharp.models.RecyclerViewQuestionItem;
 import com.aantaya.codesharp.ui.adapters.QuestionsRecyclerViewAdapter;
