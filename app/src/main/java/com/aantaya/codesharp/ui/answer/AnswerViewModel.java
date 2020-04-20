@@ -14,6 +14,7 @@ import com.aantaya.codesharp.enums.QuestionDifficulty;
 import com.aantaya.codesharp.models.QuestionModel;
 import com.aantaya.codesharp.models.QuestionSearchFilter;
 import com.aantaya.codesharp.repositories.api.QuestionRepository;
+import com.aantaya.codesharp.repositories.callbacks.IdQueryCallback;
 import com.aantaya.codesharp.repositories.callbacks.QuestionQueryCallback;
 import com.aantaya.codesharp.repositories.impl.QuestionRepositoryFirestoreImpl;
 import com.aantaya.codesharp.utils.PreferenceUtils;
@@ -43,6 +44,8 @@ public class AnswerViewModel extends AndroidViewModel {
     private MutableLiveData<QuestionModel> mQuestion = new MutableLiveData<>();
 
     private QuestionRepository mQuestionRepo;
+    private int numQueried = 2;
+    private int numFinishedQueried = 0;
 
     public AnswerViewModel(@NonNull Application application) {
         super(application);
@@ -63,6 +66,7 @@ public class AnswerViewModel extends AndroidViewModel {
         mQuestionRepo = QuestionRepositoryFirestoreImpl.getInstance();
 
         loadQuestions(initialQuestionId);
+        loadCompletedQuestions();
     }
 
     private void loadQuestions(@Nullable final String initialQuestionId){
@@ -83,8 +87,9 @@ public class AnswerViewModel extends AndroidViewModel {
                 //Add the initial question to the beginning of the list
                 mQuestionIds.add(0, initialQuestionId);
 
-                //Once we have loaded the question ids, load the first question
-                loadNextQuestion();
+                if (++numFinishedQueried == numQueried){
+                    finishInit();
+                }
             }
 
             @Override
@@ -92,6 +97,29 @@ public class AnswerViewModel extends AndroidViewModel {
                 mState.setValue(STATE_FAILED);
             }
         });
+    }
+
+    private void loadCompletedQuestions(){
+        mQuestionRepo.getCompletedQuestions(new IdQueryCallback() {
+            @Override
+            public void onSuccess(Set<String> ids) {
+                mCompletedQuestionIds.addAll(ids);
+
+                if (++numFinishedQueried == numQueried){
+                    finishInit();
+                }
+            }
+
+            @Override
+            public void onFailure(String failureString) {
+                mState.setValue(STATE_FAILED);
+            }
+        });
+    }
+
+    private void finishInit(){
+        //Once we have loaded the question ids, load the first question
+        loadNextQuestion();
     }
 
     public void loadNextQuestion(){
@@ -113,7 +141,6 @@ public class AnswerViewModel extends AndroidViewModel {
 
                     //notify the ui once we are done loading the question
                     mState.setValue(STATE_NORMAL);
-
                     break;
                 }
             }
@@ -128,8 +155,7 @@ public class AnswerViewModel extends AndroidViewModel {
     public void uploadCorrectQuestion(@NonNull String questionId, @NonNull QuestionDifficulty difficulty){
         //If the user completes the question more than once, we don't need
         // to re-upload the completion of the question
-        //todo: need to uncomment this once I implement filtering correctly on repo
-//        if (mCompletedQuestionIds.contains(questionId)) return;
+        if (mCompletedQuestionIds.contains(questionId)) return;
 
         mQuestionRepo.uploadCompletedQuestion(questionId, difficulty);
     }

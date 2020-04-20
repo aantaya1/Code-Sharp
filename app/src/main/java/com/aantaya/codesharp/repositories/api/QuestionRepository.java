@@ -30,7 +30,6 @@ public interface QuestionRepository {
      *
      * @param callback will be called on the conclusion of query
      */
-    @Deprecated
     void getCompletedQuestions(IdQueryCallback callback);
 
     /**
