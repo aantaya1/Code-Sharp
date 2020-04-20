@@ -1,15 +1,22 @@
 package com.aantaya.codesharp.ui.answer;
 
+import android.app.Application;
+import android.content.SharedPreferences;
+
 import androidx.annotation.NonNull;
+import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
+import androidx.preference.PreferenceManager;
 
 import com.aantaya.codesharp.enums.QuestionDifficulty;
 import com.aantaya.codesharp.models.QuestionModel;
+import com.aantaya.codesharp.models.QuestionSearchFilter;
 import com.aantaya.codesharp.repositories.api.QuestionRepository;
 import com.aantaya.codesharp.repositories.callbacks.QuestionQueryCallback;
 import com.aantaya.codesharp.repositories.impl.QuestionRepositoryFirestoreImpl;
+import com.aantaya.codesharp.utils.PreferenceUtils;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -18,13 +25,14 @@ import java.util.Set;
 
 import javax.annotation.Nullable;
 
-public class AnswerViewModel extends ViewModel {
+public class AnswerViewModel extends AndroidViewModel {
 
     public static final int STATE_NORMAL = 0;
     public static final int STATE_LOADING = 1;
     public static final int STATE_COMPLETED_ALL_QUESTIONS = 2;
     public static final int STATE_FAILED = 3;
 
+    private QuestionSearchFilter questionSearchFilter = new QuestionSearchFilter();
     private List<String> mQuestionIds = new ArrayList<>();
     private int currentQuestionIdx = 0;
 
@@ -35,6 +43,14 @@ public class AnswerViewModel extends ViewModel {
     private MutableLiveData<QuestionModel> mQuestion = new MutableLiveData<>();
 
     private QuestionRepository mQuestionRepo;
+
+    public AnswerViewModel(@NonNull Application application) {
+        super(application);
+
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplication());
+        questionSearchFilter.setIncludeCompleted(prefs.getBoolean(PreferenceUtils.QUESTION_FILTER_INCLUDE_COMPLETED, false));
+        questionSearchFilter.setIncludeNotCompleted(true);
+    }
 
     public void init(@NonNull String initialQuestionId){
         //If the ViewModel has already been initialized, no need to re-init
@@ -50,9 +66,7 @@ public class AnswerViewModel extends ViewModel {
     }
 
     private void loadQuestions(@Nullable final String initialQuestionId){
-
-        //todo: check prefs if the user wants to load already done questions as well
-        mQuestionRepo.getQuestions(null, new QuestionQueryCallback() {
+        mQuestionRepo.getQuestions(questionSearchFilter, new QuestionQueryCallback() {
             @Override
             public void onSuccess(Set<QuestionModel> questionModels) {
 

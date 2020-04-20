@@ -3,14 +3,14 @@ package com.aantaya.codesharp.repositories.impl;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
-import androidx.lifecycle.MutableLiveData;
 
+import com.aantaya.codesharp.BuildConfig;
 import com.aantaya.codesharp.enums.ProgrammingLanguage;
 import com.aantaya.codesharp.enums.QuestionDifficulty;
 import com.aantaya.codesharp.enums.QuestionType;
-import com.aantaya.codesharp.models.QuestionFilterConfig;
 import com.aantaya.codesharp.models.QuestionModel;
 import com.aantaya.codesharp.models.QuestionPayload;
+import com.aantaya.codesharp.models.QuestionSearchFilter;
 import com.aantaya.codesharp.models.SystemStatsModel;
 import com.aantaya.codesharp.models.UserStatsModel;
 import com.aantaya.codesharp.repositories.api.QuestionRepository;
@@ -141,11 +141,62 @@ public class QuestionRepositoryFirestoreImpl implements QuestionRepository {
      * Get questions that match the given question ids. If questionIds is null, get all of the
      * questions.
      *
-     * @param questionIds list of questions to retrieve or null to get all questions
+     * @param filter for filtering the questions retrieved from query
      * @param callback    will be called on the conclusion of query
      */
     @Override
-    public void getQuestions(@Nullable List<String> questionIds, QuestionQueryCallback callback) {
+    public void getQuestions(@NonNull QuestionSearchFilter filter, QuestionQueryCallback callback) {
+
+        if (filter.includeCompleted() && filter.includeNotCompleted()){
+            getAllQuestions(callback);
+        }else if (filter.includeCompleted()){
+            //todo: in the future we might want to get just the completed questions
+        } else if (filter.includeNotCompleted()){
+            //We want to only load the questions that the user has NOT completed so we need to
+            // first get all the questions in the db, and then filter OUT the questions that
+            // the user has finished (which we will get from another [nested] query)
+            getAllQuestions(new QuestionQueryCallback() {
+                @Override
+                public void onSuccess(Set<QuestionModel> questionModels) {
+                    getCompletedQuestions(new IdQueryCallback() {
+                        @Override
+                        public void onSuccess(Set<String> ids) {
+                            Set<QuestionModel> res = new HashSet<>();
+
+                            for (QuestionModel question : questionModels){
+                                //Only include the questions that have not been completed
+                                if (!ids.contains(question.getId())){
+                                    res.add(question);
+                                }
+                            }
+
+                            callback.onSuccess(res);
+                        }
+
+                        @Override
+                        public void onFailure(String failureString) {
+                            callback.onFailure("Something went wrong.");
+                        }
+                    });
+                }
+
+                @Override
+                public void onFailure(String failureString) {
+                    callback.onFailure("Something went wrong.");
+                }
+            });
+        }else {
+
+            if (BuildConfig.DEBUG){
+                throw new IllegalArgumentException("Cannot get questions because all filter " +
+                        "params are false!");
+            }
+
+            callback.onFailure("Something went wrong.");
+        }
+    }
+
+    private void getAllQuestions(QuestionQueryCallback callback){
         db.collection(QUESTION_COLLECTION)
                 .get()
                 .addOnCompleteListener(task -> {

@@ -7,6 +7,7 @@ import androidx.lifecycle.MutableLiveData;
 import com.aantaya.codesharp.enums.QuestionDifficulty;
 import com.aantaya.codesharp.models.QuestionFilterConfig;
 import com.aantaya.codesharp.models.QuestionModel;
+import com.aantaya.codesharp.models.QuestionSearchFilter;
 import com.aantaya.codesharp.models.RecyclerViewQuestionItem;
 import com.aantaya.codesharp.repositories.callbacks.IdQueryCallback;
 import com.aantaya.codesharp.repositories.callbacks.QuestionQueryCallback;
@@ -29,6 +30,7 @@ public interface QuestionRepository {
      *
      * @param callback will be called on the conclusion of query
      */
+    @Deprecated
     void getCompletedQuestions(IdQueryCallback callback);
 
     /**
@@ -44,10 +46,10 @@ public interface QuestionRepository {
      * Get questions that match the given question ids. If questionIds is null, get all of the
      * questions.
      *
-     * @param questionIds list of questions to retrieve or null to get all questions
+     * @param filter for filtering the questions retrieved from query
      * @param callback will be called on the conclusion of query
      */
-    void getQuestions(@Nullable List<String> questionIds, QuestionQueryCallback callback);
+    void getQuestions(@NonNull QuestionSearchFilter filter, @NonNull QuestionQueryCallback callback);
 
     /**
      * Mark a question as being completed in the repository impl.

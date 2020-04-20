@@ -47,4 +47,10 @@
     <string name="question_submit_button">Submit</string>
     <string name="correct_answer">Correct, good job!</string>
     <string name="incorrect_answer">Incorrect, try again.</string>
+
+    <!--  Question Filter Preferences  -->
+    <string name="save">Save</string>
+    <string name="question_filter_prefs">Filter Questions</string>
+    <string name="question_filter_pref_completed">Include Completed Questions</string>
+
 </resources>

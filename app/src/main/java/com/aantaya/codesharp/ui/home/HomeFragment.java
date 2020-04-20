@@ -1,6 +1,8 @@
 package com.aantaya.codesharp.ui.home;
 
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -8,15 +10,16 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SearchView;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.preference.PreferenceManager;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -26,9 +29,11 @@ import com.aantaya.codesharp.R;
 import com.aantaya.codesharp.models.RecyclerViewQuestionItem;
 import com.aantaya.codesharp.ui.settings.SettingsActivity;
 import com.aantaya.codesharp.utils.IntentUtils;
+import com.aantaya.codesharp.utils.PreferenceUtils;
 import com.facebook.shimmer.ShimmerFrameLayout;
 
 import java.lang.ref.WeakReference;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import static com.aantaya.codesharp.ui.home.HomeViewModel.STATE_FAILED;
 import static com.aantaya.codesharp.ui.home.HomeViewModel.STATE_LOADING;
@@ -143,8 +148,57 @@ public class HomeFragment extends Fragment {
                 startActivity(new Intent(getContext(), SettingsActivity.class));
                 return true;
             case R.id.main_menu_filter:
-                //todo: need to implement
-                Toast.makeText(getContext(), "Need to implement 7832", Toast.LENGTH_SHORT).show();
+
+                final String filterCompletedQuestions = getString(R.string.question_filter_pref_completed);
+
+                String[] options = new String[]{filterCompletedQuestions};
+                boolean[] selectedOptions = new boolean[options.length];
+
+                //If the user has already selected certain options we need to display
+                // them as checked already
+                SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
+                if (prefs.getBoolean(PreferenceUtils.QUESTION_FILTER_INCLUDE_COMPLETED, false)){
+                    selectedOptions[0] = true;
+                }
+
+                //Keep track of whether or not the user changed some prefs
+                AtomicBoolean userMadeChanges = new AtomicBoolean(false);
+
+                AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+                builder.setTitle(getString(R.string.question_filter_prefs));
+                builder.setMultiChoiceItems(options, selectedOptions, (dialogInterface, itemIdx, isChecked) -> {
+
+                    // We will need to update the shared prefs value for the selected option
+                    SharedPreferences.Editor prefsEditor = prefs.edit();
+
+                    final String clickedItem = options[itemIdx];
+
+                    if (clickedItem.equals(filterCompletedQuestions)){
+                        //Updated user's pref for including completed questions
+                        prefsEditor.putBoolean(PreferenceUtils.QUESTION_FILTER_INCLUDE_COMPLETED, isChecked);
+                    }
+
+                    userMadeChanges.set(true);
+                    prefsEditor.apply();
+                });
+                builder.setPositiveButton(getString(R.string.save), new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        if (userMadeChanges.get()){
+                            mHomeViewModel.init();
+                        }
+                    }
+                });
+                builder.setOnDismissListener(new DialogInterface.OnDismissListener() {
+                    @Override
+                    public void onDismiss(DialogInterface dialogInterface) {
+                        if (userMadeChanges.get()){
+                            mHomeViewModel.init();
+                        }
+                    }
+                });
+                builder.show();
+
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
