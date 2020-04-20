@@ -305,11 +305,11 @@ public class QuestionRepositoryFirestoreImpl implements QuestionRepository {
                             }
 
                             if (document.contains(USER_STATS_NUM_MED_FIELD)){
-                                statsModel.setNumEasyCompleted(((Long) document.get(USER_STATS_NUM_MED_FIELD)).intValue());
+                                statsModel.setNumMediumCompleted(((Long) document.get(USER_STATS_NUM_MED_FIELD)).intValue());
                             }
 
                             if (document.contains(USER_STATS_NUM_HARD_FIELD)){
-                                statsModel.setNumEasyCompleted(((Long) document.get(USER_STATS_NUM_HARD_FIELD)).intValue());
+                                statsModel.setNumHardCompleted(((Long) document.get(USER_STATS_NUM_HARD_FIELD)).intValue());
                             }
 
                             callback.onSuccess(statsModel);

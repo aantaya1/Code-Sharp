@@ -50,7 +50,7 @@ public class DashboardViewModel extends ViewModel {
                 mUserStats.setValue(userStats);
 
                 //uncomment for testing
-                mUserStats.setValue(new UserStatsModel(10, 5, 3));
+//                mUserStats.setValue(new UserStatsModel(10, 5, 3));
 
                 if (++completedQueries == totalQueries){
                     finishedInit();
@@ -70,7 +70,7 @@ public class DashboardViewModel extends ViewModel {
                 mTotalNumberOfQuestions.setValue(stats.getNumTotalQuestions());
 
                 //uncomment for testing
-                mTotalNumberOfQuestions.setValue(46);
+//                mTotalNumberOfQuestions.setValue(46);
 
                 if (++completedQueries == totalQueries){
                     finishedInit();
