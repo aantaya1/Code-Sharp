@@ -1,6 +1,5 @@
 package com.aantaya.codesharp.ui.answer;
 
-import android.annotation.SuppressLint;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.Gravity;
@@ -21,12 +20,12 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.preference.PreferenceManager;
 
 import com.aantaya.codesharp.R;
 import com.aantaya.codesharp.enums.ProgrammingLanguage;
+import com.aantaya.codesharp.enums.QuestionType;
 import com.aantaya.codesharp.models.QuestionModel;
 import com.aantaya.codesharp.models.QuestionPayload;
 import com.aantaya.codesharp.utils.IntentUtils;
@@ -59,6 +58,7 @@ public class AnswerFragment extends Fragment {
     private ShimmerFrameLayout mShimmerLayout;
 
     private String mSelectedAnswer = "";
+    private int mSelectedLine = -1;
 
     public static AnswerFragment newInstance() {
         return new AnswerFragment();
@@ -150,8 +150,8 @@ public class AnswerFragment extends Fragment {
                 }
 
                 @Override
-                public void onLineClicked(int i, String s) {
-
+                public void onLineClicked(int lineNumber, String lineContent) {
+                    mSelectedLine = lineNumber;
                 }
             };
 
@@ -177,13 +177,16 @@ public class AnswerFragment extends Fragment {
 
             List<String> possibleResponses = new ArrayList<>();
 
-            // We want to add all of the wrong answers and insert the correct answer at
-            // some random index in range [0, len(payload.getWrongAnswers()))
-            Random random = new Random();
-            int randomPosition = random.nextInt(payload.getWrongAnswers().size());
-            for (int i=0; i< payload.getWrongAnswers().size(); i++){
-                if (i == randomPosition) possibleResponses.add(payload.getAnswer());
-                possibleResponses.add(payload.getWrongAnswers().get(i));
+            //find-the-bug questions will not have answers (users just select line numbers)
+            if (!questionModel.getQuestionType().equals(QuestionType.FIND_THE_BUG)){
+                // We want to add all of the wrong answers and insert the correct answer at
+                // some random index in range [0, len(payload.getWrongAnswers()))
+                Random random = new Random();
+                int randomPosition = random.nextInt(payload.getWrongAnswers().size());
+                for (int i=0; i< payload.getWrongAnswers().size(); i++){
+                    if (i == randomPosition) possibleResponses.add(payload.getAnswer());
+                    possibleResponses.add(payload.getWrongAnswers().get(i));
+                }
             }
 
             //It is very important that we remove all of the buttons
@@ -222,7 +225,10 @@ public class AnswerFragment extends Fragment {
             ImageView toastIcon = toastView.findViewById(R.id.custom_toast_icon);
             TextView toastText = toastView.findViewById(R.id.custom_toast_text);
 
-            if (payload.getAnswer().equals(mSelectedAnswer)){
+            //Note, we need to decrement mSelectedLine because our answers are zero-based
+            // indexed, while the displayed line numbers are not
+            if (QuestionModel.answerIsCorrect(currentQuestion.getQuestionType(), payload,
+                    mSelectedAnswer, mSelectedLine-1)){
                 toastIcon.setImageDrawable(getResources().getDrawable(R.drawable.ic_correct));
                 toastText.setText(getResources().getString(R.string.correct_answer));
 

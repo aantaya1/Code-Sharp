@@ -64,6 +64,25 @@ public class QuestionModel {
         }
     }
 
+    /**
+     * Checks if an answer is correct or not
+     *
+     * @param type the question type for the question payload
+     * @param payload the question payload that contains the answers to validate against
+     * @param selectedAnswerString the users selected answer string (only
+     *                             used if question type != FIND_THE_BUG)
+     * @param selectedLineNumber the line the user selected (only used if question type == FIND_THE_BUG)
+     * @return
+     */
+    public static boolean answerIsCorrect(QuestionType type, QuestionPayload payload,
+                                          String selectedAnswerString, int selectedLineNumber){
+        if (type.equals(QuestionType.FIND_THE_BUG)){
+            return payload.getBugLineNumber() == selectedLineNumber;
+        }else {
+            return payload.getAnswer().equals(selectedAnswerString);
+        }
+    }
+
     public String getId() {
         return id;
     }
