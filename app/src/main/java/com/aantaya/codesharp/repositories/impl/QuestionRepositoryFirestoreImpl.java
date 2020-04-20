@@ -36,6 +36,7 @@ import java.util.Map;
 import java.util.Set;
 
 import javax.annotation.Nullable;
+import javax.security.auth.callback.Callback;
 
 public class QuestionRepositoryFirestoreImpl implements QuestionRepository {
     private static final String TAG = QuestionRepositoryFirestoreImpl.class.getSimpleName();
@@ -376,7 +377,7 @@ public class QuestionRepositoryFirestoreImpl implements QuestionRepository {
         question.setDescription(descriptionMultipleChoice);
         question.setDifficulty(QuestionDifficulty.EASY);
         question.setQuestionType(QuestionType.TOPIC_QUESTION);
-        question.setTags(new ArrayList<String>());
+        question.setTags(new ArrayList<>());
 
         questionItems.add(question);
 
@@ -403,7 +404,7 @@ public class QuestionRepositoryFirestoreImpl implements QuestionRepository {
         question.setDescription(descriptionMultipleChoice);
         question.setDifficulty(QuestionDifficulty.EASY);
         question.setQuestionType(QuestionType.TOPIC_QUESTION);
-        question.setTags(new ArrayList<String>());
+        question.setTags(new ArrayList<>());
 
         questionItems.add(question);
 
@@ -427,14 +428,198 @@ public class QuestionRepositoryFirestoreImpl implements QuestionRepository {
         question.setQuestionPayloadMap(map);
         question.setQuestionTitle("Java Garbage Collection");
         question.setDescription(descriptionMultipleChoice);
-        question.setDifficulty(QuestionDifficulty.EASY);
+        question.setDifficulty(QuestionDifficulty.MEDIUM);
         question.setQuestionType(QuestionType.TOPIC_QUESTION);
-        question.setTags(new ArrayList<String>());
+        question.setTags(new ArrayList<>());
+
+        questionItems.add(question);
+
+        //----------------------------------
+
+        questionPayload = new QuestionPayload();
+        questionPayload.setProgrammingLanguage(ProgrammingLanguage.JAVA);
+        questionPayload.setQuestion("    /**\n" +
+                "     * Prints all of the elements in the names list\n" +
+                "     * @param names the names we would like to print \n" +
+                "     *              to system out \n" +
+                "     */\n" +
+                "    private void printAllNames(List<String> names){\n" +
+                "        for (int i=0; i<=names.size(); i+=1){\n" +
+                "            System.out.println(names.get(i));\n" +
+                "        }\n" +
+                "    }");
+        questionPayload.setBugLineNumber(6);
+        questionPayload.setHints(new ArrayList<>());
+        questionPayload.setWrongAnswers(new ArrayList<>());
+
+        map = new HashMap<>();
+        map.put(ProgrammingLanguage.JAVA.toString(), questionPayload);
+
+        question = new QuestionModel();
+        question.setQuestionPayloadMap(map);
+        question.setQuestionTitle("For loops");
+        question.setDescription(descriptionMultipleChoice);
+        question.setDifficulty(QuestionDifficulty.EASY);
+        question.setQuestionType(QuestionType.FIND_THE_BUG);
+        question.setTags(new ArrayList<>());
+
+        questionItems.add(question);
+
+        //----------------------------------
+
+        questionPayload = new QuestionPayload();
+        questionPayload.setProgrammingLanguage(ProgrammingLanguage.JAVA);
+        questionPayload.setQuestion("    /**\n" +
+                "     * Prints values to system out\n" +
+                "     */\n" +
+                "    private void printValues(List<String> values){\n" +
+                "        System.out.println(\"values\");\n" +
+                "    }");
+        questionPayload.setHints(new ArrayList<>());
+        questionPayload.setAnswer("O(1)");
+        questionPayload.setWrongAnswers(new ArrayList<>(Arrays.asList("O(n)", "O(n+1)", "O(n^2)")));
+
+        map = new HashMap<>();
+        map.put(ProgrammingLanguage.JAVA.toString(), questionPayload);
+
+        question = new QuestionModel();
+        question.setQuestionPayloadMap(map);
+        question.setQuestionTitle("Printing values time complexity I");
+        question.setDescription(descriptionMultipleChoice);
+        question.setDifficulty(QuestionDifficulty.EASY);
+        question.setQuestionType(QuestionType.TIME_COMPLEXITY_ANALYSIS);
+        question.setTags(new ArrayList<>());
+
+        questionItems.add(question);
+
+        //----------------------------------
+
+        questionPayload = new QuestionPayload();
+        questionPayload.setProgrammingLanguage(ProgrammingLanguage.JAVA);
+        questionPayload.setQuestion("    /**\n" +
+                "     * Prints values to system out\n" +
+                "     */\n" +
+                "    private void printValues(List<String> values){\n" +
+                "        for (String value : values){\n" +
+                "            System.out.println(value);\n" +
+                "        }\n" +
+                "    }");
+        questionPayload.setHints(new ArrayList<>());
+        questionPayload.setAnswer("O(n)");
+        questionPayload.setWrongAnswers(new ArrayList<>(Arrays.asList("O(1)", "O(100)", "O(n^2)")));
+
+        map = new HashMap<>();
+        map.put(ProgrammingLanguage.JAVA.toString(), questionPayload);
+
+        question = new QuestionModel();
+        question.setQuestionPayloadMap(map);
+        question.setQuestionTitle("Printing values time complexity II");
+        question.setDescription(descriptionMultipleChoice);
+        question.setDifficulty(QuestionDifficulty.EASY);
+        question.setQuestionType(QuestionType.TIME_COMPLEXITY_ANALYSIS);
+        question.setTags(new ArrayList<>());
+
+        questionItems.add(question);
+
+        //----------------------------------
+
+        questionPayload = new QuestionPayload();
+        questionPayload.setProgrammingLanguage(ProgrammingLanguage.JAVA);
+        questionPayload.setQuestion("    /**\n" +
+                "     * Prints values to system out\n" +
+                "     */\n" +
+                "    private void printValues(List<String> values){\n" +
+                "        for (int i=0; i<values.size(); i=i*2){\n" +
+                "            System.out.println(values.get(i));\n" +
+                "        }\n" +
+                "    }");
+        questionPayload.setHints(new ArrayList<>());
+        questionPayload.setAnswer("O(logn)");
+        questionPayload.setWrongAnswers(new ArrayList<>(Arrays.asList("O(1)", "O(n)", "O(n^2)", "O(nlogn)")));
+
+        map = new HashMap<>();
+        map.put(ProgrammingLanguage.JAVA.toString(), questionPayload);
+
+        question = new QuestionModel();
+        question.setQuestionPayloadMap(map);
+        question.setQuestionTitle("Printing values time complexity III");
+        question.setDescription(descriptionMultipleChoice);
+        question.setDifficulty(QuestionDifficulty.MEDIUM);
+        question.setQuestionType(QuestionType.TIME_COMPLEXITY_ANALYSIS);
+        question.setTags(new ArrayList<>());
+
+        questionItems.add(question);
+
+        //----------------------------------
+
+        map = new HashMap<>();
+
+        questionPayload = new QuestionPayload();
+        questionPayload.setProgrammingLanguage(ProgrammingLanguage.JAVA);
+        questionPayload.setQuestion("    /**\n" +
+                "     * Prints values to system out\n" +
+                "     */\n" +
+                "    private void printValues(List<String> values){\n" +
+                "        \n" +
+                "        if (values.size() < 20) return;\n" +
+                "        \n" +
+                "        for (int i = 1; i <= values.size(); i++){\n" +
+                "            for(int j = 1; j < 8; j = j * 2) {\n" +
+                "                System.out.println(values.get(j));\n" +
+                "            }\n" +
+                "        }\n" +
+                "    }");
+        questionPayload.setHints(new ArrayList<>());
+        questionPayload.setAnswer("O(nlogn)");
+        questionPayload.setWrongAnswers(new ArrayList<>(Arrays.asList("O(20)", "O(20*n)", "O(n^2)", "O(logn)")));
+
+        map.put(ProgrammingLanguage.JAVA.toString(), questionPayload);
+
+        questionPayload = new QuestionPayload();
+        questionPayload.setProgrammingLanguage(ProgrammingLanguage.PYTHON);
+        questionPayload.setQuestion("def prints_values(values):\n" +
+                "    if len(values) < 20:\n" +
+                "        return\n" +
+                "\n" +
+                "    for i in range(1, len(values)):\n" +
+                "        for j in (2 ** j for j in range(3)):\n" +
+                "            print(j)\n" +
+                "\n" +
+                "\n" +
+                "prints_values([1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1])");
+        questionPayload.setHints(new ArrayList<>());
+        questionPayload.setAnswer("O(nlogn)");
+        questionPayload.setWrongAnswers(new ArrayList<>(Arrays.asList("O(20)", "O(20*n)", "O(n^2)", "O(logn)")));
+
+        map.put(ProgrammingLanguage.PYTHON.toString(), questionPayload);
+
+        question = new QuestionModel();
+        question.setQuestionPayloadMap(map);
+        question.setQuestionTitle("Printing values time complexity IV");
+        question.setDescription(descriptionMultipleChoice);
+        question.setDifficulty(QuestionDifficulty.HARD);
+        question.setQuestionType(QuestionType.TIME_COMPLEXITY_ANALYSIS);
+        question.setTags(new ArrayList<>());
 
         questionItems.add(question);
 
         for (QuestionModel questionModel : questionItems){
+            incrementQuestionCount();
             db.collection("questions").add(questionModel);
+        }
+    }
+
+    /**
+     * Prints values to system out
+     */
+    private void printValues(List<String> values){
+
+        if (values.size() < 20) return;
+
+        for (int i = 1; i <= values.size(); i++){
+            for(int j = 1; j < 8; j = j * 2) {
+                System.out.println(values.get(j));
+            }
         }
     }
 }

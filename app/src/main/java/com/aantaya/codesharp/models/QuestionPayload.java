@@ -20,17 +20,20 @@ public class QuestionPayload {
     private List<String> hints;
     private List<String> wrongAnswers;
     private String answer;
+    private int bugLineNumber;
 
     public QuestionPayload() {
         //blank constructor
     }
 
-    public QuestionPayload(ProgrammingLanguage programmingLanguage, String question, List<String> hints, List<String> wrongAnswers, String answer) {
+    public QuestionPayload(ProgrammingLanguage programmingLanguage, String question, List<String> hints,
+                           List<String> wrongAnswers, String answer, int bugLineNumber) {
         this.programmingLanguage = programmingLanguage;
         this.question = question;
         this.hints = hints;
         this.wrongAnswers = wrongAnswers;
         this.answer = answer;
+        this.bugLineNumber = bugLineNumber;
     }
 
     public ProgrammingLanguage getProgrammingLanguage() {
@@ -71,5 +74,13 @@ public class QuestionPayload {
 
     public void setAnswer(String answer) {
         this.answer = answer;
+    }
+
+    public int getBugLineNumber() {
+        return bugLineNumber;
+    }
+
+    public void setBugLineNumber(int bugLineNumber) {
+        this.bugLineNumber = bugLineNumber;
     }
 }
