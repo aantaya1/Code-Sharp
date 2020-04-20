@@ -130,24 +130,16 @@ public class AnswerFragment extends Fragment {
 
             CodeView.OnHighlightListener listener = new CodeView.OnHighlightListener() {
                 @Override
-                public void onStartCodeHighlight() {
-
-                }
+                public void onStartCodeHighlight() { }
 
                 @Override
-                public void onFinishCodeHighlight() {
-
-                }
+                public void onFinishCodeHighlight() { }
 
                 @Override
-                public void onLanguageDetected(Language language, int i) {
-
-                }
+                public void onLanguageDetected(Language language, int i) { }
 
                 @Override
-                public void onFontSizeChanged(int i) {
-
-                }
+                public void onFontSizeChanged(int i) { }
 
                 @Override
                 public void onLineClicked(int lineNumber, String lineContent) {
