@@ -35,6 +35,7 @@ import com.google.android.material.radiobutton.MaterialRadioButton;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 import br.tiagohm.codeview.CodeView;
 import br.tiagohm.codeview.Language;
@@ -174,11 +175,16 @@ public class AnswerFragment extends Fragment {
                     .setStartLineNumber(1)
                     .apply();
 
-            int i=0;
-
             List<String> possibleResponses = new ArrayList<>();
-            possibleResponses.add(payload.getAnswer());
-            possibleResponses.addAll(payload.getWrongAnswers());
+
+            // We want to add all of the wrong answers and insert the correct answer at
+            // some random index in range [0, len(payload.getWrongAnswers()))
+            Random random = new Random();
+            int randomPosition = random.nextInt(payload.getWrongAnswers().size());
+            for (int i=0; i< payload.getWrongAnswers().size(); i++){
+                if (i == randomPosition) possibleResponses.add(payload.getAnswer());
+                possibleResponses.add(payload.getWrongAnswers().get(i));
+            }
 
             //It is very important that we remove all of the buttons
             // from the prev question!
@@ -193,7 +199,6 @@ public class AnswerFragment extends Fragment {
                         LinearLayout.LayoutParams.WRAP_CONTENT));
                 btnTag.setTransformationMethod(null);
                 btnTag.setText(response);
-                btnTag.setId(i++);
 
                 btnTag.setOnClickListener(view -> {
                     //todo: do i need to do anything else?
