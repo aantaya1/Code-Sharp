@@ -136,7 +136,9 @@ public class AnswerFragment extends Fragment {
                 public void onFinishCodeHighlight() { }
 
                 @Override
-                public void onLanguageDetected(Language language, int i) { }
+                public void onLanguageDetected(Language language, int confidence) {
+
+                }
 
                 @Override
                 public void onFontSizeChanged(int i) { }
@@ -156,11 +158,13 @@ public class AnswerFragment extends Fragment {
                 codeTheme = Theme.ATELIER_LAKESIDE_LIGHT;
             }
 
+            Language language = convertToLanguage(payload.getProgrammingLanguage());
+
             mCodeView.setOnHighlightListener(listener)
                     .setTheme(codeTheme)
                     .setCode(payload.getQuestion() + "\n")
-                    .setLanguage(Language.valueOf(payload.getProgrammingLanguage().toString().toUpperCase()))
-                    .setWrapLine(payload.getProgrammingLanguage().equals(ProgrammingLanguage.MARKDOWN))
+                    .setLanguage(language)
+                    .setWrapLine(language.equals(Language.MARKDOWN))
                     .setFontSize(14)
                     .setZoomEnabled(false)
                     .setShowLineNumber(true)
@@ -268,5 +272,22 @@ public class AnswerFragment extends Fragment {
         mShimmerLayout.stopShimmer();
         mShimmerLayout.setVisibility(View.GONE);
         mScrollviewLayout.setVisibility(View.VISIBLE);
+    }
+
+    private Language convertToLanguage(ProgrammingLanguage language){
+        switch (language){
+            case C_P_P:
+            case C:
+                return Language.CPP;
+            case JAVA:
+                return Language.JAVA;
+            case PYTHON:
+                return Language.PYTHON;
+            case C_SHARP:
+                return Language.C_SHARP;
+            case MARKDOWN:
+            default:
+                return Language.MARKDOWN;
+        }
     }
 }

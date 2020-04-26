@@ -127,6 +127,8 @@ public class QuestionRepositoryFirestoreImpl implements QuestionRepository {
                         QuestionModel questionModel = document.toObject(QuestionModel.class);
                         questionModel.setId(document.getId());
 
+                        normalizeQuestionStringEol(questionModel);
+
                         Set<QuestionModel> res = new HashSet<>();
                         res.add(questionModel);
 
@@ -207,6 +209,8 @@ public class QuestionRepositoryFirestoreImpl implements QuestionRepository {
                         for(QueryDocumentSnapshot document : task.getResult()){
                             QuestionModel questionModel = document.toObject(QuestionModel.class);
                             questionModel.setId(document.getId());
+
+                            normalizeQuestionStringEol(questionModel);
 
                             res.add(questionModel);
                         }
@@ -323,6 +327,21 @@ public class QuestionRepositoryFirestoreImpl implements QuestionRepository {
                         Log.w(TAG, "Error getting documents.", task.getException());
                     }
                 });
+    }
+
+    /**
+     * Helper method for normalizing the EOL marker for the question strings in a question.
+     * The web-client that creates the question might have saved the question with different
+     * EOL markers.
+     *
+     * @param questionModel
+     */
+    private static void normalizeQuestionStringEol(QuestionModel questionModel){
+        for (String key : questionModel.getQuestionPayloadMap().keySet()){
+            QuestionPayload payload = questionModel.getQuestionPayloadMap().get(key);
+            String questionWithCorrectEOL = payload.getQuestion().replaceAll("\\r\\n?", "\n");
+            payload.setQuestion(questionWithCorrectEOL);
+        }
     }
 
     private void incrementQuestionCount(){
