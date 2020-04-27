@@ -224,7 +224,7 @@ public class AnswerFragment extends Fragment {
             //Note, we need to decrement mSelectedLine because our answers are zero-based
             // indexed, while the displayed line numbers are not
             if (QuestionModel.answerIsCorrect(currentQuestion.getQuestionType(), payload,
-                    mSelectedAnswer, mSelectedLine-1)){
+                    mSelectedAnswer, mSelectedLine)){
                 toastIcon.setImageDrawable(getResources().getDrawable(R.drawable.ic_correct));
                 toastText.setText(getResources().getString(R.string.correct_answer));
 
