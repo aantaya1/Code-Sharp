@@ -25,11 +25,18 @@
             android:background="@color/shimmer_grey"
             android:textSize="14sp"/>
 
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="                                 "
+            android:textSize="12sp"
+            android:background="@color/shimmer_grey"
+            android:layout_marginTop="@dimen/margin_large"/>
+
         <br.tiagohm.codeview.CodeView
             android:layout_width="match_parent"
             android:layout_height="100dp"
-            android:backgroundTint="@color/shimmer_grey"
-            android:layout_marginTop="@dimen/margin_large"/>
+            android:backgroundTint="@color/shimmer_grey"/>
 
         <RadioGroup
             android:layout_width="match_parent"

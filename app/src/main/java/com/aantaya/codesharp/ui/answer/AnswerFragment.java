@@ -51,6 +51,7 @@ public class AnswerFragment extends Fragment {
 
     private TextView mQuestionTitle;
     private TextView mQuestionDescription;
+    private TextView mProgrammingLanguageTextView;
     private CodeView mCodeView;
     private RadioGroup mQuestionAnswersContainer;
     private Button mSubmitButton;
@@ -72,6 +73,7 @@ public class AnswerFragment extends Fragment {
 
         mQuestionTitle = root.findViewById(R.id.answer_question_title);
         mQuestionDescription = root.findViewById(R.id.answer_question_description);
+        mProgrammingLanguageTextView = root.findViewById(R.id.answer_question_prog_language);
         mCodeView = root.findViewById(R.id.answer_question_content);
         mQuestionAnswersContainer = root.findViewById(R.id.answer_question_answers_container);
         mSubmitButton = root.findViewById(R.id.answer_submit_button);
@@ -127,6 +129,7 @@ public class AnswerFragment extends Fragment {
             }
 
             mQuestionDescription.setText(questionModel.getDescription());
+            mProgrammingLanguageTextView.setText(getString(R.string.programming_lang, payload.getProgrammingLanguage().getName()));
 
             CodeView.OnHighlightListener listener = new CodeView.OnHighlightListener() {
                 @Override
@@ -244,12 +247,6 @@ public class AnswerFragment extends Fragment {
             toast.show();
         });
     }
-
-public void printNumbers(int arg1){
-    for (int i=0; i<arg1; i++){
-        System.out.println("Printing number: " + i);
-    }
-}
 
     @Override
     public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {

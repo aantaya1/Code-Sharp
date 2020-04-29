@@ -47,6 +47,7 @@
     <string name="question_submit_button">Submit</string>
     <string name="correct_answer">Correct, good job!</string>
     <string name="incorrect_answer">Incorrect, try again.</string>
+    <string name="programming_lang">Language: %s</string>
 
     <!--  Question Filter Preferences  -->
     <string name="save">Save</string>

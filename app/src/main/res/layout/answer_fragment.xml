@@ -67,11 +67,18 @@
                 android:textSize="14sp"
                 android:text="This is a long question description about things."/>
 
+            <TextView
+                android:id="@+id/answer_question_prog_language"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="12sp"
+                android:layout_marginTop="@dimen/margin_large"
+                android:text="Language: Java"/>
+
             <br.tiagohm.codeview.CodeView
                 android:id="@+id/answer_question_content"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/margin_large"/>
+                android:layout_height="wrap_content"/>
 
             <RadioGroup
                 android:id="@+id/answer_question_answers_container"
