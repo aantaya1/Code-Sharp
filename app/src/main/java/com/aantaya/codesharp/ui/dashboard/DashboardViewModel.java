@@ -1,8 +1,11 @@
 package com.aantaya.codesharp.ui.dashboard;
 
+import android.app.Application;
+
+import androidx.annotation.NonNull;
+import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
-import androidx.lifecycle.ViewModel;
 
 import com.aantaya.codesharp.models.ProgressModel;
 import com.aantaya.codesharp.models.SystemStatsModel;
@@ -12,7 +15,9 @@ import com.aantaya.codesharp.repositories.callbacks.SystemStatsCallback;
 import com.aantaya.codesharp.repositories.callbacks.UserStatsCallback;
 import com.aantaya.codesharp.repositories.impl.QuestionRepositoryFirestoreImpl;
 
-public class DashboardViewModel extends ViewModel {
+import java.lang.ref.WeakReference;
+
+public class DashboardViewModel extends AndroidViewModel {
 
     public static final int STATE_NORMAL = 0;
     public static final int STATE_LOADING = 1;
@@ -28,6 +33,10 @@ public class DashboardViewModel extends ViewModel {
 
     QuestionRepository questionRepo;
 
+    public DashboardViewModel(@NonNull Application application) {
+        super(application);
+    }
+
     /**
      * Initialize the viewmodel to start loading data
      */
@@ -36,7 +45,7 @@ public class DashboardViewModel extends ViewModel {
         // We don't want to init more than once
         if (questionRepo != null) return;
 
-        questionRepo = QuestionRepositoryFirestoreImpl.getInstance();
+        questionRepo = QuestionRepositoryFirestoreImpl.getInstance(new WeakReference<>(getApplication()));
 
         mState.setValue(STATE_LOADING);
 

@@ -18,6 +18,7 @@ import com.aantaya.codesharp.repositories.callbacks.QuestionQueryCallback;
 import com.aantaya.codesharp.repositories.impl.QuestionRepositoryFirestoreImpl;
 import com.aantaya.codesharp.utils.PreferenceUtils;
 
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -42,7 +43,7 @@ public class HomeViewModel extends AndroidViewModel {
         mState.setValue(STATE_LOADING);
 
         if (questionRepo == null){
-            questionRepo = QuestionRepositoryFirestoreImpl.getInstance();
+            questionRepo = QuestionRepositoryFirestoreImpl.getInstance(new WeakReference<>(getApplication()));
         }
 
         // We cant do this in the constructor because these values might change after the view

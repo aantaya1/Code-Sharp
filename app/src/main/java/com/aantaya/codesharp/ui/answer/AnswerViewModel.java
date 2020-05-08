@@ -19,6 +19,7 @@ import com.aantaya.codesharp.repositories.callbacks.QuestionQueryCallback;
 import com.aantaya.codesharp.repositories.impl.QuestionRepositoryFirestoreImpl;
 import com.aantaya.codesharp.utils.PreferenceUtils;
 
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -63,7 +64,7 @@ public class AnswerViewModel extends AndroidViewModel {
 
         //todo: we might want to replace this with DI (Dagger)
         //init the repo
-        mQuestionRepo = QuestionRepositoryFirestoreImpl.getInstance();
+        mQuestionRepo = QuestionRepositoryFirestoreImpl.getInstance(new WeakReference<>(getApplication()));
 
         loadQuestions(initialQuestionId);
         loadCompletedQuestions();
