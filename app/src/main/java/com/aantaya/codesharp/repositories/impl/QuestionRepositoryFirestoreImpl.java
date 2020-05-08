@@ -3,14 +3,13 @@ package com.aantaya.codesharp.repositories.impl;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.util.Log;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.preference.PreferenceManager;
 
 import com.aantaya.codesharp.BuildConfig;
-import com.aantaya.codesharp.enums.ProgrammingLanguage;
 import com.aantaya.codesharp.enums.QuestionDifficulty;
-import com.aantaya.codesharp.enums.QuestionType;
 import com.aantaya.codesharp.models.QuestionModel;
 import com.aantaya.codesharp.models.QuestionPayload;
 import com.aantaya.codesharp.models.QuestionSearchFilter;
@@ -19,6 +18,7 @@ import com.aantaya.codesharp.models.UserStatsModel;
 import com.aantaya.codesharp.repositories.api.QuestionRepository;
 import com.aantaya.codesharp.repositories.callbacks.IdQueryCallback;
 import com.aantaya.codesharp.repositories.callbacks.QuestionQueryCallback;
+import com.aantaya.codesharp.repositories.callbacks.SyncCacheCallback;
 import com.aantaya.codesharp.repositories.callbacks.SystemStatsCallback;
 import com.aantaya.codesharp.repositories.callbacks.UserStatsCallback;
 import com.aantaya.codesharp.utils.PreferenceUtils;
@@ -29,12 +29,12 @@ import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreSettings;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.firestore.SetOptions;
 import com.google.firebase.firestore.Source;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -42,7 +42,6 @@ import java.util.Map;
 import java.util.Set;
 
 import javax.annotation.Nullable;
-import javax.security.auth.callback.Callback;
 
 public class QuestionRepositoryFirestoreImpl implements QuestionRepository {
     private static final String TAG = QuestionRepositoryFirestoreImpl.class.getSimpleName();
@@ -60,10 +59,14 @@ public class QuestionRepositoryFirestoreImpl implements QuestionRepository {
 
     private static QuestionRepositoryFirestoreImpl questionRepository;
 
-    private FirebaseFirestore db;//todo: revisit this, maybe we don't need to keep this connection open
+    private FirebaseFirestore db;
     private FirebaseUser user;
 
+    private WeakReference<Context> mContextWeakRef;
+
     private QuestionRepositoryFirestoreImpl(WeakReference<Context> contextWeakReference){
+        this.mContextWeakRef = contextWeakReference;
+
         db = FirebaseFirestore.getInstance();
 
         // The default cache size threshold is 100 MB. Configure "setCacheSizeBytes"
@@ -75,9 +78,6 @@ public class QuestionRepositoryFirestoreImpl implements QuestionRepository {
                 .build();
 
         db.setFirestoreSettings(settings);
-
-        checkAndUpdateCache(contextWeakReference.get());
-
         user = FirebaseAuth.getInstance().getCurrentUser();
     }
 
@@ -107,8 +107,13 @@ public class QuestionRepositoryFirestoreImpl implements QuestionRepository {
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
                         DocumentSnapshot document = task.getResult();
-                        List<String> ids = (document != null) ? (List<String>) document.get("question_ids") : new ArrayList<>();
 
+                        if (document != null){
+                            String dataSource = document.getMetadata().isFromCache() ? "local cache" : "server";
+                            Log.d(TAG, "Fetched question from " + dataSource);
+                        }
+
+                        List<String> ids = (document != null) ? (List<String>) document.get("question_ids") : new ArrayList<>();
                         Set<String> items = new HashSet<>();
 
                         if (ids != null) items.addAll(ids);
@@ -138,6 +143,15 @@ public class QuestionRepositoryFirestoreImpl implements QuestionRepository {
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
                         DocumentSnapshot document = task.getResult();
+
+                        if (document == null){
+                            //todo: implement this?
+                            callback.onFailure("");
+                            return;
+                        }
+
+                        String dataSource = document.getMetadata().isFromCache() ? "local cache" : "server";
+                        Log.d(TAG, "Fetched question from " + dataSource);
 
                         QuestionModel questionModel = document.toObject(QuestionModel.class);
                         questionModel.setId(document.getId());
@@ -218,9 +232,20 @@ public class QuestionRepositoryFirestoreImpl implements QuestionRepository {
                 .get(source)
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
+                        QuerySnapshot querySnapshot = task.getResult();
+
+                        if (querySnapshot == null){
+                            //todo: implement this?
+                            callback.onFailure("");
+                            return;
+                        }
+
+                        String dataSource = querySnapshot.getMetadata().isFromCache() ? "local cache" : "server";
+                        Log.d(TAG, "Fetched all questions from " + dataSource);
+
                         Set<QuestionModel> res = new HashSet<>();
 
-                        for(QueryDocumentSnapshot document : task.getResult()){
+                        for(QueryDocumentSnapshot document : querySnapshot){
                             QuestionModel questionModel = document.toObject(QuestionModel.class);
                             questionModel.setId(document.getId());
 
@@ -285,18 +310,22 @@ public class QuestionRepositoryFirestoreImpl implements QuestionRepository {
                     if (task.isSuccessful()) {
                         DocumentSnapshot document = task.getResult();
 
-                        if (document != null){
-                            SystemStatsModel statsModel = new SystemStatsModel();
-
-                            if (document.contains(STATS_NUM_QUESTIONS_FIELD)){
-                                statsModel.setNumTotalQuestions(((Long) document.get(STATS_NUM_QUESTIONS_FIELD)).intValue());
-                            }
-
-                            callback.onSuccess(statsModel);
-                        }else {
-                            //todo: need to implement
+                        if (document == null){
+                            //todo: implement this?
                             callback.onFailure("");
+                            return;
                         }
+
+                        String dataSource = document.getMetadata().isFromCache() ? "local cache" : "server";
+                        Log.d(TAG, "Fetched system stats from " + dataSource);
+
+                        SystemStatsModel statsModel = new SystemStatsModel();
+
+                        if (document.contains(STATS_NUM_QUESTIONS_FIELD)){
+                            statsModel.setNumTotalQuestions(((Long) document.get(STATS_NUM_QUESTIONS_FIELD)).intValue());
+                        }
+
+                        callback.onSuccess(statsModel);
                     } else {
                         //todo: need to implement
                         callback.onFailure("");
@@ -318,31 +347,35 @@ public class QuestionRepositoryFirestoreImpl implements QuestionRepository {
     private void getUserStats(UserStatsCallback callback, Source source){
         db.collection(COMPLETED_QUESTION_COLLECTION)
                 .document(user.getUid())
-                .get()
+                .get(source)
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
                         DocumentSnapshot document = task.getResult();
 
-                        if (document != null){
-                            UserStatsModel statsModel = new UserStatsModel();
-
-                            if (document.contains(USER_STATS_NUM_EASY_FIELD)){
-                                statsModel.setNumEasyCompleted(((Long) document.get(USER_STATS_NUM_EASY_FIELD)).intValue());
-                            }
-
-                            if (document.contains(USER_STATS_NUM_MED_FIELD)){
-                                statsModel.setNumMediumCompleted(((Long) document.get(USER_STATS_NUM_MED_FIELD)).intValue());
-                            }
-
-                            if (document.contains(USER_STATS_NUM_HARD_FIELD)){
-                                statsModel.setNumHardCompleted(((Long) document.get(USER_STATS_NUM_HARD_FIELD)).intValue());
-                            }
-
-                            callback.onSuccess(statsModel);
-                        }else {
-                            //todo: need to implement
+                        if (document == null){
+                            //todo: implement this?
                             callback.onFailure("");
+                            return;
                         }
+
+                        String dataSource = document.getMetadata().isFromCache() ? "local cache" : "server";
+                        Log.d(TAG, "Fetched user stats from " + dataSource);
+
+                        UserStatsModel statsModel = new UserStatsModel();
+
+                        if (document.contains(USER_STATS_NUM_EASY_FIELD)){
+                            statsModel.setNumEasyCompleted(((Long) document.get(USER_STATS_NUM_EASY_FIELD)).intValue());
+                        }
+
+                        if (document.contains(USER_STATS_NUM_MED_FIELD)){
+                            statsModel.setNumMediumCompleted(((Long) document.get(USER_STATS_NUM_MED_FIELD)).intValue());
+                        }
+
+                        if (document.contains(USER_STATS_NUM_HARD_FIELD)){
+                            statsModel.setNumHardCompleted(((Long) document.get(USER_STATS_NUM_HARD_FIELD)).intValue());
+                        }
+
+                        callback.onSuccess(statsModel);
                     } else {
                         //todo: need to implement
                         callback.onFailure("");
@@ -355,20 +388,23 @@ public class QuestionRepositoryFirestoreImpl implements QuestionRepository {
      * This method will check how old the data in our cache is. If it is older than a
      * specified amount of time, we will update the cache.
      *
-     * @param context
+     * @param cacheCallback
      */
-    private void checkAndUpdateCache(Context context){
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+    @Override
+    public void checkAndUpdateCache(SyncCacheCallback cacheCallback){
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(mContextWeakRef.get());
         long currentTime = System.currentTimeMillis();
         long lastSyncTime = prefs.getLong(PreferenceUtils.LAST_SYNC_DATE, currentTime);
         long NUM_MILLISECONDS_IN_A_WEEK = 604800000;
 
-        if ((currentTime - lastSyncTime) > NUM_MILLISECONDS_IN_A_WEEK){
-            updateLocalCache();
+        if (currentTime - lastSyncTime == 0 || (currentTime - lastSyncTime) >= NUM_MILLISECONDS_IN_A_WEEK){
+            updateLocalCache(cacheCallback);
 
             SharedPreferences.Editor editor = prefs.edit();
             editor.putLong(PreferenceUtils.LAST_SYNC_DATE, currentTime);
             editor.apply();
+        }else {
+            cacheCallback.onSuccess();
         }
     }
 
@@ -379,29 +415,38 @@ public class QuestionRepositoryFirestoreImpl implements QuestionRepository {
      * If we add new collections to the database, we might need to update this method
      * to sync those values up too.
      */
-    private void updateLocalCache(){
+    private void updateLocalCache(SyncCacheCallback cacheCallback){
         getAllQuestions(Source.SERVER, new QuestionQueryCallback() {
             @Override
-            public void onSuccess(Set<QuestionModel> questionModels) { }
+            public void onSuccess(Set<QuestionModel> questionModels) {
+                getCompletedQuestions(Source.SERVER, new IdQueryCallback() {
+                    @Override
+                    public void onSuccess(Set<String> ids) {
+                        getSystemStats(Source.SERVER, new SystemStatsCallback() {
+                            @Override
+                            public void onSuccess(SystemStatsModel stats) {
+                                cacheCallback.onSuccess();
+                            }
+
+                            @Override
+                            public void onFailure(String failureString) {
+                                //todo: implement this?
+                                cacheCallback.onFailure("");
+                            }
+                        });
+                    }
+
+                    @Override
+                    public void onFailure(String failureString) {
+                        //todo: implement this?
+                    }
+                });
+            }
 
             @Override
-            public void onFailure(String failureString) { }
-        });
-
-        getCompletedQuestions(Source.SERVER, new IdQueryCallback() {
-            @Override
-            public void onSuccess(Set<String> ids) { }
-
-            @Override
-            public void onFailure(String failureString) { }
-        });
-
-        getSystemStats(Source.SERVER, new SystemStatsCallback() {
-            @Override
-            public void onSuccess(SystemStatsModel stats) { }
-
-            @Override
-            public void onFailure(String failureString) { }
+            public void onFailure(String failureString) {
+                //todo: implement this?
+            }
         });
     }
 

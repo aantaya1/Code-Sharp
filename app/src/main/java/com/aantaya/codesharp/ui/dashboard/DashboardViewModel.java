@@ -11,6 +11,7 @@ import com.aantaya.codesharp.models.ProgressModel;
 import com.aantaya.codesharp.models.SystemStatsModel;
 import com.aantaya.codesharp.models.UserStatsModel;
 import com.aantaya.codesharp.repositories.api.QuestionRepository;
+import com.aantaya.codesharp.repositories.callbacks.SyncCacheCallback;
 import com.aantaya.codesharp.repositories.callbacks.SystemStatsCallback;
 import com.aantaya.codesharp.repositories.callbacks.UserStatsCallback;
 import com.aantaya.codesharp.repositories.impl.QuestionRepositoryFirestoreImpl;
@@ -49,6 +50,20 @@ public class DashboardViewModel extends AndroidViewModel {
 
         mState.setValue(STATE_LOADING);
 
+        questionRepo.checkAndUpdateCache(new SyncCacheCallback() {
+            @Override
+            public void onSuccess() {
+                fetchData();
+            }
+
+            @Override
+            public void onFailure(String failureString) {
+                mState.setValue(STATE_FAILED);
+            }
+        });
+    }
+
+    private void fetchData(){
         //First we will load the the user's stats, and then we will load the system stats
         // we are nesting the callbacks because in order to
         questionRepo.getUserStats(new UserStatsCallback() {

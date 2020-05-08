@@ -15,6 +15,7 @@ import com.aantaya.codesharp.models.RecyclerViewQuestionItem;
 import com.aantaya.codesharp.repositories.api.QuestionRepository;
 import com.aantaya.codesharp.repositories.callbacks.IdQueryCallback;
 import com.aantaya.codesharp.repositories.callbacks.QuestionQueryCallback;
+import com.aantaya.codesharp.repositories.callbacks.SyncCacheCallback;
 import com.aantaya.codesharp.repositories.impl.QuestionRepositoryFirestoreImpl;
 import com.aantaya.codesharp.utils.PreferenceUtils;
 
@@ -52,17 +53,27 @@ public class HomeViewModel extends AndroidViewModel {
         questionSearchFilter.setIncludeCompleted(prefs.getBoolean(PreferenceUtils.QUESTION_FILTER_INCLUDE_COMPLETED, false));
         questionSearchFilter.setIncludeNotCompleted(true);
 
-        questionRepo.getQuestions(questionSearchFilter, new QuestionQueryCallback() {
+        questionRepo.checkAndUpdateCache(new SyncCacheCallback() {
             @Override
-            public void onSuccess(Set<QuestionModel> questionModels) {
-                List<RecyclerViewQuestionItem> items = new ArrayList<>();
+            public void onSuccess() {
+                questionRepo.getQuestions(questionSearchFilter, new QuestionQueryCallback() {
+                    @Override
+                    public void onSuccess(Set<QuestionModel> questionModels) {
+                        List<RecyclerViewQuestionItem> items = new ArrayList<>();
 
-                for (QuestionModel model : questionModels){
-                    items.add(new RecyclerViewQuestionItem(model.getId(), model.getQuestionTitle(), model.getDifficulty()));
-                }
+                        for (QuestionModel model : questionModels){
+                            items.add(new RecyclerViewQuestionItem(model.getId(), model.getQuestionTitle(), model.getDifficulty()));
+                        }
 
-                mQuestionsLiveData.setValue(items);
-                mState.setValue(STATE_NORMAL);
+                        mQuestionsLiveData.setValue(items);
+                        mState.setValue(STATE_NORMAL);
+                    }
+
+                    @Override
+                    public void onFailure(String failureString) {
+                        mState.setValue(STATE_FAILED);
+                    }
+                });
             }
 
             @Override

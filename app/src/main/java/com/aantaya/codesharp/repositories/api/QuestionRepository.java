@@ -1,5 +1,7 @@
 package com.aantaya.codesharp.repositories.api;
 
+import android.content.Context;
+
 import androidx.annotation.NonNull;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
@@ -11,6 +13,7 @@ import com.aantaya.codesharp.models.QuestionSearchFilter;
 import com.aantaya.codesharp.models.RecyclerViewQuestionItem;
 import com.aantaya.codesharp.repositories.callbacks.IdQueryCallback;
 import com.aantaya.codesharp.repositories.callbacks.QuestionQueryCallback;
+import com.aantaya.codesharp.repositories.callbacks.SyncCacheCallback;
 import com.aantaya.codesharp.repositories.callbacks.SystemStatsCallback;
 import com.aantaya.codesharp.repositories.callbacks.UserStatsCallback;
 
@@ -23,6 +26,8 @@ import javax.annotation.Nullable;
  * API that defines the operations that a question repository implementation should provide.
  */
 public interface QuestionRepository {
+
+    void checkAndUpdateCache(SyncCacheCallback cacheCallback);
 
     /**
      * Get a set of question ids that represent the questions a user has successfully
