@@ -3,7 +3,6 @@ package com.aantaya.codesharp.repositories.impl;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.util.Log;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.preference.PreferenceManager;
@@ -97,7 +96,7 @@ public class QuestionRepositoryFirestoreImpl implements QuestionRepository {
      */
     @Override
     public void getCompletedQuestions(IdQueryCallback callback) {
-        getCompletedQuestions(Source.CACHE, callback);
+        getCompletedQuestions(Source.SERVER, callback);
     }
 
     private void getCompletedQuestions(Source source, IdQueryCallback callback){
@@ -110,7 +109,7 @@ public class QuestionRepositoryFirestoreImpl implements QuestionRepository {
 
                         if (document != null){
                             String dataSource = document.getMetadata().isFromCache() ? "local cache" : "server";
-                            Log.d(TAG, "Fetched question from " + dataSource);
+                            Log.d(TAG, "Fetched completed questions from " + dataSource);
                         }
 
                         List<String> ids = (document != null) ? (List<String>) document.get("question_ids") : new ArrayList<>();
@@ -341,7 +340,7 @@ public class QuestionRepositoryFirestoreImpl implements QuestionRepository {
      */
     @Override
     public void getUserStats(UserStatsCallback callback) {
-        getUserStats(callback, Source.CACHE);
+        getUserStats(callback, Source.SERVER);
     }
 
     private void getUserStats(UserStatsCallback callback, Source source){
@@ -395,9 +394,9 @@ public class QuestionRepositoryFirestoreImpl implements QuestionRepository {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(mContextWeakRef.get());
         long currentTime = System.currentTimeMillis();
         long lastSyncTime = prefs.getLong(PreferenceUtils.LAST_SYNC_DATE, currentTime);
-        long NUM_MILLISECONDS_IN_A_WEEK = 604800000;
+        final long NUM_MILLISECONDS_IN_A_DAY = 86400000;
 
-        if (currentTime - lastSyncTime == 0 || (currentTime - lastSyncTime) >= NUM_MILLISECONDS_IN_A_WEEK){
+        if (currentTime - lastSyncTime == 0 || (currentTime - lastSyncTime) >= (NUM_MILLISECONDS_IN_A_DAY * 3)){
             updateLocalCache(cacheCallback);
 
             SharedPreferences.Editor editor = prefs.edit();
@@ -409,8 +408,10 @@ public class QuestionRepositoryFirestoreImpl implements QuestionRepository {
     }
 
     /**
-     * This method will update the question collection, the specific user's completed
-     * question collection, and the system stats collection.
+     * This method will update the question collection cache and the system stats collection cache.
+     *
+     * We are only using the cache for these collections because the user stats and completed
+     * questions collections are updated very frequently, so we can't just cache those.
      *
      * If we add new collections to the database, we might need to update this method
      * to sync those values up too.
@@ -419,26 +420,16 @@ public class QuestionRepositoryFirestoreImpl implements QuestionRepository {
         getAllQuestions(Source.SERVER, new QuestionQueryCallback() {
             @Override
             public void onSuccess(Set<QuestionModel> questionModels) {
-                getCompletedQuestions(Source.SERVER, new IdQueryCallback() {
+                getSystemStats(Source.SERVER, new SystemStatsCallback() {
                     @Override
-                    public void onSuccess(Set<String> ids) {
-                        getSystemStats(Source.SERVER, new SystemStatsCallback() {
-                            @Override
-                            public void onSuccess(SystemStatsModel stats) {
-                                cacheCallback.onSuccess();
-                            }
-
-                            @Override
-                            public void onFailure(String failureString) {
-                                //todo: implement this?
-                                cacheCallback.onFailure("");
-                            }
-                        });
+                    public void onSuccess(SystemStatsModel stats) {
+                        cacheCallback.onSuccess();
                     }
 
                     @Override
                     public void onFailure(String failureString) {
                         //todo: implement this?
+                        cacheCallback.onFailure("");
                     }
                 });
             }
@@ -446,6 +437,7 @@ public class QuestionRepositoryFirestoreImpl implements QuestionRepository {
             @Override
             public void onFailure(String failureString) {
                 //todo: implement this?
+                cacheCallback.onFailure("");
             }
         });
     }
